@@ -2,56 +2,213 @@ import React, {useState, useEffect} from "react";
 import 'assets/css/student';
 import PasswordRequirements from 'components/PasswordRequirements';
 import ButtonGroup from 'components/ButtonGroup';
-
 import { BiEditAlt } from "react-icons/bi";
 
-export const ProfileTeacher = () =>{
-
-    const[fname, setFname] = useState('');
-    const[lname, setLname] = useState('');
-    const[username, setUsername] = useState('');
-    const[email, setEmail] = useState('');
-    const[oldPassword, setOldPassword] = useState('');
-    const[newPassword, setNewPassword] = useState('');
-    const[confirmNewPassword, setConfirmNewPassword] = useState('');
+export const ProfileTeacher = () => {
+    const [fname, setFname] = useState('');
+    const [lname, setLname] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
     const [errorUsernameMessage, setErrorUsernameMessage] = useState('');
     const [errorEmailMessage, setErrorEmailMessage] = useState('');
     const [errorOldPasswordMessage, setErrorOldPasswordMessage] = useState('');
     const [errorNewPasswordMessage, setErrorNewPasswordMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const [loading, setLoading] = useState(false);
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [isEditingPassword, setIsEditingPassword] = useState(false);
 
+    const [profilePicture, setProfilePicture] = useState("https://via.placeholder.com/100");
+    const [tempProfilePicture, setTempProfilePicture] = useState(null);
+    const [newProfilePictureFile, setNewProfilePictureFile] = useState(null);
+    const [shouldRemovePicture, setShouldRemovePicture] = useState(false);
+
+    // Fetch user data on component mount
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+
+    const fetchUserProfile = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/profile/', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                }
+            });
+            
+            if (response.ok) {
+                const userData = await response.json();
+                setFname(userData.first_name || '');
+                setLname(userData.last_name || '');
+                setUsername(userData.username || '');
+                setEmail(userData.email || '');
+                setProfilePicture(userData.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+                setTempProfilePicture(userData.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+            } else {
+                console.error('Failed to fetch user profile');
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    };
+
+    const handleSaveUserProfile = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setErrorUsernameMessage('');
+        setErrorEmailMessage('');
+        setSuccessMessage('');
+
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const formData = new FormData();
+            
+            // Add basic profile information
+            formData.append('first_name', fname);
+            formData.append('last_name', lname);
+            formData.append('username', username);
+            formData.append('email', email);
+
+            // Handle profile picture changes
+            if (newProfilePictureFile) {
+                formData.append('profile_picture', newProfilePictureFile);
+            } else if (shouldRemovePicture) {
+                formData.append('profile_picture', '');
+            }
+
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccessMessage('Profile updated successfully');
+                setIsEditingProfile(false);
+                setProfilePicture(data.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+                setNewProfilePictureFile(null);
+                setShouldRemovePicture(false);
+                // Update local storage
+                const userData = JSON.parse(localStorage.getItem('user') || '{}');
+                localStorage.setItem('user', JSON.stringify({...userData, ...data}));
+            } else {
+                if (data.username) setErrorUsernameMessage(data.username[0]);
+                if (data.email) setErrorEmailMessage(data.email[0]);
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSavePassword = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setErrorOldPasswordMessage('');
+        setErrorNewPasswordMessage('');
+        setSuccessMessage('');
+
+        if (!isPasswordRequirementMet('Be 8-100 characters long') ||
+            !isPasswordRequirementMet('Contain at least one uppercase and one lowercase letter') ||
+            !isPasswordRequirementMet('Contain at least one number or special character')) {
+            setErrorNewPasswordMessage('Password does not meet the requirements');
+            setLoading(false);
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            setErrorNewPasswordMessage('Passwords do not match');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    old_password: oldPassword,
+                    new_password: newPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccessMessage('Password updated successfully');
+                setIsEditingPassword(false);
+                handleCancelPasswordEdit();
+            } else {
+                if (data.old_password) setErrorOldPasswordMessage(data.old_password[0]);
+                if (data.new_password) setErrorNewPasswordMessage(data.new_password[0]);
+            }
+        } catch (error) {
+            console.error('Error updating password:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ... rest of your existing handlers and UI code remains the same ...
     const handleFnameChange = (e) => setFname(e.target.value);
     const handleLnameChange = (e) => setLname(e.target.value);
     const handleUsernameChange = (e) => setUsername(e.target.value);
     const handleEmailChange = (e) => setEmail(e.target.value);
+    const handleOldPasswordChange = (e) => setOldPassword(e.target.value);
+    const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
+    const handleConfirmNewPasswordChange = (e) => setConfirmNewPassword(e.target.value);
     
+    const handleChangePicture = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-    const [profilePicture, setProfilePicture] = useState(
-        "https://via.placeholder.com/100" // Default profile picture
-    );
-
-    const handleChangePicture = () => {
-        // Logic to change picture
-        alert("Change picture functionality");
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(file);
+        
+        // Create a temporary URL for preview
+        const tempUrl = URL.createObjectURL(file);
+        setTempProfilePicture(tempUrl);
     };
 
     const handleRemovePicture = () => {
-        setProfilePicture("https://via.placeholder.com/100"); // Reset to default
+        setShouldRemovePicture(true);
+        setNewProfilePictureFile(null);
+        setTempProfilePicture('https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
     };
 
+    const handleEditProfile = () => {
+        setIsEditingProfile(true);
+        setTempProfilePicture(profilePicture);
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(null);
+    };
 
-    const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const [isEditingPassword, setIsEditingPassword] = useState(false);
-
-    const handleEditProfile = () => setIsEditingProfile(true);
     const handleEditPassword = () => setIsEditingPassword(true);
 
-    const handleCancelProfileEdit = () => setIsEditingProfile(false);
-    const handleCancelPasswordEdit = () => {
-        setIsEditingPassword(false)
+    const handleCancelProfileEdit = () => {
+        setIsEditingProfile(false);
+        setTempProfilePicture(profilePicture);
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(null);
+    };
 
+    const handleCancelPasswordEdit = () => {
+        setIsEditingPassword(false);
         setOldPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
@@ -59,61 +216,29 @@ export const ProfileTeacher = () =>{
         setErrorOldPasswordMessage("");
     };
 
-
-    // checking requirement in password
     const isPasswordRequirementMet = (requirement) => {
         switch (requirement) {
-        case 'Be 8-100 characters long':
-            return newPassword.length >= 8 && newPassword.length <= 100;
-        case 'Contain at least one uppercase and one lowercase letter':
-            return /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword);
-        case 'Contain at least one number or special character':
-            return /\d/.test(newPassword) || /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
-        default:
-            return false;
+            case 'Be 8-100 characters long':
+                return newPassword.length >= 8 && newPassword.length <= 100;
+            case 'Contain at least one uppercase and one lowercase letter':
+                return /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword);
+            case 'Contain at least one number or special character':
+                return /\d/.test(newPassword) || /[!@#$%^&*(),.?":{}|<>]/.test(newPassword);
+            default:
+                return false;
         }
     };
 
-
-    const handleSaveUserProfile = (e) => {
-        e.preventDefault();
-        // Add your logic for saving the user profile
-        console.log("Saving user profile:", { fname, lname, username, email });
-        setIsEditingProfile(false);
-    };
-
-    const handleSavePassword = (e) => {
-        e.preventDefault();
-        // Add your logic for saving the password
-   
-
-        if (!isPasswordRequirementMet('Be 8-100 characters long') ||
-            !isPasswordRequirementMet('Contain at least one uppercase and one lowercase letter') ||
-            !isPasswordRequirementMet('Contain at least one number or special character')) {
-            
-            setErrorNewPasswordMessage('Password does not meet the requirements');
-            setLoading(false);
-            return;
-            }
-
-        if (newPassword !== confirmNewPassword) {
-            setErrorNewPasswordMessage('Passwords do not match');
-            setLoading(false);
-            return; 
-        }
-
-
-        console.log("Saving new password:", { oldPassword, newPassword });
-        setIsEditingPassword(false);
-    };
-
-    
     return(
         <>
             <div className="HomeStudent__main-header">
                 <h1>Settings</h1>
             </div>
-
+            {successMessage && (
+                <div className="ProfileStudent__success-message">
+                    {successMessage}
+                </div>
+            )}
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">User Profile</h5>
@@ -132,23 +257,27 @@ export const ProfileTeacher = () =>{
                             alt="Profile"
                             className="ProfileStudent__profile-picture"
                         />
-                        <div className="ProfileStudent__picture-buttons">
-                            <button
-                                type="button"
-                                className="ProfileStudent__button change"
-                                onClick={handleChangePicture}
-                            >
-                                Change picture
-                            </button>
+                        {isEditingProfile && (
+                            <div className="ProfileStudent__picture-buttons">
+                                <label className="ProfileStudent__button change">
+                                    Change picture
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={handleChangePicture}
+                                    />
+                                </label>
 
-                            <button
-                                type="button"
-                                className="ProfileStudent__button remove"
-                                onClick={handleRemovePicture}
-                            >
-                                Remove picture
-                            </button>
-                        </div>
+                                <button
+                                    type="button"
+                                    className="ProfileStudent__button remove"
+                                    onClick={handleRemovePicture}
+                                >
+                                    Remove picture
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="ProfileStudent__form-group">
