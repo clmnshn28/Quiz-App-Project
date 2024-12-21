@@ -1,55 +1,133 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import 'assets/css/auth';
 import * as images from 'assets/images';
 import PasswordRequirements from 'components/PasswordRequirements';
-
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdArrowDropUp, MdOutlineArrowDropDown } from "react-icons/md";
 
-export const SignUp = () =>{
+export const SignUp = () => {
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        is_teacher: false,
+    });
+    const [errors, setErrors] = useState({});
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [userType, setUserType] = useState(""); 
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); 
-
-    const [errorUsernameMessage, setErrorUsernameMessage] = useState('');
-    const [errorEmailMessage, setErrorEmailMessage] = useState('');
-    const [errorPasswordMessage, setErrorPasswordMessage] = useState('');
-    const [errorUserTypeMessage, setErrorUserTypeMessage] = useState('');
-
-    const [loading, setLoading] = useState(false);
-
-    const handleUsernameChange = (e) => setUsername(e.target.value);
-    const handleEmailChange = (e) => setEmail(e.target.value);
-    const handlePasswordChange = (e) => setPassword(e.target.value);
-    const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
-    
-    
-    // checking requirement in password
-    const isPasswordRequirementMet = (requirement) => {
-        switch (requirement) {
-        case 'Be 8-100 characters long':
-            return password.length >= 8 && password.length <= 100;
-        case 'Contain at least one uppercase and one lowercase letter':
-            return /[A-Z]/.test(password) && /[a-z]/.test(password);
-        case 'Contain at least one number or special character':
-            return /\d/.test(password) || /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        default:
-            return false;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        // Clear error when user starts typing
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
         }
     };
 
     const options = [
-        { value: "True", title: "Teacher" },
-        { value: "False", title: "Student" },
+        { value: true, title: "Teacher" },
+        { value: false, title: "Student" },
     ];
 
     const handleSelect = (option) => {
-        setUserType(option.value);
-        setIsDropdownOpen(false); // Close dropdown after selection
+        setFormData(prev => ({
+            ...prev,
+            is_teacher: option.value
+        }));
+        setIsDropdownOpen(false);
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.username) {
+            newErrors.username = 'Username is required';
+        }
+
+        if (!formData.email) {
+            newErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Invalid email format';
+        }
+
+        if (!formData.password) {
+            newErrors.password = 'Password is required';
+        } else if (formData.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters';
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+
+        return newErrors;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const newErrors = validateForm();
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                    is_teacher: formData.is_teacher,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Registration successful - now login
+                const loginResponse = await fetch('https://apiquizapp.pythonanywhere.com/api/token/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: formData.username,
+                        password: formData.password,
+                    }),
+                });
+
+                const loginData = await loginResponse.json();
+
+                if (loginResponse.ok) {
+                    localStorage.setItem('accessToken', loginData.access);
+                    localStorage.setItem('refreshToken', loginData.refresh);
+                    navigate(formData.is_teacher ? '/teacher-dashboard' : '/student-dashboard');
+                }
+            } else {
+                // Handle validation errors from the server
+                setErrors(data);
+            }
+        } catch (error) {
+            setErrors({ general: 'An error occurred. Please try again.' });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Close dropdown on outside click
@@ -60,50 +138,17 @@ export const SignUp = () =>{
             }
         };
 
-        // Add event listener when dropdown is open
         if (isDropdownOpen) {
             document.addEventListener('click', handleClickOutside);
-        } else {
-            document.removeEventListener('click', handleClickOutside);
         }
 
-        // Cleanup on unmount or when dropdown is closed
         return () => document.removeEventListener('click', handleClickOutside);
     }, [isDropdownOpen]);
 
-
-    // Handle form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        if (!isPasswordRequirementMet('Be 8-100 characters long') ||
-            !isPasswordRequirementMet('Contain at least one uppercase and one lowercase letter') ||
-            !isPasswordRequirementMet('Contain at least one number or special character')) {
-            
-            setErrorPasswordMessage('Password does not meet the requirements');
-            setLoading(false);
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            setErrorPasswordMessage('Passwords do not match');
-            setLoading(false);
-            return; 
-        }
-
-        if (!userType) {
-            setErrorUserTypeMessage("Select a user type.");
-            return;
-        }
-
-
-    };
-    
-        
-    return(
+    return (
         <div className="SignUpUser__background">
             <div className="SignUpUser__left-container">
-                <img src={images.loginBanner} className="SignUpUser__image-cover " alt="Login Cover"/>
+                <img src={images.loginBanner} className="SignUpUser__image-cover" alt="Login Cover"/>
             </div>
 
             <div className="SignUpUser__right-container">
@@ -112,127 +157,147 @@ export const SignUp = () =>{
                     <h1>Register</h1>
                     <div className="SignUpUser__card-body">
                         <form onSubmit={handleSubmit}>
+                            {errors.general && (
+                                <div className="RegisterUser__error-general-message">
+                                    {errors.general}
+                                </div>
+                            )}
+                            
+                            {/* Username field */}
                             <div className="RegisterUser__register-inputs">
-                                <label  htmlFor="username"  className="SignUpUser__input-label">
+                                <label htmlFor="username" className="SignUpUser__input-label">
                                     Username
                                 </label>
                                 <input 
                                     type="text" 
                                     name="username" 
-                                    className="SignUpUser__input-field " 
-                                    value={username}
-                                    onChange={handleUsernameChange}
+                                    className="SignUpUser__input-field" 
+                                    value={formData.username}
+                                    onChange={handleChange}
                                     autoComplete="off"
                                     required
                                 />
-                                {errorUsernameMessage && (
+                                {errors.username && (
                                     <span className="RegisterUser__error-user-pass-message">
-                                        {errorUsernameMessage}
+                                        {errors.username}
                                     </span>
                                 )}
                             </div>
+
+                            {/* Email field */}
                             <div className="RegisterUser__register-inputs">
-                                <label  htmlFor="email"  className="SignUpUser__input-label">
+                                <label htmlFor="email" className="SignUpUser__input-label">
                                     Email Address
                                 </label>
                                 <input 
                                     type="email" 
                                     name="email" 
-                                    className="SignUpUser__input-field " 
-                                    value={email}
-                                    onChange={handleEmailChange}
+                                    className="SignUpUser__input-field" 
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     autoComplete="off"
                                     required
                                 />
-                                {errorEmailMessage && (
+                                {errors.email && (
                                     <span className="RegisterUser__error-user-pass-message">
-                                        {errorEmailMessage}
+                                        {errors.email}
                                     </span>
                                 )}
                             </div>
+
+                            {/* Password fields */}
                             <div className="RegisterUser__register-inputs">
                                 <label htmlFor="password" className="SignUpUser__input-label">
                                     Password
                                 </label>
-                                <div className="RegisterUser__password-content">
-                                    <input
+                                <input
                                     type="password"
                                     name="password"
                                     className="SignUpUser__input-field"
-                                    value={password}
-                                    onChange={handlePasswordChange}
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     autoComplete="off"
                                     required
                                 />
-                                </div>
-                                {errorPasswordMessage && (
+                                {errors.password && (
                                     <span className="RegisterUser__error-user-pass-message">
-                                        {errorPasswordMessage}
+                                        {errors.password}
                                     </span>
                                 )}
                             </div>
+
                             <div className="RegisterUser__register-inputs">
-                                <label  htmlFor="confirmPassword"  className="SignUpUser__input-label">
+                                <label htmlFor="confirmPassword" className="SignUpUser__input-label">
                                     Confirm Password
                                 </label>
                                 <input 
                                     type="password" 
                                     name="confirmPassword" 
-                                    className="SignUpUser__input-field " 
-                                    value={confirmPassword}
-                                    onChange={handleConfirmPasswordChange}
+                                    className="SignUpUser__input-field" 
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
                                     autoComplete="off"
                                     required
                                 />
-                            </div>
-                            <div className="RegisterUser__register-inputs">
-                                <label htmlFor="userType" className="SignUpUser__input-label">
-                                    I am registering as a...
-                                </label>
-                                {errorUserTypeMessage && (
+                                {errors.confirmPassword && (
                                     <span className="RegisterUser__error-user-pass-message">
-                                        {errorUserTypeMessage}
+                                        {errors.confirmPassword}
                                     </span>
                                 )}
+                            </div>
+
+                            {/* User type dropdown */}
+                            <div className="RegisterUser__register-inputs">
+                                <label className="SignUpUser__input-label">
+                                    I am registering as a...
+                                </label>
                                 <div className="CustomDropdown">
                                     <button
                                         type="button"
                                         className="CustomDropdown__button"
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     >
-                                        {options.find((opt) => opt.value === userType)?.title || "Select an option"}
+                                        {options.find((opt) => opt.value === formData.is_teacher)?.title || "Select an option"}
+                                        {isDropdownOpen ? (
+                                            <MdArrowDropUp className="CustomDropdown__custom-icon" />
+                                        ) : (
+                                            <MdOutlineArrowDropDown className="CustomDropdown__custom-icon" />
+                                        )}
                                     </button>
-                                    {isDropdownOpen ? (
-                                        <MdArrowDropUp className="CustomDropdown__custom-icon" />
-                                    ) : (
-                                        <MdOutlineArrowDropDown className="CustomDropdown__custom-icon" />
-                                    )}
+                                    
                                     {isDropdownOpen && (
                                         <div className="CustomDropdown__menu">
                                             {options.map((option) => (
                                                 <div
-                                                    key={option.value}
+                                                    key={option.value.toString()}
                                                     className="CustomDropdown__item"
                                                     onClick={() => handleSelect(option)}
                                                 >
-                                                    <div className="CustomDropdown__item-title">{option.title}</div>
+                                                    <div className="CustomDropdown__item-title">
+                                                        {option.title}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
                                 </div>
                             </div>
+
                             <div className="password-instruction">
-                                <PasswordRequirements newPassword={password}/>
-                            </div>           
-                            <button type="submit" className="SignUpUser__submit-btn">
-                                Register
+                                <PasswordRequirements newPassword={formData.password}/>
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                className="SignUpUser__submit-btn"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Registering...' : 'Register'}
                             </button>
                         </form>
-                      
                     </div>
                     <p className="SignUpUser_register-here">
-                        Don’t have an account?  <Link to="/sign-in">Login here</Link>
+                        Already have an account? <Link to="/sign-in">Login here</Link>
                     </p>
                 </div>
             </div>
