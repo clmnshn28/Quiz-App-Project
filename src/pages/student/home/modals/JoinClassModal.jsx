@@ -3,7 +3,7 @@ import "assets/css/modals";
 import Modal from "components/Modal";
 
 export const JoinClassModal = ({ isOpen, onClose, onConfirm }) => {
-  // if (!isOpen) return null;
+  if (!isOpen) return null;
 
   return (
     <Modal>

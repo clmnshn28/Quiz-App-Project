@@ -117,7 +117,7 @@ export const SignUp = () => {
                 if (loginResponse.ok) {
                     localStorage.setItem('accessToken', loginData.access);
                     localStorage.setItem('refreshToken', loginData.refresh);
-                    navigate(formData.is_teacher ? '/teacher-dashboard' : '/student-dashboard');
+                    navigate(formData.is_teacher ? '/teacher/home' : '/student/home');
                 }
             } else {
                 // Handle validation errors from the server

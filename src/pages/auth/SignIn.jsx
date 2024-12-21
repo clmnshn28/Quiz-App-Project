@@ -51,7 +51,7 @@ export const SignIn = () => {
                 localStorage.setItem('user', JSON.stringify(userData));
                 
                 // Redirect based on user type
-                navigate(userData.is_teacher ? '/teacher-dashboard' : '/student-dashboard');
+                navigate(userData.is_teacher ? '/teacher/home' : '/student/home');
             } else {
                 setErrorMessage(data.detail || 'Invalid username or password');
             }
