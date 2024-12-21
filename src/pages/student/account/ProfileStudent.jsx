@@ -24,6 +24,9 @@ export const ProfileStudent = () => {
     const [isEditingPassword, setIsEditingPassword] = useState(false);
 
     const [profilePicture, setProfilePicture] = useState("https://via.placeholder.com/100");
+    const [tempProfilePicture, setTempProfilePicture] = useState(null);
+    const [newProfilePictureFile, setNewProfilePictureFile] = useState(null);
+    const [shouldRemovePicture, setShouldRemovePicture] = useState(false);
 
     // Fetch user data on component mount
     useEffect(() => {
@@ -41,12 +44,12 @@ export const ProfileStudent = () => {
             
             if (response.ok) {
                 const userData = await response.json();
-                console.log(userData);
                 setFname(userData.first_name || '');
                 setLname(userData.last_name || '');
                 setUsername(userData.username || '');
                 setEmail(userData.email || '');
                 setProfilePicture(userData.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+                setTempProfilePicture(userData.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
             } else {
                 console.error('Failed to fetch user profile');
             }
@@ -64,18 +67,27 @@ export const ProfileStudent = () => {
 
         try {
             const accessToken = localStorage.getItem('accessToken');
+            const formData = new FormData();
+            
+            // Add basic profile information
+            formData.append('first_name', fname);
+            formData.append('last_name', lname);
+            formData.append('username', username);
+            formData.append('email', email);
+
+            // Handle profile picture changes
+            if (newProfilePictureFile) {
+                formData.append('profile_picture', newProfilePictureFile);
+            } else if (shouldRemovePicture) {
+                formData.append('profile_picture', '');
+            }
+
             const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    first_name: fname,
-                    last_name: lname,
-                    username: username,
-                    email: email,
-                }),
+                body: formData,
             });
 
             const data = await response.json();
@@ -83,6 +95,9 @@ export const ProfileStudent = () => {
             if (response.ok) {
                 setSuccessMessage('Profile updated successfully');
                 setIsEditingProfile(false);
+                setProfilePicture(data.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+                setNewProfilePictureFile(null);
+                setShouldRemovePicture(false);
                 // Update local storage
                 const userData = JSON.parse(localStorage.getItem('user') || '{}');
                 localStorage.setItem('user', JSON.stringify({...userData, ...data}));
@@ -158,64 +173,40 @@ export const ProfileStudent = () => {
     const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
     const handleConfirmNewPasswordChange = (e) => setConfirmNewPassword(e.target.value);
     
-    const handleChangePicture = async (e) => {
+    const handleChangePicture = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const formData = new FormData();
-        formData.append('profile_picture', file);
-
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: formData,
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setProfilePicture(data.profile_picture);
-                setSuccessMessage('Profile picture updated successfully');
-            } else {
-                console.error('Failed to update profile picture');
-            }
-        } catch (error) {
-            console.error('Error updating profile picture:', error);
-        }
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(file);
+        
+        // Create a temporary URL for preview
+        const tempUrl = URL.createObjectURL(file);
+        setTempProfilePicture(tempUrl);
     };
 
-    const handleRemovePicture = async () => {
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    profile_picture: null,
-                }),
-            });
-
-            if (response.ok) {
-                setProfilePicture('https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
-                setSuccessMessage('Profile picture removed successfully');
-            } else {
-                console.error('Failed to remove profile picture');
-            }
-        } catch (error) {
-            console.error('Error removing profile picture:', error);
-        }
+    const handleRemovePicture = () => {
+        setShouldRemovePicture(true);
+        setNewProfilePictureFile(null);
+        setTempProfilePicture('https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
     };
 
-    const handleEditProfile = () => setIsEditingProfile(true);
+    const handleEditProfile = () => {
+        setIsEditingProfile(true);
+        setTempProfilePicture(profilePicture);
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(null);
+    };
+
     const handleEditPassword = () => setIsEditingPassword(true);
 
-    const handleCancelProfileEdit = () => setIsEditingProfile(false);
+    const handleCancelProfileEdit = () => {
+        setIsEditingProfile(false);
+        setTempProfilePicture(profilePicture);
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(null);
+    };
+
     const handleCancelPasswordEdit = () => {
         setIsEditingPassword(false);
         setOldPassword("");
@@ -266,25 +257,27 @@ export const ProfileStudent = () => {
                             alt="Profile"
                             className="ProfileStudent__profile-picture"
                         />
-                        <div className="ProfileStudent__picture-buttons">
-                        <label className="ProfileStudent__button change">
-                                Change picture
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                    onChange={handleChangePicture}
-                                />
-                            </label>
+                        {isEditingProfile && (
+                            <div className="ProfileStudent__picture-buttons">
+                                <label className="ProfileStudent__button change">
+                                    Change picture
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={handleChangePicture}
+                                    />
+                                </label>
 
-                            <button
-                                type="button"
-                                className="ProfileStudent__button remove"
-                                onClick={handleRemovePicture}
-                            >
-                                Remove picture
-                            </button>
-                        </div>
+                                <button
+                                    type="button"
+                                    className="ProfileStudent__button remove"
+                                    onClick={handleRemovePicture}
+                                >
+                                    Remove picture
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="ProfileStudent__form-group">

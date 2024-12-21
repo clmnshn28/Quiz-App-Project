@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import 'assets/css/layouts';
 import * as images from 'assets/images';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { GrHomeRounded } from "react-icons/gr";
 import { TbLogout2, TbSettings } from "react-icons/tb";
@@ -11,7 +11,7 @@ import { LogoutModal } from "./modals/LogoutModal";
 export const StudentLayout = () =>{
 
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
+    const navigate = useNavigate();
     const location = useLocation();
     const [highlightedTab, setHighlightedTab] = useState('');
 
@@ -29,7 +29,7 @@ export const StudentLayout = () =>{
 
     const handleLogout = () => {
         setIsLogoutModalOpen(false);
-        
+        navigate('/sign-in');
         console.log("User logged out");
     };
 
