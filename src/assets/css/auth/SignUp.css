@@ -1,0 +1,260 @@
+
+.SignUpUser__background {
+    height: 100vh; 
+    width: 100vw;
+    background-color: #f4f4f4; 
+    display: flex;  
+}
+
+.SignUpUser__left-container{
+    background-color: #67A292;
+    width: 44%;
+    height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.SignUpUser__image-cover {
+    width: 29em;
+}
+
+
+/* right side */
+.SignUpUser__right-container{
+    width: 56%;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    padding-top: 50px;
+    box-sizing: border-box; 
+}
+
+
+.SignUpUser__login-content{
+    width:55%;
+    margin: 0 auto; 
+}
+
+.SignUpUser__image-logo {
+    width: 9em;
+}
+
+.SignUpUser__login-content h1{
+    font-weight: bold;
+    color: #56575B;
+    font-size: 40px;
+    font-family: 'Inter';
+}
+
+.RegisterUser__register-inputs{
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.SignUpUser__input-label{
+    color: #56575B;
+    display: block;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.SignUpUser__input-field {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #DDE9E6;
+    border: none;
+    border-radius: 5px;
+    font-size: 15px;
+    color: #56575B;
+    font-family: 'inter';
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.SignUpUser__input-field:focus {
+    background-color: #c8ded9; 
+    outline: none; 
+}
+
+
+.RegisterUser__password-content{
+    position: relative;
+}
+
+.SignUpUser__toggle-password{
+    position: absolute;
+    top: 19%;
+    right: 5%;
+}
+
+.SignUpUser__eye-icon{
+    color: #56575B;
+    height: 22px;
+    width: 22px;
+}
+
+
+.RegisterUser__error-user-pass-message{
+    position:absolute ;
+    top: 10%;
+    right: 0;
+    color: red;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.SignUpUser__forgot-password-container {
+    text-align: right;
+    margin-bottom:50px;
+}
+
+.SignUpUser__forgot-password-container a {
+    color: #67A292;
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+
+.SignUpUser__submit-btn {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 30px 0 40px;
+    background-color: #67A292;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.SignUpUser__submit-btn:hover {
+    background-color: #57927A;
+}
+
+.SignUpUser_register-here {
+    font-size: 0.9rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.SignUpUser__login-content a {
+    color: #67A292;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+
+
+/* dropdown */
+.CustomDropdown {
+    position: relative;
+    width: 100%;
+}
+.CustomDropdown__button{
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #DDE9E6;
+    border: none;
+    border-radius: 5px;
+    font-size: 15px;
+    color: #56575B;
+    font-family: 'inter';
+    font-weight: 600;
+    text-align: start;
+}
+
+
+.CustomDropdown__button:focus {
+    outline: none; 
+}
+
+  
+.CustomDropdown__custom-icon {
+    position: absolute;
+    right: 5%;
+    top: 18%;
+    font-size: 24px;
+    pointer-events: none;
+    color: #565252;
+}
+  
+
+.CustomDropdown__menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #c8ded9;
+    color: #565252;
+    border-radius: 4px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.CustomDropdown__item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 1s, color 0.4s ease;
+}
+
+.CustomDropdown__item:last-child {
+    border-bottom: none;
+}
+
+.CustomDropdown__item:hover {
+    background-color: #7db7a7;
+    color: #f0f0f0;
+}
+
+.CustomDropdown__item-title {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+
+/* --- */
+.password-instruction {
+    margin-left: 5px;
+}
+
+.password-instruction p{
+    font-size: 12px;
+    font-weight: bold;
+    color: #565252;
+    margin: 0;
+}
+
+.password-instruction ul{
+    margin: 0;
+    margin-bottom: 10px;
+    padding:6px 0px;
+    list-style: none;
+}
+  
+.password-instruction li{
+    font-size: 10px;
+    font-weight: 500;
+    color: #565252;
+    margin: 0;
+}
+
+.wrong{
+    color: red;
+    font-weight: bolder;
+    font-size: 1.2em;
+    margin-right: 3px;
+}
+  
+.check{
+    color: rgb(9, 185, 9);
+    font-weight: bolder;
+    font-size: 1.2em;
+    margin-right: 3px;
+}
