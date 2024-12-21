@@ -1,0 +1,53 @@
+
+
+.JoinClassModal__content{
+    background: #fff;
+    border-radius: 10px;
+    width: 450px;
+    max-width: 90%;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.JoinClassModal__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: left;
+    color: #56575B;
+  }
+
+.JoinClassModal__form-group {
+    margin-bottom: 20px;
+    position: relative;
+    display: block;
+}
+
+.JoinClassModal__form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+  .JoinClassModal__input {
+    width: 100%;
+    border: none;
+    border-radius: 7px;
+    background-color: #DDE9E6;
+    font-size: 15px;
+    color: #56575B;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    height: 45px;
+    padding-left: 15px;
+    box-sizing: border-box;
+  }
+  
+  .JoinClassModal__input:focus {
+    outline: none;
+  }
+

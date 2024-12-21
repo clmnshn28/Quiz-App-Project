@@ -1,0 +1,73 @@
+
+/* button */
+.ButtonGroup__container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 5px 0 5px;
+}
+  
+.ButtonGroup__pass-cancel {
+    width: 160px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: "poppins";
+    border-radius: 7px;
+    border:none;
+    background-color: #D9D9D9;
+    color: #626262;
+    cursor: pointer;
+}
+
+.ButtonGroup__pass-save {
+    width: 160px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: "poppins";
+    border-radius: 7px;
+    border:none;
+    color: #fff;
+    cursor: pointer;
+}
+
+
+.ButtonGroup__pass-save:active,
+.ButtonGroup__pass-cancel:active{
+    opacity: 0.8;
+}
+
+.ButtonGroup__pass-save:focus,
+.ButtonGroup__pass-cancel:focus{
+    outline: none;
+}
+  
+
+.ButtonGroup__pass-save:disabled {
+    background-color: #d3d3d3 !important;
+    color: #888; 
+    cursor: not-allowed;
+}
+
+
+@media only screen and (max-width: 767px) {
+
+    /* button */
+    .ButtonGroup__container {
+        gap: 20px;
+    }
+
+    .ButtonGroup__pass-cancel {
+        width: 105px;
+        height: 33px;
+        font-size: 12px;
+    }
+    
+
+    .ButtonGroup__pass-save {
+        width: 115px;
+        height: 33px;
+        font-size: 12px;
+    }
+}

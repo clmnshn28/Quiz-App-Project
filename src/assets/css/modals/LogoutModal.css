@@ -1,0 +1,44 @@
+
+
+.LogoutModal__content{
+    background: #fff;
+    border-radius: 10px;
+    width: 450px;
+    max-width: 90%;
+    position: relative;
+}
+
+.LogoutModal__headers{
+    background-color: #67A292;
+    text-align: center;
+    padding: 15px 10px 10px ;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    border-radius: 10px 10px 0 0 ;
+}
+
+.LogoutModal__titles{
+    color: #fff;
+    font-family: 'Inter';
+    margin: 0;
+}
+
+.LogoutModal__description{
+    font-size: 17px;
+    font-weight: 500;
+    color: #56575B; 
+    text-align: center;
+    padding: 20px 0;
+}
+
+
+.LogoutModal__modal-icon {
+    font-size: 30px;
+    color: #fff;
+}
+
+.LogoutModal__actions{
+    margin-bottom: 30px;
+}

@@ -2,8 +2,11 @@ import React, {useState, useEffect} from "react";
 import 'assets/css/student';
 
 import { FiLogIn } from "react-icons/fi";
+import { JoinClassModal } from "./modals/JoinClassModal";
 
 export const HomeStudent = () =>{
+
+    const [isJoinClassModalOpen, setIsJoinClassModalOpen] = useState(false);
 
     const colorCombinations = [
         { cardColor: '#DDE9E6', copyColor: '#A7CDC3', startColor: '#67A292' },
@@ -32,6 +35,26 @@ export const HomeStudent = () =>{
         });
     }, []); 
 
+    const getFormattedDate = () => {
+        const now = new Date();
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const dayName = days[now.getDay()];
+        const day = now.getDate();
+        const month = months[now.getMonth()];
+        const year = now.getFullYear();
+
+        return `It’s ${dayName}, ${day} ${month} ${year}`;
+    };
+
+
+    const handleConfirmJoin = () =>{
+        
+    }
 
     return(
         <>
@@ -39,11 +62,13 @@ export const HomeStudent = () =>{
                 <div>
                     <h1>Welcome Back,<span> Student</span>!</h1>
                     <p className="HomeStudent__date-time ">
-                        It’s Wednesday, 18 December 2024
+                        {getFormattedDate()}
                     </p>
                 </div>
                 <div className="HomeStudent__main-header-search">
-                    <button className="HomeStudent__join-class">Join a Class</button>
+                    <button className="HomeStudent__join-class" onClick={() => setIsJoinClassModalOpen(true)}>
+                        Join a Class
+                    </button>
                 </div>
             </div>
 
@@ -75,6 +100,12 @@ export const HomeStudent = () =>{
                     </button>
                 </div>
             </div>
+
+            <JoinClassModal
+                isOpen={isJoinClassModalOpen}
+                onClose={() => setIsJoinClassModalOpen(false)}
+                onConfirm={handleConfirmJoin}
+            />
 
         </>
     );

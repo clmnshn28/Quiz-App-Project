@@ -5,10 +5,12 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { GrHomeRounded } from "react-icons/gr";
 import { TbLogout2, TbSettings } from "react-icons/tb";
+import { LogoutModal } from "./modals/LogoutModal";
 
 
 export const StudentLayout = () =>{
 
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
     const location = useLocation();
     const [highlightedTab, setHighlightedTab] = useState('');
@@ -22,7 +24,15 @@ export const StudentLayout = () =>{
                 setHighlightedTab('settings');
             }
             
-        }, [location]);
+    }, [location]);
+
+
+    const handleLogout = () => {
+        setIsLogoutModalOpen(false);
+        
+        console.log("User logged out");
+    };
+
 
     return(
         <div className="StudentLayout__container">
@@ -45,12 +55,12 @@ export const StudentLayout = () =>{
                             <span className="sidebar-text">Settings</span>
                         </li>
                     </Link>
-                    <Link to="logout" className={`link-sidebar ${highlightedTab === 'a'? 'highlighted' : ''}`}>
+                    <div className={`link-sidebar ${highlightedTab === 'a'? 'highlighted' : ''}`} onClick={()=> setIsLogoutModalOpen(true)}>
                         <li>
                             <TbLogout2 className={`StudentLayout__sidebar-icon ${highlightedTab === 'a'? 'active' : ''} `}/>
                             <span className="sidebar-text">Logout</span>
                         </li>
-                    </Link>
+                    </div>
                 </div>
             </div>
  
@@ -58,6 +68,12 @@ export const StudentLayout = () =>{
             <div className="StudentLayout__main-content-layout">
                 <Outlet/>
             </div>
+
+            <LogoutModal
+                isOpen={isLogoutModalOpen}
+                onClose={()=> setIsLogoutModalOpen(false)}
+                onConfirm={handleLogout}
+            />
         </div>
     );
 };

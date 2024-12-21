@@ -39,10 +39,6 @@
 
 /* content */
 
-.ProfileStudent__card-body{
-
-}
-
 
 .ProfileStudent__picture-section {
     display: flex;
@@ -70,6 +66,10 @@
     cursor: pointer;
     font-size: 0.9rem;
 }
+
+.ProfileStudent__button:focus {
+    outline: none;
+  }
   
 .ProfileStudent__button.change {
     background-color: #67A292;
@@ -86,6 +86,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 20px;
+    position: relative;
 }
 
 .ProfileStudent__profile-label{
@@ -112,6 +113,64 @@
     border: none;
     border-radius: 7px;
     background-color: #DDE9E6;
+    font-size: 15px;
+    color: #56575B;
+    font-family: 'inter';
+    font-weight: 600;
     height: 45px;
     padding-left: 15px;
   }
+
+  .ProfileStudent__input:focus {
+    outline: none;
+  }
+
+
+  /* error */
+  
+.ProfileStudent__error-user-pass-message{
+    position:absolute ;
+    top: -42%;
+    right: 0;
+    color: red;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* requirements */
+
+/* --- */
+.update-password-instruction {
+    background-color: rgba(146, 146, 146,0.15);
+    padding: 15px 15px 10px;
+    border-radius: 5px;
+    margin-left: 210px;
+    margin-bottom: 40px;
+}
+
+.update-password-instruction p{
+    font-size: 12px;
+    font-weight: bold;
+    color: #565252;
+    margin: 0;
+}
+
+.update-password-instruction ul{
+    margin: 0;
+    margin-bottom: 10px;
+    padding:6px 0px;
+    list-style: none;
+}
+  
+.update-password-instruction li{
+    font-size: 10px;
+    font-weight: 500;
+    color: #565252;
+    margin: 0;
+}
+
+.ProfileStudent__actions{
+    display: flex;
+    justify-content: end;
+}
