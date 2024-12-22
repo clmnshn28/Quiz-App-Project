@@ -155,7 +155,9 @@ export const HomeStudent = () => {
                         <div key={classItem.id} className="class-card">
                             <p className="card-title">{classItem.name}</p>
                             <p className="card-instructor">
-                                Instructor: {`${classItem.teacher?.first_name || ''} ${classItem.teacher?.last_name || ''} ${classItem.teacher?.username}`}
+                                Instructor: {classItem.teacher?.first_name && classItem.teacher?.last_name 
+                                    ? `${classItem.teacher.first_name} ${classItem.teacher.last_name}`
+                                    : classItem.teacher?.username}
                             </p>
                             <button className="card-start">
                                 <FiLogIn className="HomeStudent__join-icon"/> 
