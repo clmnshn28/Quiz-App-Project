@@ -116,7 +116,7 @@ export const SignIn = () => {
                                         className="LoginUser__toggle-password"
                                         onClick={togglePasswordVisibility}
                                     >
-                                        {showPassword ? <TbEyeClosed className="LoginUser__eye-icon"/> : <TbEye className="LoginUser__eye-icon"/>}
+                                        {showPassword ? <TbEye className="LoginUser__eye-icon"/> : <TbEyeClosed className="LoginUser__eye-icon"/>}
                                     </span>
                                 </div>
                             </div>
@@ -129,7 +129,7 @@ export const SignIn = () => {
                                 className="LoginUser__submit-btn"
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Logging in...' : 'Login'}
+                                {isLoading ?  <span className="LoginUser__spinner"></span> : 'Login'}
                             </button>
                         </form>
                     </div>

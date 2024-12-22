@@ -91,10 +91,16 @@ export const HomeTeacher = () => {
         return Math.random().toString(36).substring(2, 10).toUpperCase();
     };
 
-    const handleCopyCode = async (joinCode) => {
+    const handleCopyCode = async (joinCode, classId) => {
         try {
             await navigator.clipboard.writeText(joinCode);
-            // Optionally show a success message
+
+            // Set the copied class's tooltip text
+            const tooltipElement = document.querySelector(`#copy-button-${classId}`);
+            if (tooltipElement) {
+                tooltipElement.setAttribute("data-tooltip", "Copied!");
+                setTimeout(() => tooltipElement.setAttribute("data-tooltip", "Copy Code"), 1000);
+            }
         } catch (err) {
             console.error('Failed to copy join code:', err);
         }
@@ -163,13 +169,15 @@ export const HomeTeacher = () => {
                 {classes.map((classItem, index) => (
                     <div key={classItem.id} className="class-card">
                         <button 
+                            id={`copy-button-${classItem.id}`}
+                            data-tooltip="Copy Code" 
                             className="HomeTeacher__copy-code card-copy"
-                            onClick={() => handleCopyCode(classItem.join_code)}
+                            onClick={() => handleCopyCode(classItem.join_code, classItem.id)}
                         >
                             <TbCopy className="class-card-copy-code"/>
                         </button>
                         <p className="card-title">{classItem.name}</p>
-                        <p className="card-instructor">{`${classItem.students?.length || 0} students`}</p>
+                        <p className="card-instructor"> {`${classItem.students?.length || 0} ${classItem.students?.length === 1 ? 'student' : 'students'}`}</p>
                         <button className="card-start">
                             <FiLogIn className="HomeStudent__join-icon"/> 
                         </button>

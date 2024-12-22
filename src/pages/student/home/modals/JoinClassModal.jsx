@@ -2,17 +2,22 @@ import React, { useState } from "react";
 import "assets/css/modals";
 import Modal from "components/Modal";
 import ButtonGroup from 'components/ButtonGroup';
+import { RiErrorWarningLine } from "react-icons/ri";
 
-export const JoinClassModal = ({ isOpen, onClose, onConfirm }) => {
+export const JoinClassModal = ({ isOpen, onClose, onConfirm, error, setError  }) => {
 
   const[classCode, setClassCode] = useState('');
 
-  const handleClassCodeChange = (e) => setClassCode(e.target.value);
+  const handleClassCodeChange = (e) =>{ 
+    setClassCode(e.target.value)
+    setError(null);
+  };
 
 
   const handleCancelJoinClass = () =>{
     onClose();
     setClassCode('');
+    setError(null);
   }
 
   const handleConfirmJoinClass = () =>{
@@ -41,6 +46,14 @@ export const JoinClassModal = ({ isOpen, onClose, onConfirm }) => {
                     autoComplete="off"
                     />
               </div>
+              {error && (
+                <div
+                  className="JoinClassModal__error-message"
+                >
+                  <RiErrorWarningLine  className="JoinClassModal__error-icon"/>
+                  {error}
+                </div>
+              )}
               <div className="JoinClassModal__btn-actions" style={{marginTop:"30px"}}>
                 <ButtonGroup
                   onCancel={handleCancelJoinClass}

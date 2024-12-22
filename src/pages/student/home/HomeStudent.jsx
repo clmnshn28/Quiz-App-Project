@@ -146,18 +146,6 @@ export const HomeStudent = () => {
                 </div>
             </div>
 
-            {error && (
-                <div className="error-message" style={{
-                    backgroundColor: '#ffebee',
-                    color: '#c62828',
-                    padding: '10px',
-                    borderRadius: '4px',
-                    marginBottom: '20px'
-                }}>
-                    {error}
-                </div>
-            )}
-
             <h2 className="HomeStudent__your-classes">Your Classes</h2>
             <div className="HomeStudent__card-container">
                 {classes.length === 0 ? (
@@ -184,6 +172,8 @@ export const HomeStudent = () => {
                     setError(null);
                 }}
                 onConfirm={handleConfirmJoin}
+                error={error} 
+                setError={setError} 
             />
         </>
     );

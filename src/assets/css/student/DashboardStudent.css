@@ -152,7 +152,7 @@
 }
 
 .HomeTeacher__copy-code::after {
-    content: "Copy Code";
+    content: attr(data-tooltip);
     position: absolute;
     top: -80%; 
     left: 50%;

@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { GrHomeRounded } from "react-icons/gr";
 import { TbLogout2, TbSettings } from "react-icons/tb";
 import { GrDocument } from "react-icons/gr";
+import { RiFolderChartLine } from "react-icons/ri";
 
 export const TeacherLayout = () =>{
 
@@ -23,8 +24,10 @@ export const TeacherLayout = () =>{
         
             if (currentPath.includes('home')) {
                 setHighlightedTab('home');
-            } else if (currentPath.includes('quiz')) {
-                setHighlightedTab('quiz');
+            } else if (currentPath.includes('quizzes')) {
+                setHighlightedTab('quizzes');
+            } else if (currentPath.includes('quiz-bank')) {
+                setHighlightedTab('quiz-bank');
             } else if (currentPath.includes('settings')) {
                 setHighlightedTab('settings');
             }
@@ -51,10 +54,16 @@ export const TeacherLayout = () =>{
                             <span className="sidebar-text">Home</span>
                         </li>
                     </Link>
-                    <Link to="quiz" className={`link-sidebar ${highlightedTab === 'quiz'? 'highlighted' : ''}`}>
+                    <Link to="quizzes" className={`link-sidebar ${highlightedTab === 'quizzes'? 'highlighted' : ''}`}>
                         <li>
-                            <GrDocument className={`StudentLayout__sidebar-icon ${highlightedTab === 'quiz'? 'active' : ''} `}/>
+                            <GrDocument className={`StudentLayout__sidebar-icon ${highlightedTab === 'quizzes'? 'active' : ''} `}/>
                             <span className="sidebar-text">Quizzes</span>
+                        </li>
+                    </Link>
+                    <Link to="quiz-bank" className={`link-sidebar ${highlightedTab === 'quiz-bank'? 'highlighted' : ''}`}>
+                        <li>
+                            <RiFolderChartLine className={`StudentLayout__sidebar-icon ${highlightedTab === 'quiz-bank'? 'active' : ''} `}/>
+                            <span className="sidebar-text">Quiz Bank</span>
                         </li>
                     </Link>
                 </div>
