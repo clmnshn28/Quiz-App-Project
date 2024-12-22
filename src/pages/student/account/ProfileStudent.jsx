@@ -169,9 +169,6 @@ export const ProfileStudent = () => {
     const handleLnameChange = (e) => setLname(e.target.value);
     const handleUsernameChange = (e) => setUsername(e.target.value);
     const handleEmailChange = (e) => setEmail(e.target.value);
-    const handleOldPasswordChange = (e) => setOldPassword(e.target.value);
-    const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
-    const handleConfirmNewPasswordChange = (e) => setConfirmNewPassword(e.target.value);
     
     const handleChangePicture = (e) => {
         const file = e.target.files?.[0];
@@ -284,7 +281,7 @@ export const ProfileStudent = () => {
                         <label>First Name</label>
                         <input
                         type="text"
-                        value={fname}
+                        value={fname || "-"}
                         onChange={handleFnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -295,7 +292,7 @@ export const ProfileStudent = () => {
                         <label>Last Name</label>
                         <input
                         type="text"
-                        value={lname}
+                        value={lname || "-"}
                         onChange={handleLnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -306,7 +303,7 @@ export const ProfileStudent = () => {
                         <label>Username</label>
                         <input
                         type="text"
-                        value={username}
+                        value={username || "-"}
                         onChange={handleUsernameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -322,7 +319,7 @@ export const ProfileStudent = () => {
                         <label>Email Address</label>
                         <input
                         type="text"
-                        value={email}
+                        value={email || "-"}
                         onChange={handleEmailChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -349,7 +346,13 @@ export const ProfileStudent = () => {
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">Change Password</h5>
-                    <BiEditAlt className="ProfileStudent__edit-icon" onClick={handleEditPassword}/>
+                   
+                    {!isEditingPassword && (
+                        <BiEditAlt 
+                            className="ProfileStudent__edit-icon" 
+                            onClick={handleEditPassword}
+                        />
+                    )}
                 </div>
                 <form method="post" onSubmit={handleSavePassword} className="ProfileStudent__card-body">
                     {!isEditingPassword ? (

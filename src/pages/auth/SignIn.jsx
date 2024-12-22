@@ -3,6 +3,7 @@ import 'assets/css/auth';
 import * as images from 'assets/images';
 import { TbEye, TbEyeClosed } from "react-icons/tb";
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
 
 export const SignIn = () => {
     const [username, setUsername] = useState('');
@@ -11,6 +12,7 @@ export const SignIn = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { signIn } = useAuth();
 
     const handleUsernameChange = (e) => setUsername(e.target.value);
     const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -50,6 +52,9 @@ export const SignIn = () => {
                 const userData = await userResponse.json();
                 localStorage.setItem('user', JSON.stringify(userData));
                 
+                // Store user in context
+                signIn(userData);
+
                 // Redirect based on user type
                 navigate(userData.is_teacher ? '/teacher/home' : '/student/home');
             } else {

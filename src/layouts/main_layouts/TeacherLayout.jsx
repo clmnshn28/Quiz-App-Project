@@ -2,7 +2,8 @@ import React, {useState, useEffect} from "react";
 import 'assets/css/layouts';
 import * as images from 'assets/images';
 import { LogoutModal } from "./modals/LogoutModal";
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; 
 
 import { GrHomeRounded } from "react-icons/gr";
 import { TbLogout2, TbSettings } from "react-icons/tb";
@@ -11,6 +12,8 @@ import { GrDocument } from "react-icons/gr";
 export const TeacherLayout = () =>{
 
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+    const navigate = useNavigate();
+    const { signOut } = useAuth(); 
 
     const location = useLocation();
     const [highlightedTab, setHighlightedTab] = useState('');
@@ -30,7 +33,8 @@ export const TeacherLayout = () =>{
 
     const handleLogout = () => {
         setIsLogoutModalOpen(false);
-        
+        signOut();
+        navigate('/sign-in');
         console.log("User logged out");
     };
 

@@ -3,9 +3,9 @@
 .JoinClassModal__content{
     background: #fff;
     border-radius: 10px;
-    width: 450px;
+    width: 550px;
     max-width: 90%;
-    padding: 20px;
+    padding: 20px 25px;
     position: relative;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -13,11 +13,12 @@
 
 .JoinClassModal__title {
     font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 20px;
+    font-weight: 500;
     text-align: left;
     color: #56575B;
-  }
+    margin: 0 0 20px;
+}
+
 
 .JoinClassModal__form-group {
     margin-bottom: 20px;
@@ -27,13 +28,13 @@
 
 .JoinClassModal__form-group label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #555;
-    font-weight: 600;
-    margin-bottom: 5px;
+    font-weight: 400;
+    margin-bottom: 7px;
 }
 
-  .JoinClassModal__input {
+.JoinClassModal__input {
     width: 100%;
     border: none;
     border-radius: 7px;
@@ -45,9 +46,40 @@
     height: 45px;
     padding-left: 15px;
     box-sizing: border-box;
-  }
+}
   
-  .JoinClassModal__input:focus {
+.JoinClassModal__input:focus {
     outline: none;
-  }
+}
 
+.JoinClassModal__note{
+  color: #56575B;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 300;
+}  
+
+
+.JoinClassModal__btn-actions{
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin: 20px 0 8px;
+}
+
+
+.JoinClassModal__btn-create{
+  background-color: #67A292;
+  font-size: 18px;
+  font-weight: 400;
+  padding: 12px 24px;
+  border: none;
+}
+
+.JoinClassModal__btn-create:active{
+  opacity: 0.8;
+}
+
+.JoinClassModal__btn-create:focus{
+  outline: none;
+}

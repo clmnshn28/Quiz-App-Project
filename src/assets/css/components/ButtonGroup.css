@@ -3,7 +3,7 @@
 .ButtonGroup__container {
     display: flex;
     justify-content: center;
-    gap: 30px;
+    gap: 20px;
     margin: 5px 0 5px;
 }
   

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-
+import PrivateRoute from './PrivateRoute';
 import {SignIn, SignUp} from 'pages/auth';
 import { StudentLayout, TeacherLayout } from 'layouts/main_layouts';
 
@@ -17,12 +17,20 @@ const MainRoutes = () =>{
                 <Route path="/sign-in" element={<SignIn />} /> 
                 <Route path="/sign-up" element={<SignUp />} /> 
 
-                <Route path="/student/" element={<StudentLayout/>}>
+                <Route path="/student" element={
+                    <PrivateRoute allowedRoles={['student']}>
+                      <StudentLayout/>
+                    </PrivateRoute>
+                }>
                     <Route path="home" element={<HomeStudent />} /> 
                     <Route path="settings" element={<ProfileStudent />} />
                 </Route>
 
-                <Route path="/teacher/" element={<TeacherLayout/>}>
+                <Route path="/teacher" element={
+                    <PrivateRoute allowedRoles={['teacher']}>
+                      <TeacherLayout />
+                    </PrivateRoute>
+                }>
                     <Route path="home" element={<HomeTeacher />} /> 
                     <Route path="settings" element={<ProfileTeacher />} />
                 </Route>

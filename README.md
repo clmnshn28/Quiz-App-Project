@@ -44,9 +44,9 @@
 
   <h2>🛠️Technologies Used </h2>
     <ul>
-        <li>🐍Python </li>
-        <li>🧑‍💻Django </li>
-        <li>🌐HTML/CSS/JavaScript </li>
+        <li>⚛️ React (Frontend)</li>
+        <li>🐍 Django (Backend)</li>
+        <li>📡 RESTful API</li>
     </ul>
 
 </body>

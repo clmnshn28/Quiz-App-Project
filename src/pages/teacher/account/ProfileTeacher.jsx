@@ -169,9 +169,6 @@ export const ProfileTeacher = () => {
     const handleLnameChange = (e) => setLname(e.target.value);
     const handleUsernameChange = (e) => setUsername(e.target.value);
     const handleEmailChange = (e) => setEmail(e.target.value);
-    const handleOldPasswordChange = (e) => setOldPassword(e.target.value);
-    const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
-    const handleConfirmNewPasswordChange = (e) => setConfirmNewPassword(e.target.value);
     
     const handleChangePicture = (e) => {
         const file = e.target.files?.[0];
@@ -284,7 +281,7 @@ export const ProfileTeacher = () => {
                         <label>First Name</label>
                         <input
                         type="text"
-                        value={fname}
+                        value={fname || "-"}
                         onChange={handleFnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -295,7 +292,7 @@ export const ProfileTeacher = () => {
                         <label>Last Name</label>
                         <input
                         type="text"
-                        value={lname}
+                        value={lname || "-"}
                         onChange={handleLnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -306,7 +303,7 @@ export const ProfileTeacher = () => {
                         <label>Username</label>
                         <input
                         type="text"
-                        value={username}
+                        value={username || "-"}
                         onChange={handleUsernameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -322,7 +319,7 @@ export const ProfileTeacher = () => {
                         <label>Email Address</label>
                         <input
                         type="text"
-                        value={email}
+                        value={email || "-"}
                         onChange={handleEmailChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"

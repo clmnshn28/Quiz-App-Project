@@ -12,7 +12,7 @@ export const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
     <Modal>
         <div className="LogoutModal__content">
             <div className="LogoutModal__headers">
-                <TbLogout2 class="LogoutModal__modal-icon"/>
+                <TbLogout2 className="LogoutModal__modal-icon"/>
                 <h2 className="LogoutModal__titles">Confirm Logout</h2>
             </div>
             <p className="LogoutModal__description">Are you sure you want to log out?</p>
@@ -22,7 +22,7 @@ export const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
                     onCancel={onClose}
                     onSave={onConfirm}
                     saveText='Logout'
-                    saveButtonColor='#9E1616'
+                    saveButtonColor='#a94547'
                 />
             </div>
         </div>

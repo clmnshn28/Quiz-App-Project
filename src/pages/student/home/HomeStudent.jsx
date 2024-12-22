@@ -7,6 +7,31 @@ import { JoinClassModal } from "./modals/JoinClassModal";
 export const HomeStudent = () =>{
 
     const [isJoinClassModalOpen, setIsJoinClassModalOpen] = useState(false);
+    const [fname, setFname] = useState('');
+
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+
+    const fetchUserProfile = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/profile/', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                setFname(userData.first_name || 'Student'); // Default to 'Student' if fname is missing
+            } else {
+                console.error('Failed to fetch user profile');
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    };
 
     const colorCombinations = [
         { cardColor: '#DDE9E6', copyColor: '#A7CDC3', startColor: '#67A292' },
@@ -52,7 +77,7 @@ export const HomeStudent = () =>{
     };
 
 
-    const handleConfirmJoin = () =>{
+    const handleConfirmJoin = async (classCode) => {
         
     }
 
@@ -60,7 +85,7 @@ export const HomeStudent = () =>{
         <>
             <div className="HomeStudent__main-header">
                 <div>
-                    <h1>Welcome Back,<span> Student</span>!</h1>
+                    <h1>Welcome Back, <span>{fname || 'Student'}</span>!</h1>
                     <p className="HomeStudent__date-time ">
                         {getFormattedDate()}
                     </p>

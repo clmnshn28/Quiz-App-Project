@@ -3,9 +3,39 @@ import 'assets/css/student';
 
 import { FiLogIn } from "react-icons/fi";
 import { TbCopy } from "react-icons/tb";
+import { CreateClassModal } from "./modals/CreateClassModal";
 
 export const HomeTeacher = () =>{
 
+    const [isCreateClassModalOpen, setIsCreateClassModalOpen] = useState(false);
+    const [fname, setFname] = useState('');
+
+    // fetch first name
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+
+    const fetchUserProfile = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/profile/', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                setFname(userData.first_name || 'Teacher');
+            } else {
+                console.error('Failed to fetch user profile');
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    };
+
+    // class card color 
     const colorCombinations = [
         { cardColor: '#DDE9E6', copyColor: '#A7CDC3', startColor: '#67A292' },
         { cardColor: '#E9DDDD', copyColor: '#CDA7A7', startColor: '#A26768' },
@@ -49,17 +79,25 @@ export const HomeTeacher = () =>{
         return `It’s ${dayName}, ${day} ${month} ${year}`;
     };
 
+
+    const handleConfirmCreate = async ({ className, section }) => {
+        
+    }
+
+
     return(
         <>
             <div className="HomeStudent__main-header">
                 <div>
-                    <h1>Welcome Back,<span> Teacher</span>!</h1>
+                    <h1>Welcome Back, <span>{fname || 'Teacher'}</span>!</h1>
                     <p className="HomeStudent__date-time ">
                         {getFormattedDate()}
                     </p>
                 </div>
                 <div className="HomeStudent__main-header-search">
-                    <button className="HomeStudent__join-class">Create a Class</button>
+                    <button className="HomeStudent__join-class" onClick={() => setIsCreateClassModalOpen(true)}>
+                        Create a Class
+                    </button>
                 </div>
             </div>
 
@@ -100,6 +138,12 @@ export const HomeTeacher = () =>{
                     </button>
                 </div>
             </div>
+
+            <CreateClassModal
+                isOpen={isCreateClassModalOpen}
+                onClose={() => setIsCreateClassModalOpen(false)}
+                onConfirm={handleConfirmCreate}
+            />
 
         </>
     );

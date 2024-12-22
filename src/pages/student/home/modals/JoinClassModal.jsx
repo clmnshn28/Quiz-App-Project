@@ -1,24 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import "assets/css/modals";
 import Modal from "components/Modal";
+import ButtonGroup from 'components/ButtonGroup';
 
 export const JoinClassModal = ({ isOpen, onClose, onConfirm }) => {
+
+  const[classCode, setClassCode] = useState('');
+
+  const handleClassCodeChange = (e) => setClassCode(e.target.value);
+
+
+  const handleCancelJoinClass = () =>{
+    onClose();
+    setClassCode('');
+  }
+
+  const handleConfirmJoinClass = () =>{
+    onConfirm(classCode);
+    setClassCode('');
+  }
+
+
   if (!isOpen) return null;
 
   return (
     <Modal>
-        <div className="JoinClassModal__content">
-          <h5 class="JoinClassModal__title" >Create a New Class</h5>
+        <div className="JoinClassModal__content" style={{width:'500px'}}>
+          <h5 className="JoinClassModal__title" >Join a Class</h5>
           <form>
-              <div class="JoinClassModal__form-group">
-                  <label for="className" className="JoinClassModal__input-label">Class name (required)</label>
-                  <input type="text" class="JoinClassModal__input" id="className" name="class_name" required/>
+              <div className="JoinClassModal__form-group">
+                  <label htmlFor="className" className="JoinClassModal__input-label">Class Join Code</label>
+                  <input 
+                    type="text" 
+                    className="JoinClassModal__input" 
+                    id="className" 
+                    name="class_name" 
+                    value={classCode}
+                    onChange={handleClassCodeChange} 
+                    required
+                    autoComplete="off"
+                    />
               </div>
-              <div class="JoinClassModal__form-group">
-                  <label for="section" class="JoinClassModal__input-label">Section</label>
-                  <input type="text" class="JoinClassModal__input" id="section" name="section"/>
+              <div className="JoinClassModal__btn-actions" style={{marginTop:"30px"}}>
+                <ButtonGroup
+                  onCancel={handleCancelJoinClass}
+                  onSave={handleConfirmJoinClass}
+                  saveText='Join Class'
+                  saveButtonColor='#67A292'
+                />
               </div>
-              <small class="text-muted">Note: A unique join code will be automatically generated for your class.</small>
           </form>
         </div>
     </Modal>
