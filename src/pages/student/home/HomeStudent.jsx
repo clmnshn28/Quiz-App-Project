@@ -160,6 +160,7 @@ export const HomeStudent = () => {
                                 style={{ backgroundColor: colors.cardColor }}
                             >
                                 <p className="card-title">{classItem.name}</p>
+                                <p className="card-instructor">{classItem.section}</p>
                                 <p className="card-instructor">
                                     Instructor: {classItem.teacher?.first_name && classItem.teacher?.last_name
                                         ? `${classItem.teacher.first_name} ${classItem.teacher.last_name}`

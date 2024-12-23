@@ -70,8 +70,9 @@ export const HomeTeacher = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: `${className} ${section}`.trim(),
-                    join_code: generateJoinCode()  // The backend will handle this if empty
+                    name: className.trim(),
+                    section: section.trim(),
+                    join_code: generateJoinCode()
                 })
             });
 
@@ -183,7 +184,7 @@ export const HomeTeacher = () => {
                                     <TbCopy className="class-card-copy-code"/>
                                 </button>
                                 <p className="card-title">{classItem.name}</p>
-                                <p className="card-instructor"> BSIT 4E-G1</p>
+                                <p className="card-instructor">{classItem.section}</p>
                                 <p className="card-number-student"> {`${classItem.students?.length || 0} ${classItem.students?.length <= 1 ? 'student' : 'students'}`}</p>
                                 <button 
                                     className="card-start"
