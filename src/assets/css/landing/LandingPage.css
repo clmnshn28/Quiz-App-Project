@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+.LandingPage__content{
+    min-width: 100vw;
+    min-height: 100vh;
+    background-color: #F9FBFB;
+}
+
+
+
+header{
+    background-color: #A7CDC3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 80px 30px 110px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.LandingPage__logo {
+    width: 8em;
+    animation: none; 
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.LandingPage__logo:hover {
+    animation: zoom 1s infinite alternate;
+}
+
+@keyframes zoom {
+    0% {
+        transform: scale(1); 
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+/* navigation */
+nav a {
+    position: relative;
+    margin-right: 100px;
+    text-decoration: none;
+    color: white;
+    font-family: 'inter';
+    font-weight: bold;
+    font-size: 18px;
+    transition: all 0.3s ease-in-out;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px; 
+    left: 50%; 
+    width: 0;
+    height: 3px; 
+    background-color: #56575B;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+    transform: translateX(-50%);
+}
+
+nav a:hover {
+    color: #56575B;
+}
+
+nav a:hover::after {
+    width: 100%; 
+}
+
+
+
+/* button */
+.LandingPage__sign-in-btn {
+    background-color: #578a7d;
+    color: white;
+    width: 8em;
+    border: none;
+    font-size: 17px;
+    font-family: 'inter';
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+
+.LandingPage__sign-in-btn:active {
+    opacity: 0.8;
+}
+
+.LandingPage__sign-in-btn:focus {
+    outline: none;
+}
+
+.LandingPage__sign-up-btn {
+    background-color: #A7CDC3;
+    color: #578a7d;
+    border: 3px solid #578a7d;
+    width: 8em;
+    font-size: 17px;
+    font-family: 'inter';
+    font-weight: bold;
+    padding: 9px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 20px;
+    transition: background-color 1s ease, color  1s ease, border 0.3s ease;
+}
+
+.LandingPage__sign-up-btn:hover {
+    border: 3px solid #578a7d;
+    background-color: #6fa99a;
+    color: white;
+}
+
+.LandingPage__sign-up-btn:active {
+    opacity: 0.8;
+}
+
+.LandingPage__sign-up-btn:focus {
+    outline: none;
+}
+
+
+
+
+
+
+
+/* section 1 */
+.LandingPage__hero{
+    background: linear-gradient(to bottom, #A7CDC3, #67A292); 
+    height: 45em;
+    padding: 40px 100px 15px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.LandingPage__phrase-container{
+    width: 41%;
+    cursor: context-menu;
+    position: relative;
+}
+/* text */
+
+.LandingPage__sub-phrase{
+    margin: 0;
+    font-weight: 400;
+    font-size: 28px;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+.LandingPage__sub-phrase.no-shadow{
+    text-shadow: none; /* Remove text shadow */
+}
+
+.LandingPage__hero h1{
+    font-size: 6.2em;
+    margin: 0;
+    font-weight: bolder;
+    text-transform: uppercase; 
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* mask */
+.LandingPage__mask{
+    width: 100%;
+    top: -0.01%;
+    position: absolute;
+    mask-image:url('../../images/landing_cursor.svg');
+    mask-repeat: no-repeat;
+    mask-size: 150px;
+   color: #67A292;
+}
+
+/* landing cover image */
+.LandingPage__hero-icon{
+    position: absolute;
+    top: 6%;
+    right: 10%;
+    width: 40em;
+    animation: float3DWithShadow 6s ease-in-out infinite; /* Apply 3D animation with shadow */
+    transform-origin: center; /* Ensure transformations happen around the center */
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+} 
+
+
+@keyframes float3DWithShadow {
+    0%, 100% {
+        transform: translateY(0) rotateY(0deg) rotateX(0deg) scale(1); /* Original position */
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3)); /* Regular shadow */
+    }
+    25% {
+        transform: translateY(-15px) rotateY(-10deg) rotateX(5deg) scale(1.02); /* Slight tilt */
+        filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4)); /* Larger shadow */
+    }
+    50% {
+        transform: translateY(-30px) rotateY(0deg) rotateX(0deg) scale(1.05); /* Float higher */
+        filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.5)); /* Even larger shadow */
+    }
+    75% {
+        transform: translateY(-15px) rotateY(10deg) rotateX(-5deg) scale(1.02); /* Opposite tilt */
+        filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4)); /* Shadow returns */
+    }
+}
+
+
+
+
+/* section 2 */
+.LandingPage__about-us{
+    background: linear-gradient(to bottom, #67A292, white); 
+    height: 60em;
+}
+
+
+
+
+/* footer */
+footer {
+    background-color: #67A292;
+    color: white;
+    text-align: center;
+}
+
+.footer__copyright{
+    margin: 0; 
+    padding: 20px 0; 
+}
+
+
