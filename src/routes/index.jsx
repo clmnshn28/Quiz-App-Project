@@ -1,5 +1,8 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
+
+import { LandingPage } from 'pages/landing';
+
 import {SignIn, SignUp} from 'pages/auth';
 import { StudentLayout, TeacherLayout } from 'layouts/main_layouts';
 
@@ -16,6 +19,7 @@ const MainRoutes = () =>{
     return(
         <Router>
             <Routes>
+                <Route path="/" element={<LandingPage />} /> 
                 <Route path="/sign-in" element={<SignIn />} /> 
                 <Route path="/sign-up" element={<SignUp />} /> 
 
