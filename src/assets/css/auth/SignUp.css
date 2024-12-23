@@ -16,7 +16,7 @@
 }
 
 .SignUpUser__image-cover {
-    width: 29em;
+    width: 32em;
 }
 
 
@@ -121,7 +121,7 @@
 .SignUpUser__submit-btn {
     width: 100%;
     padding: 12px 20px;
-    margin: 30px 0 40px;
+    margin: 20px 0 40px;
     background-color: #67A292;
     color: white;
     border: none;
@@ -136,9 +136,17 @@
     background-color: #57927A;
 }
 
+.LoginUser__submit-btn:active:not(:disabled) {
+    opacity: 0.8;
+}
+
 .SignUpUser__submit-btn:disabled {
     background-color: #74a498;
     cursor: not-allowed;
+}
+
+.SignUpUser__submit-btn:focus {
+   outline: none;
 }
 
 .SignUpUser__spinner {
@@ -248,6 +256,7 @@
 /* --- */
 .password-instruction {
     margin-left: 5px;
+    margin-top: 25px;
 }
 
 .password-instruction p{

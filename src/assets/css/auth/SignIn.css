@@ -26,7 +26,7 @@ body{
 }
 
 .LoginUser__image-cover {
-    width: 29em;
+    width: 32em;
 }
 
 /* right side */
@@ -146,9 +146,17 @@ body{
     background-color: #57927A;
 }
 
+.LoginUser__submit-btn:active:not(:disabled) {
+    opacity: 0.8;
+}
+
 .LoginUser__submit-btn:disabled {
     background-color: #74a498;
     cursor: not-allowed;
+}
+
+.LoginUser__submit-btn:focus {
+    outline: none;
 }
 
 .LoginUser__spinner {

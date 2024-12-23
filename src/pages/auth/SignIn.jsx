@@ -58,7 +58,7 @@ export const SignIn = () => {
                 // Redirect based on user type
                 navigate(userData.is_teacher ? '/teacher/home' : '/student/home');
             } else {
-                setErrorMessage(data.detail || 'Invalid username or password');
+                setErrorMessage(data.detail || 'Invalid username or password.');
             }
         } catch (error) {
             setErrorMessage('An error occurred. Please try again.');

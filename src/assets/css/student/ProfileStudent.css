@@ -69,8 +69,12 @@
 
 .ProfileStudent__button:focus {
     outline: none;
-  }
-  
+}
+
+.ProfileStudent__button:active {
+    opacity: 0.8;
+}
+
 .ProfileStudent__button.change {
     background-color: #67A292;
     color: #fff;

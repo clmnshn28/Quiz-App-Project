@@ -1,1 +1,1 @@
-import './ProfileTeacher.css';
+import './QuizzesTeacher.css';

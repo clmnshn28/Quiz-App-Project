@@ -2,7 +2,10 @@ import React, {useState, useEffect} from "react";
 import 'assets/css/student';
 import PasswordRequirements from 'components/PasswordRequirements';
 import ButtonGroup from 'components/ButtonGroup';
+import * as images from 'assets/images';
+
 import { BiEditAlt } from "react-icons/bi";
+import { SuccessMessageModal } from "./modals";
 
 export const ProfileStudent = () => {
     const [fname, setFname] = useState('');
@@ -17,13 +20,15 @@ export const ProfileStudent = () => {
     const [errorEmailMessage, setErrorEmailMessage] = useState('');
     const [errorOldPasswordMessage, setErrorOldPasswordMessage] = useState('');
     const [errorNewPasswordMessage, setErrorNewPasswordMessage] = useState('');
+      
+    const [successMessageModal, setSuccessMessageModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isEditingPassword, setIsEditingPassword] = useState(false);
 
-    const [profilePicture, setProfilePicture] = useState("https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png");
+    const [profilePicture, setProfilePicture] = useState(images.defaultAvatar);
     const [newProfilePictureFile, setNewProfilePictureFile] = useState(null);
     const [shouldRemovePicture, setShouldRemovePicture] = useState(false);
 
@@ -95,7 +100,9 @@ export const ProfileStudent = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setSuccessMessage('Profile updated successfully');
+                setSuccessMessage('Profile updated successfully.');
+                setSuccessMessageModal(true);
+
                 setIsEditingProfile(false);
                 
                 // Update profile picture based on response
@@ -175,7 +182,7 @@ export const ProfileStudent = () => {
             const accessToken = localStorage.getItem('accessToken');
             const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/change_password/', {
                 method: 'POST',
-                headers: {
+                headers: {  
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
@@ -188,7 +195,9 @@ export const ProfileStudent = () => {
             const data = await response.json();
     
             if (response.ok) {
-                setSuccessMessage('Password updated successfully');
+                setSuccessMessageModal(true);
+                setSuccessMessage('Password updated successfully.');
+
                 setIsEditingPassword(false);
                 handleCancelPasswordEdit();
             } else {
@@ -360,7 +369,6 @@ export const ProfileStudent = () => {
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">Change Password</h5>
-                   
                     {!isEditingPassword && (
                         <BiEditAlt 
                             className="ProfileStudent__edit-icon" 
@@ -435,7 +443,11 @@ export const ProfileStudent = () => {
                     )}
                 </form>
             </div>
-
+            <SuccessMessageModal
+                isOpen={successMessageModal}
+                onClose={()=>setSuccessMessageModal(false)}
+                successMessage={successMessage}
+            />
         </>
     );
 };

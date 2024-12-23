@@ -3,6 +3,7 @@ import 'assets/css/student';
 import { FiLogIn } from "react-icons/fi";
 import { TbCopy } from "react-icons/tb";
 import { CreateClassModal } from "./modals/CreateClassModal";
+import { SuccessMessageModal } from "./modals";
 
 export const HomeTeacher = () => {
     const [isCreateClassModalOpen, setIsCreateClassModalOpen] = useState(false);
@@ -10,6 +11,9 @@ export const HomeTeacher = () => {
     const [classes, setClasses] = useState([]);
     const [error, setError] = useState(null);
 
+    const [successMessageModal, setSuccessMessageModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    
     // fetch first name and classes
     useEffect(() => {
         fetchUserProfile();
@@ -47,7 +51,7 @@ export const HomeTeacher = () => {
 
             if (response.ok) {
                 const classesData = await response.json();
-                setClasses(classesData);
+                setClasses(classesData.sort((a, b) => b.id - a.id));
             } else {
                 console.error('Failed to fetch classes');
             }
@@ -73,9 +77,13 @@ export const HomeTeacher = () => {
 
             if (response.ok) {
                 const newClass = await response.json();
-                setClasses(prevClasses => [...prevClasses, newClass]);
+                setClasses(prevClasses => [newClass, ...prevClasses]);
                 setIsCreateClassModalOpen(false);
                 setError(null);
+
+                setSuccessMessage("Class successfully created!"); 
+                setSuccessMessageModal(true);
+                
             } else {
                 const errorData = await response.json();
                 setError(errorData.error || 'Failed to create class');
@@ -113,22 +121,10 @@ export const HomeTeacher = () => {
         { cardColor: '#DDE9E9', copyColor: '#A7B7CD', startColor: '#677CA2' }
     ];
 
-    useEffect(() => {
-        const classCards = document.querySelectorAll('.class-card');
-        classCards.forEach((card, index) => {
-            const { cardColor, copyColor, startColor } = colorCombinations[index % colorCombinations.length];
-            card.style.backgroundColor = cardColor;
-            card.style.setProperty('--card-bg-color', cardColor);
-            const copyButton = card.querySelector('.HomeTeacher__copy-code');
-            if (copyButton) {
-                copyButton.style.backgroundColor = copyColor;
-            }
-            const startButton = card.querySelector('.card-start');
-            if (startButton) {
-                startButton.style.backgroundColor = startColor;
-            }
-        });
-    }, [classes]); // Update when classes change
+    const getColorForClass = (id) => {
+        const index = id % colorCombinations.length;
+        return colorCombinations[index];
+    };
 
     const getFormattedDate = () => {
         const now = new Date();
@@ -166,29 +162,50 @@ export const HomeTeacher = () => {
 
             <h2 className="HomeStudent__your-classes">Your Classes</h2>
             <div className="HomeStudent__card-container">
-                {classes.map((classItem, index) => (
-                    <div key={classItem.id} className="class-card">
-                        <button 
-                            id={`copy-button-${classItem.id}`}
-                            data-tooltip="Copy Code" 
-                            className="HomeTeacher__copy-code card-copy"
-                            onClick={() => handleCopyCode(classItem.join_code, classItem.id)}
-                        >
-                            <TbCopy className="class-card-copy-code"/>
-                        </button>
-                        <p className="card-title">{classItem.name}</p>
-                        <p className="card-instructor"> {`${classItem.students?.length || 0} ${classItem.students?.length === 1 ? 'student' : 'students'}`}</p>
-                        <button className="card-start">
-                            <FiLogIn className="HomeStudent__join-icon"/> 
-                        </button>
-                    </div>
-                ))}
+                {classes.length === 0 ? (
+                    <p className="HomeStudent__no-available">You haven't created any classes yet.</p>
+                ) : (
+                    classes.map((classItem, index) =>  {
+                        const colors = getColorForClass(classItem.id);
+                        return (
+                            <div 
+                            key={classItem.id} 
+                            className="class-card"
+                            style={{ backgroundColor: colors.cardColor,   '--card-bg-color': colors.cardColor, }}
+                            >
+                                <button 
+                                    id={`copy-button-${classItem.id}`}
+                                    data-tooltip="Copy Code" 
+                                    style={{ backgroundColor: colors.copyColor }}
+                                    className="HomeTeacher__copy-code card-copy"
+                                    onClick={() => handleCopyCode(classItem.join_code, classItem.id)}
+                                >
+                                    <TbCopy className="class-card-copy-code"/>
+                                </button>
+                                <p className="card-title">{classItem.name}</p>
+                                <p className="card-instructor"> BSIT 4E-G1</p>
+                                <p className="card-number-student"> {`${classItem.students?.length || 0} ${classItem.students?.length <= 1 ? 'student' : 'students'}`}</p>
+                                <button 
+                                    className="card-start"
+                                    style={{ backgroundColor: colors.startColor }}
+                                >
+                                    <FiLogIn className="HomeStudent__join-icon"/> 
+                                </button>
+                            </div>
+                        );
+                    })
+                )}
             </div>
 
             <CreateClassModal
                 isOpen={isCreateClassModalOpen}
                 onClose={() => setIsCreateClassModalOpen(false)}
                 onConfirm={handleConfirmCreate}
+            />
+            <SuccessMessageModal
+                isOpen={successMessageModal}
+                onClose={()=>setSuccessMessageModal(false)}
+                successMessage={successMessage}
             />
         </>
     );
