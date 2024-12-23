@@ -2,7 +2,10 @@ import React, {useState, useEffect} from "react";
 import 'assets/css/student';
 import PasswordRequirements from 'components/PasswordRequirements';
 import ButtonGroup from 'components/ButtonGroup';
+import * as images from 'assets/images';
+
 import { BiEditAlt } from "react-icons/bi";
+import { SuccessMessageModal } from "./modals";
 
 export const ProfileTeacher = () => {
     const [fname, setFname] = useState('');
@@ -17,13 +20,15 @@ export const ProfileTeacher = () => {
     const [errorEmailMessage, setErrorEmailMessage] = useState('');
     const [errorOldPasswordMessage, setErrorOldPasswordMessage] = useState('');
     const [errorNewPasswordMessage, setErrorNewPasswordMessage] = useState('');
+    
+    const [successMessageModal, setSuccessMessageModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isEditingPassword, setIsEditingPassword] = useState(false);
 
-    const [profilePicture, setProfilePicture] = useState("https://via.placeholder.com/100");
+    const [profilePicture, setProfilePicture] = useState(images.defaultAvatar);
     const [tempProfilePicture, setTempProfilePicture] = useState(null);
     const [newProfilePictureFile, setNewProfilePictureFile] = useState(null);
     const [shouldRemovePicture, setShouldRemovePicture] = useState(false);
@@ -93,11 +98,15 @@ export const ProfileTeacher = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setSuccessMessage('Profile updated successfully');
+                
                 setIsEditingProfile(false);
                 setProfilePicture(data.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
                 setNewProfilePictureFile(null);
                 setShouldRemovePicture(false);
+
+                setSuccessMessage('Profile updated successfully.');
+                setSuccessMessageModal(true);
+
                 // Update local storage
                 const userData = JSON.parse(localStorage.getItem('user') || '{}');
                 localStorage.setItem('user', JSON.stringify({...userData, ...data}));
@@ -135,8 +144,8 @@ export const ProfileTeacher = () => {
 
         try {
             const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
-                method: 'PUT',
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/change_password/', {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
@@ -150,7 +159,9 @@ export const ProfileTeacher = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setSuccessMessage('Password updated successfully');
+                setSuccessMessageModal(true);
+                setSuccessMessage('Password updated successfully.');
+
                 setIsEditingPassword(false);
                 handleCancelPasswordEdit();
             } else {
@@ -159,6 +170,7 @@ export const ProfileTeacher = () => {
             }
         } catch (error) {
             console.error('Error updating password:', error);
+            setErrorNewPasswordMessage('An error occurred while updating the password');
         } finally {
             setLoading(false);
         }
@@ -231,11 +243,6 @@ export const ProfileTeacher = () => {
             <div className="HomeStudent__main-header">
                 <h1>Settings</h1>
             </div>
-            {successMessage && (
-                <div className="ProfileStudent__success-message">
-                    {successMessage}
-                </div>
-            )}
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">User Profile</h5>
@@ -346,7 +353,12 @@ export const ProfileTeacher = () => {
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">Change Password</h5>
-                    <BiEditAlt className="ProfileStudent__edit-icon" onClick={handleEditPassword}/>
+                    {!isEditingPassword && (
+                        <BiEditAlt 
+                            className="ProfileStudent__edit-icon" 
+                            onClick={handleEditPassword}
+                        />
+                    )}
                 </div>
                 <form method="post" onSubmit={handleSavePassword} className="ProfileStudent__card-body">
                     {!isEditingPassword ? (
@@ -415,7 +427,11 @@ export const ProfileTeacher = () => {
                     )}
                 </form>
             </div>
-
+            <SuccessMessageModal
+                isOpen={successMessageModal}
+                onClose={()=>setSuccessMessageModal(false)}
+                successMessage={successMessage}
+            />
         </>
     );
 };

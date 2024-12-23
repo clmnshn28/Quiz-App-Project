@@ -292,7 +292,7 @@ export const SignUp = () => {
                                 className="SignUpUser__submit-btn"
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Registering...' : 'Register'}
+                                {isLoading ? <span className="SignUpUser__spinner"></span> : 'Register'}
                             </button>
                         </form>
                     </div>

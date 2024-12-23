@@ -30,7 +30,7 @@ export const CreateClassModal = ({ isOpen, onClose, onConfirm }) => {
     <Modal>
       <div className="JoinClassModal__content">
              <h5 className="JoinClassModal__title" >Create a New Class</h5>
-             <form>
+       
                  <div className="JoinClassModal__form-group">
                      <label htmlFor="className" className="JoinClassModal__input-label">Class name (required)</label>
                      <input 
@@ -40,7 +40,6 @@ export const CreateClassModal = ({ isOpen, onClose, onConfirm }) => {
                        name="class_name" 
                        value={className} 
                        onChange={handleClassNameChange}
-                       required
                        autoComplete="off"
                        />
                  </div>
@@ -67,7 +66,7 @@ export const CreateClassModal = ({ isOpen, onClose, onConfirm }) => {
                      saveButtonColor='#67A292'
                    />
                  </div>
-             </form>
+      
            </div>
     </Modal>
   );

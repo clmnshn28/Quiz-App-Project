@@ -16,7 +16,7 @@
 }
 
 .SignUpUser__image-cover {
-    width: 29em;
+    width: 32em;
 }
 
 
@@ -121,7 +121,7 @@
 .SignUpUser__submit-btn {
     width: 100%;
     padding: 12px 20px;
-    margin: 30px 0 40px;
+    margin: 20px 0 40px;
     background-color: #67A292;
     color: white;
     border: none;
@@ -135,6 +135,40 @@
 .SignUpUser__submit-btn:hover {
     background-color: #57927A;
 }
+
+.LoginUser__submit-btn:active:not(:disabled) {
+    opacity: 0.8;
+}
+
+.SignUpUser__submit-btn:disabled {
+    background-color: #74a498;
+    cursor: not-allowed;
+}
+
+.SignUpUser__submit-btn:focus {
+   outline: none;
+}
+
+.SignUpUser__spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    margin-right: 8px; 
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 
 .SignUpUser_register-here {
     font-size: 0.9rem;
@@ -222,6 +256,7 @@
 /* --- */
 .password-instruction {
     margin-left: 5px;
+    margin-top: 25px;
 }
 
 .password-instruction p{

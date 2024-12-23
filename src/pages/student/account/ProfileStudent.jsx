@@ -2,7 +2,10 @@ import React, {useState, useEffect} from "react";
 import 'assets/css/student';
 import PasswordRequirements from 'components/PasswordRequirements';
 import ButtonGroup from 'components/ButtonGroup';
+import * as images from 'assets/images';
+
 import { BiEditAlt } from "react-icons/bi";
+import { SuccessMessageModal } from "./modals";
 
 export const ProfileStudent = () => {
     const [fname, setFname] = useState('');
@@ -17,14 +20,15 @@ export const ProfileStudent = () => {
     const [errorEmailMessage, setErrorEmailMessage] = useState('');
     const [errorOldPasswordMessage, setErrorOldPasswordMessage] = useState('');
     const [errorNewPasswordMessage, setErrorNewPasswordMessage] = useState('');
+      
+    const [successMessageModal, setSuccessMessageModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isEditingPassword, setIsEditingPassword] = useState(false);
 
-    const [profilePicture, setProfilePicture] = useState("https://via.placeholder.com/100");
-    const [tempProfilePicture, setTempProfilePicture] = useState(null);
+    const [profilePicture, setProfilePicture] = useState(images.defaultAvatar);
     const [newProfilePictureFile, setNewProfilePictureFile] = useState(null);
     const [shouldRemovePicture, setShouldRemovePicture] = useState(false);
 
@@ -48,8 +52,12 @@ export const ProfileStudent = () => {
                 setLname(userData.last_name || '');
                 setUsername(userData.username || '');
                 setEmail(userData.email || '');
-                setProfilePicture(userData.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
-                setTempProfilePicture(userData.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+                
+                // Update profile picture with default fallback
+                const pictureUrl = userData.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png';
+                setProfilePicture(pictureUrl);
+                
+                localStorage.setItem('user', JSON.stringify(userData));
             } else {
                 console.error('Failed to fetch user profile');
             }
@@ -69,17 +77,16 @@ export const ProfileStudent = () => {
             const accessToken = localStorage.getItem('accessToken');
             const formData = new FormData();
             
-            // Add basic profile information
             formData.append('first_name', fname);
             formData.append('last_name', lname);
             formData.append('username', username);
             formData.append('email', email);
 
             // Handle profile picture changes
-            if (newProfilePictureFile) {
+            if (shouldRemovePicture) {
+                formData.append('remove_profile_picture', 'true');
+            } else if (newProfilePictureFile) {
                 formData.append('profile_picture', newProfilePictureFile);
-            } else if (shouldRemovePicture) {
-                formData.append('profile_picture', '');
             }
 
             const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
@@ -93,14 +100,26 @@ export const ProfileStudent = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setSuccessMessage('Profile updated successfully');
+                setSuccessMessage('Profile updated successfully.');
+                setSuccessMessageModal(true);
+
                 setIsEditingProfile(false);
-                setProfilePicture(data.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+                
+                // Update profile picture based on response
+                const newPictureUrl = data.profile_picture || 'https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png';
+                setProfilePicture(newPictureUrl);
+                
+                // Reset picture-related states
                 setNewProfilePictureFile(null);
                 setShouldRemovePicture(false);
-                // Update local storage
-                const userData = JSON.parse(localStorage.getItem('user') || '{}');
-                localStorage.setItem('user', JSON.stringify({...userData, ...data}));
+
+                // Update localStorage
+                const updatedUserData = {
+                    ...JSON.parse(localStorage.getItem('user') || '{}'),
+                    ...data
+                };
+                localStorage.setItem('user', JSON.stringify(updatedUserData));
+
             } else {
                 if (data.username) setErrorUsernameMessage(data.username[0]);
                 if (data.email) setErrorEmailMessage(data.email[0]);
@@ -112,13 +131,39 @@ export const ProfileStudent = () => {
         }
     };
 
+    const handleChangePicture = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(file);
+        
+        // Create a temporary URL for preview
+        const tempUrl = URL.createObjectURL(file);
+        setProfilePicture(tempUrl);
+    };
+
+    const handleRemovePicture = () => {
+        setShouldRemovePicture(true);
+        setNewProfilePictureFile(null);
+        setProfilePicture('https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
+    };
+
+    const handleCancelProfileEdit = () => {
+        setIsEditingProfile(false);
+        // Reset to the current profile from the server
+        fetchUserProfile();
+        setShouldRemovePicture(false);
+        setNewProfilePictureFile(null);
+    };
+
     const handleSavePassword = async (e) => {
         e.preventDefault();
         setLoading(true);
         setErrorOldPasswordMessage('');
         setErrorNewPasswordMessage('');
         setSuccessMessage('');
-
+    
         if (!isPasswordRequirementMet('Be 8-100 characters long') ||
             !isPasswordRequirementMet('Contain at least one uppercase and one lowercase letter') ||
             !isPasswordRequirementMet('Contain at least one number or special character')) {
@@ -126,18 +171,18 @@ export const ProfileStudent = () => {
             setLoading(false);
             return;
         }
-
+    
         if (newPassword !== confirmNewPassword) {
             setErrorNewPasswordMessage('Passwords do not match');
             setLoading(false);
             return;
         }
-
+    
         try {
             const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/update_profile/', {
-                method: 'PUT',
-                headers: {
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/change_password/', {
+                method: 'POST',
+                headers: {  
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
@@ -146,11 +191,13 @@ export const ProfileStudent = () => {
                     new_password: newPassword,
                 }),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
-                setSuccessMessage('Password updated successfully');
+                setSuccessMessageModal(true);
+                setSuccessMessage('Password updated successfully.');
+
                 setIsEditingPassword(false);
                 handleCancelPasswordEdit();
             } else {
@@ -159,6 +206,7 @@ export const ProfileStudent = () => {
             }
         } catch (error) {
             console.error('Error updating password:', error);
+            setErrorNewPasswordMessage('An error occurred while updating the password');
         } finally {
             setLoading(false);
         }
@@ -169,24 +217,6 @@ export const ProfileStudent = () => {
     const handleLnameChange = (e) => setLname(e.target.value);
     const handleUsernameChange = (e) => setUsername(e.target.value);
     const handleEmailChange = (e) => setEmail(e.target.value);
-    
-    const handleChangePicture = (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setShouldRemovePicture(false);
-        setNewProfilePictureFile(file);
-        
-        // Create a temporary URL for preview
-        const tempUrl = URL.createObjectURL(file);
-        setTempProfilePicture(tempUrl);
-    };
-
-    const handleRemovePicture = () => {
-        setShouldRemovePicture(true);
-        setNewProfilePictureFile(null);
-        setTempProfilePicture('https://apiquizapp.pythonanywhere.com/media/profile_pictures/profile.png');
-    };
 
     const handleEditProfile = () => {
         setIsEditingProfile(true);
@@ -196,13 +226,6 @@ export const ProfileStudent = () => {
     };
 
     const handleEditPassword = () => setIsEditingPassword(true);
-
-    const handleCancelProfileEdit = () => {
-        setIsEditingProfile(false);
-        setTempProfilePicture(profilePicture);
-        setShouldRemovePicture(false);
-        setNewProfilePictureFile(null);
-    };
 
     const handleCancelPasswordEdit = () => {
         setIsEditingPassword(false);
@@ -346,7 +369,6 @@ export const ProfileStudent = () => {
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">Change Password</h5>
-                   
                     {!isEditingPassword && (
                         <BiEditAlt 
                             className="ProfileStudent__edit-icon" 
@@ -421,7 +443,11 @@ export const ProfileStudent = () => {
                     )}
                 </form>
             </div>
-
+            <SuccessMessageModal
+                isOpen={successMessageModal}
+                onClose={()=>setSuccessMessageModal(false)}
+                successMessage={successMessage}
+            />
         </>
     );
 };

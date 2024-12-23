@@ -7,6 +7,8 @@ import { HomeStudent } from 'pages/student/home';
 import { ProfileStudent } from 'pages/student/account';
 
 import { HomeTeacher } from 'pages/teacher/home';
+import { QuizzesTeacher } from 'pages/teacher/quizzes';
+import { QuizBankTeacher } from 'pages/teacher/quiz-bank';
 import { ProfileTeacher } from 'pages/teacher/account';
 
 const MainRoutes = () =>{
@@ -31,7 +33,9 @@ const MainRoutes = () =>{
                       <TeacherLayout />
                     </PrivateRoute>
                 }>
-                    <Route path="home" element={<HomeTeacher />} /> 
+                    <Route path="home" element={<HomeTeacher />} />
+                    <Route path="quizzes" element={<QuizzesTeacher />} /> 
+                    <Route path="quiz-bank" element={<QuizBankTeacher />} />  
                     <Route path="settings" element={<ProfileTeacher />} />
                 </Route>
             </Routes>

@@ -1,0 +1,10 @@
+
+
+.QuizzesTeacher__questions-container {
+    width: 75%;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    padding: 30px 40px;
+    border-radius: 15px;
+    border: 1px solid rgba(178, 179, 184, 0.8);
+}
