@@ -39,7 +39,7 @@ const MainRoutes = () =>{
                 }>
                     <Route path="home" element={<HomeTeacher />} />
                     <Route path="quizzes" element={<QuizzesTeacher />} /> 
-                    <Route path="quiz-bank" element={<QuizBankTeacher />} />  
+                    <Route path="question-bank" element={<QuizBankTeacher />} />  
                     <Route path="settings" element={<ProfileTeacher />} />
                 </Route>
             </Routes>

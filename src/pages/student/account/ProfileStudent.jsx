@@ -1,13 +1,16 @@
 import React, {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import 'assets/css/student';
 import PasswordRequirements from 'components/PasswordRequirements';
 import ButtonGroup from 'components/ButtonGroup';
 import * as images from 'assets/images';
 
 import { BiEditAlt } from "react-icons/bi";
-import { SuccessMessageModal } from "./modals";
+import { DeleteAccountModal, SuccessMessageModal } from "./modals";
 
 export const ProfileStudent = () => {
+    const navigate = useNavigate();
+    
     const [fname, setFname] = useState('');
     const [lname, setLname] = useState('');
     const [username, setUsername] = useState('');
@@ -23,6 +26,8 @@ export const ProfileStudent = () => {
       
     const [successMessageModal, setSuccessMessageModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+
+    const [deleteAccountModal, setDeleteAccountModal] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -249,16 +254,19 @@ export const ProfileStudent = () => {
         }
     };
 
+
+
+    // DELETE ACCOUNT
+    const handleDeleteAccount = () => {
+        navigate('/sign-in');
+        setDeleteAccountModal(false);
+    }
+
     return(
         <>
             <div className="HomeStudent__main-header">
                 <h1>Settings</h1>
             </div>
-            {successMessage && (
-                <div className="ProfileStudent__success-message">
-                    {successMessage}
-                </div>
-            )}
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">User Profile</h5>
@@ -443,10 +451,23 @@ export const ProfileStudent = () => {
                     )}
                 </form>
             </div>
+
+            <div className="ProfileStudent__profile-container">
+                <h5 className="ProfileStudent__card-header-user delete-account">Account Deletion</h5>
+                <p className="ProfileStudent__delete-desc">Deleting your account is permanent and cannot be undone.</p>
+                <button  className="ProfileStudent__button-delete" onClick={()=> setDeleteAccountModal(true)}>
+                    Delete Account
+                </button>
+            </div>
             <SuccessMessageModal
                 isOpen={successMessageModal}
                 onClose={()=>setSuccessMessageModal(false)}
                 successMessage={successMessage}
+            />
+            <DeleteAccountModal
+                isOpen={deleteAccountModal}
+                onClose={()=> setDeleteAccountModal(false)}
+                onDelete ={handleDeleteAccount}
             />
         </>
     );

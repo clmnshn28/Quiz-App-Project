@@ -22,7 +22,7 @@ export const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
                     onCancel={onClose}
                     onSave={onConfirm}
                     saveText='Logout'
-                    saveButtonColor='#a94547'
+                    saveButtonColor='#A26768'
                 />
             </div>
         </div>
