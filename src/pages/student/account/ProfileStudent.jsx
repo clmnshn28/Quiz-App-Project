@@ -254,13 +254,33 @@ export const ProfileStudent = () => {
         }
     };
 
-
-
     // DELETE ACCOUNT
-    const handleDeleteAccount = () => {
-        navigate('/sign-in');
-        setDeleteAccountModal(false);
-    }
+    const handleDeleteAccount = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/delete_account/', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+
+            if (response.ok) {
+                // Clear all local storage data
+                localStorage.clear();
+                // Navigate to sign-in page
+                navigate('/sign-in');
+                setDeleteAccountModal(false);
+            } else {
+                const data = await response.json();
+                console.error('Failed to delete account:', data.error);
+                // You might want to show an error message to the user here
+            }
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            // Handle error appropriately
+        }
+    };
 
     return(
         <>

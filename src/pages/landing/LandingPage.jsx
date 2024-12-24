@@ -147,7 +147,7 @@ export const LandingPage = () =>{
                             <p>Mark David L. Basinillo</p>
                         </div>
                         <div className="LandingPage__about-us-person">
-                            <img src={images.defaultAvatar} alt="Profile"/>
+                            <img src={images.profile2} alt="Profile"/>
                             <p>Joshua T. Canoza</p>
                         </div>
                         <div className="LandingPage__about-us-person">

@@ -4,7 +4,7 @@ import logoutIcon from './logoutIcon.png';
 import defaultAvatar from './default-avatar.jpg';
 import landingCover from './landing_cover.png';
 import profile1 from './profile1.jpg';
-import profile2 from './profile4.jpg';
+import profile2 from './profile2.jpg';
 import profile3 from './profile3.jpg';
 import profile4 from './profile4.jpg';
 import profile5 from './profile5.jpg';
