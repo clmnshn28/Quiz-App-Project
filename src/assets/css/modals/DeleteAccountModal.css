@@ -1,0 +1,84 @@
+
+.DeleteAccountModal__content{
+    background: #fff;
+    padding: 25px 34px;
+    border-radius: 10px;
+    width: 550px;
+    max-width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+
+.DeleteAccountModal__content h2{
+    color: #A26768;
+    margin: 0;
+    margin-bottom: 20px;
+    font-size: 27px;
+}
+
+
+.DeleteAccountModal__content-desc{
+    color: #56575B;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.DeleteAccountModal__note-container{
+    display:flex;
+    align-items: center;
+    gap: 5px;  
+    background-color: #f1f1f1;
+    width: 100%;
+    padding: 10px;
+    border-radius: 7px;
+}
+
+.DeleteAccountModal__note-icon{
+    color: #929292;
+}
+
+.DeleteAccountModal__content-note{
+    font-size: 12px;
+    color: #929292;
+    margin: 0;
+    font-weight: 500;
+}
+
+.DeleteAccountModal__btn-actions{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    width: 100%;
+    margin-top: 8px;
+}
+
+ 
+.ButtonGroup__pass-cancel {
+    width: 160px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: "poppins";
+    border-radius: 7px;
+    border:none;
+    background-color: #D9D9D9;
+    color: #626262;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.DeleteAccountModal__delete-line{
+    display: inline-block; 
+    width: 2px; 
+    height: 30px;
+    background-color: #797a7e; 
+    margin: 0 10px;
+    vertical-align: middle; 
+}

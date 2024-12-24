@@ -178,3 +178,29 @@
     display: flex;
     justify-content: end;
 }
+
+
+/* delete account */
+.ProfileStudent__button-delete{
+    width: 100%;
+    padding: 15px;
+    background-color: #A26768;
+    color: #fff;
+    font-family: 'inter';
+    font-weight: 600;
+    border:none;
+}
+
+.ProfileStudent__button-delete:active{
+    opacity: 0.8;
+}
+
+.ProfileStudent__button-delete:focus{
+    outline: none;
+}
+
+.ProfileStudent__delete-desc{
+    color: #7e7a7a;
+    font-size: 14px;
+    margin: 4px 0 15px;
+}

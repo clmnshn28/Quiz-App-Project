@@ -8,7 +8,8 @@ import { useAuth } from '../../context/AuthContext';
 import { GrHomeRounded } from "react-icons/gr";
 import { TbLogout2, TbSettings } from "react-icons/tb";
 import { GrDocument } from "react-icons/gr";
-import { RiFolderChartLine } from "react-icons/ri";
+import { RiFolderChartLine, RiQuestionLine  } from "react-icons/ri";
+import { LuFileQuestion } from "react-icons/lu";
 
 export const TeacherLayout = () =>{
 
@@ -26,8 +27,8 @@ export const TeacherLayout = () =>{
                 setHighlightedTab('home');
             } else if (currentPath.includes('quizzes')) {
                 setHighlightedTab('quizzes');
-            } else if (currentPath.includes('quiz-bank')) {
-                setHighlightedTab('quiz-bank');
+            } else if (currentPath.includes('question-bank')) {
+                setHighlightedTab('question-bank');
             } else if (currentPath.includes('settings')) {
                 setHighlightedTab('settings');
             }
@@ -60,10 +61,10 @@ export const TeacherLayout = () =>{
                             <span className="sidebar-text">Quizzes</span>
                         </li>
                     </Link>
-                    <Link to="quiz-bank" className={`link-sidebar ${highlightedTab === 'quiz-bank'? 'highlighted' : ''}`}>
+                    <Link to="question-bank" className={`link-sidebar ${highlightedTab === 'question-bank'? 'highlighted' : ''}`}>
                         <li>
-                            <RiFolderChartLine className={`StudentLayout__sidebar-icon ${highlightedTab === 'quiz-bank'? 'active' : ''} `}/>
-                            <span className="sidebar-text">Quiz Bank</span>
+                            <LuFileQuestion className={`StudentLayout__sidebar-icon ${highlightedTab === 'question-bank'? 'active' : ''} `}/>
+                            <span className="sidebar-text">Question Bank</span>
                         </li>
                     </Link>
                 </div>
