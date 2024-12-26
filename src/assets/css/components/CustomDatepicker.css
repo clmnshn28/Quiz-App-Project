@@ -1,0 +1,123 @@
+.QuizzesTeacher__date-picker {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    color: #565252;
+}
+
+.QuizzesTeacher__date-input {
+    width: 100%;
+    height: 45px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #DDE9E6;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.QuizzesTeacher__calendar-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: -30%;
+    width: 300px;
+    background: #A7CDC3;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+    z-index: 1000;
+}
+
+.QuizzesTeacher__calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+}
+
+.QuizzesTeacher__calendar-header button {
+    border: none;
+    color: #565252;
+    background: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.QuizzesTeacher__calendar-header button:hover {
+    background-color: #f1f5f9;
+}
+
+.QuizzesTeacher__calendar-month-year {
+    display: flex;
+    gap: 8px;
+}
+
+.QuizzesTeacher__calendar-select {
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #565252;
+    padding: 4px 6px;
+    background: #A7CDC3;
+    border-radius: 4px;
+}
+
+.QuizzesTeacher__calendar-select:focus {
+    outline: none;
+}
+.QuizzesTeacher__calendar-select option:hover {
+    background-color: #67A292; /* Change to desired color */
+    color: #ffffff; /* Optional: Change text color */
+}
+
+.QuizzesTeacher__calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #f8fafc;
+    padding: 8px;
+    background-color: #67A292;
+
+}
+
+.QuizzesTeacher__calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 8px;
+}
+
+.QuizzesTeacher__calendar-day {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 1px;
+    font-weight: 500;
+    transition: background-color 0.5s, color 0.5s ;
+}
+
+.QuizzesTeacher__calendar-day:not(.empty):hover {
+    background-color: #67A292;
+    color: #f1f5f9;
+}
+
+.QuizzesTeacher__calendar-day.empty {
+    cursor: default;
+}
+.QuizzesTeacher__calendar-day.selected {
+    background-color: #67A292;
+    color: #f1f5f9;
+}

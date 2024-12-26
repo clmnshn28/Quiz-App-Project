@@ -6,7 +6,7 @@ import ButtonGroup from 'components/ButtonGroup';
 import * as images from 'assets/images';
 
 import { BiEditAlt } from "react-icons/bi";
-import { DeleteAccountModal, SuccessMessageModal } from "./modals";
+import { DeleteAccountModal, SuccessDeleteModal, SuccessMessageModal } from "./modals";
 
 export const ProfileStudent = () => {
     const navigate = useNavigate();
@@ -28,6 +28,7 @@ export const ProfileStudent = () => {
     const [successMessage, setSuccessMessage] = useState('');
 
     const [deleteAccountModal, setDeleteAccountModal] = useState(false);
+    const [successDeleteAccountModal, setSuccessDeleteAccountModal] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -268,8 +269,8 @@ export const ProfileStudent = () => {
             if (response.ok) {
                 // Clear all local storage data
                 localStorage.clear();
-                // Navigate to sign-in page
-                navigate('/sign-in');
+                
+                setSuccessDeleteAccountModal(true);
                 setDeleteAccountModal(false);
             } else {
                 const data = await response.json();
@@ -280,6 +281,13 @@ export const ProfileStudent = () => {
             console.error('Error deleting account:', error);
             // Handle error appropriately
         }
+    };
+
+    // success delete modal
+    const handleSuccessDeleteAccount = () =>{
+        // Navigate to sign-in page
+        navigate('/sign-in');
+        setSuccessDeleteAccountModal(false);
     };
 
     return(
@@ -332,7 +340,7 @@ export const ProfileStudent = () => {
                         <label>First Name</label>
                         <input
                         type="text"
-                        value={fname || "-"}
+                        value={fname}
                         onChange={handleFnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -343,7 +351,7 @@ export const ProfileStudent = () => {
                         <label>Last Name</label>
                         <input
                         type="text"
-                        value={lname || "-"}
+                        value={lname}
                         onChange={handleLnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -488,6 +496,10 @@ export const ProfileStudent = () => {
                 isOpen={deleteAccountModal}
                 onClose={()=> setDeleteAccountModal(false)}
                 onDelete ={handleDeleteAccount}
+            />
+            <SuccessDeleteModal
+                isOpen={successDeleteAccountModal}
+                onClose={handleSuccessDeleteAccount}
             />
         </>
     );
