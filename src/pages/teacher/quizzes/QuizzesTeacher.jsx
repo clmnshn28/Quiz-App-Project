@@ -10,13 +10,12 @@ import { FiTrash2 } from "react-icons/fi";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 import { IoMdRadioButtonOn, IoIosCheckmarkCircleOutline, IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 
-import { AnswerKeyModal, SuccessPublishModal } from "./modals";
+import { AnswerKeyModal, SuccessPublishModal, QuestionBankModal } from "./modals";
 
 export const QuizzesTeacher = () => {
-
+    const [combinedQuestions, setCombinedQuestions] = useState([]);
     const [currentStep, setCurrentStep] = useState(1);
     const totalSteps = 2;
-
     const [questions, setQuestions] = useState([{
         id: 1,
         questionText: "",
@@ -224,8 +223,6 @@ export const QuizzesTeacher = () => {
         return true;
     };
     
-
-
     // Detect scroll and update isScrolled state
     useEffect(() => {
         const handleScroll = () => {
@@ -248,11 +245,11 @@ export const QuizzesTeacher = () => {
             pointText: {},
             multipleFilled: {}
         };
-
+    
         let hasErrors = false;
-
+    
+        // Validate new questions
         questions.forEach(question => {
-            // Question text validation
             if (!question.questionText.trim()) {
                 newErrorStates.questionText[question.id] = true;
                 hasErrors = true;
@@ -281,11 +278,21 @@ export const QuizzesTeacher = () => {
         });
 
         setErrorStates(newErrorStates);
-
-        if (!hasErrors && currentStep < totalSteps) {
-            setCurrentStep(prev => prev + 1);
+        // Validate bank questions
+        if (selectedBankQuestions.length === 0 && questions.length === 0) {
+            setQuestionsError(true);
+            hasErrors = true;
         }
-    };
+
+        if (hasErrors) {
+            setErrorStates(newErrorStates);
+            return;
+        }
+
+        // Combine questions for next step
+        setCombinedQuestions([...selectedBankQuestions, ...questions]);
+        setCurrentStep(currentStep + 1);
+        };
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -294,20 +301,24 @@ export const QuizzesTeacher = () => {
     };
 
 // Step 2 useStates
-    const [selectedClass, setSelectedClass] = useState('');
-
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-
-    const [timeHours, setTimeHours] = useState('00');
-    const [timeMinutes, setTimeMinutes] = useState('00');
-
-    const [quizName, setQuizName] = useState('');
-    const [quizNameError, setQuizNameError] = useState(false);
+    // Class selection state
+    const [classOptions, setClassOptions] = useState([]);
+    const [selectedClass, setSelectedClass] = useState(null);
     const [classError, setClassError] = useState(false);
-    const [timerError, setTimerError] = useState(false);
+
+    // Time and schedule state
+    const [timeHours, setTimeHours] = useState('00');
+    const [timeMinutes, setTimeMinutes] = useState('30');
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const [scheduleError, setScheduleError] = useState(false);
 
+    // Quiz details state
+    const [quizName, setQuizName] = useState('');
+    const [quizNameError, setQuizNameError] = useState(false);
+    const [timerError, setTimerError] = useState(false);
+
+    // Settings toggles
     const [toggleSettings, setToggleSettings] = useState({
         showAnswer: false,
         pointValues: false,
@@ -315,13 +326,32 @@ export const QuizzesTeacher = () => {
         correctAnswers: false
     });
 
-    // Class options
-     const classOptions = [
-        { value: "classA", title: "Class A" },
-        { value: "classB", title: "Class B" },
-        { value: "classC", title: "Class C" },
+    // Fetch classes on component mount
+    useEffect(() => {
+        const fetchClasses = async () => {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const response = await fetch('https://apiquizapp.pythonanywhere.com/api/classes/', {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    }
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    const formattedClasses = data.map(c => ({
+                        value: c.id,
+                        title: c.section ? `${c.name} ${c.section}` : c.name
+                    }));
+                    setClassOptions(formattedClasses);
+                }
+            } catch (error) {
+                console.error('Error fetching classes:', error);
+            }
+        };
 
-    ];
+        fetchClasses();
+    }, []);
     
     // Toggle
     const handleToggleChange = (setting) => {
@@ -336,14 +366,6 @@ export const QuizzesTeacher = () => {
         setQuizName(e.target.value);
         if (e.target.value.trim()) {
             setQuizNameError(false);
-        }
-    };
-
-    // assign class
-    const handleClassSelect = (option) => {
-          setSelectedClass(option.value);
-        if (option.value) {
-            setClassError(false);
         }
     };
 
@@ -371,76 +393,276 @@ export const QuizzesTeacher = () => {
         }
     };
 
-    const handlePublishQuizConfirm = () => {
-        let hasError = false;
-        
-        // Check if quiz name is empty
-        if (!quizName.trim()) {
-            setQuizNameError(true);
-            hasError = true;
+    // Add these state declarations at the top with other states
+const [publishError, setPublishError] = useState(false);
+const [questionsError, setQuestionsError] = useState(false);
+
+// Add reset form function
+const resetForm = () => {
+    setQuizName('');
+    setSelectedClass(null);
+    setQuestions([]);
+    setStartDate('');
+    setEndDate('');
+    setTimeHours('00');
+    setTimeMinutes('00');
+    setToggleSettings({
+        showAnswer: false,
+        pointValues: false,
+        missedQuestions: false,
+        correctAnswers: false
+    });
+    clearErrors();
+};
+
+const clearErrors = () => {
+    setQuizNameError(false);
+    setClassError(false);
+    setQuestionsError(false);
+    setScheduleError(false);
+    setTimerError(false);
+    setPublishError(false);
+};
+
+const [questionBank, setQuestionBank] = useState([]);
+const [selectedBankQuestions, setSelectedBankQuestions] = useState([]);
+const [isUsingQuestionBank, setIsUsingQuestionBank] = useState(false);
+
+// Add fetch function
+const fetchQuestionBank = async () => {
+    try {
+        const accessToken = localStorage.getItem('accessToken');
+        const response = await fetch('https://apiquizapp.pythonanywhere.com/api/questions/', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            setQuestionBank(data);
+        }
+    } catch (error) {
+        console.error('Error fetching question bank:', error);
+    }
+};
+
+// Add useEffect to fetch questions
+useEffect(() => {
+    fetchQuestionBank();
+}, []);
+
+const handlePublishQuizConfirm = async () => {
+    clearErrors();
+    if (!validateForm()) return;
+
+    try {
+        const accessToken = localStorage.getItem('accessToken');
+        let questionIds = [];
+
+        if (isUsingQuestionBank) {
+            questionIds = selectedBankQuestions.map(q => q.id);
+        } else {
+            questionIds = await createQuestions(accessToken);
         }
 
-        // Check if class is selected
-        if (!selectedClass) {
-            setClassError(true);
-            hasError = true;
-        }
+        await createQuiz(accessToken, questionIds);
+        setIsSuccessPublishModal(true);
+        resetForm();
+    } catch (error) {
+        console.error('Error in quiz creation:', error);
+        setPublishError(true);
+    }
+};
 
-        // Check if timer is set (not 00:00)
-        if (timeHours === '00' && timeMinutes === '00') {
-            setTimerError(true);
-            hasError = true;
-        }
+const validateForm = () => {
+    let isValid = true;
+    
+    if (!quizName.trim()) {
+        setQuizNameError(true);
+        isValid = false;
+    }
+    if (!selectedClass) {
+        setClassError(true);
+        isValid = false;
+    }
+    if (!questions.length) {
+        setQuestionsError(true);
+        isValid = false;
+    }
+    if (!startDate || !endDate) {
+        setScheduleError(true);
+        isValid = false;
+    }
+    
+    return isValid;
+};
 
-        // Check if both dates are selected
-        if (!startDate || !endDate) {
-            setScheduleError(true);
-            hasError = true;
-        }
+const createQuestions = async (accessToken) => {
+    try {
+        const responses = await Promise.all(questions.map(async (q) => {
+            // Convert boolean to string for TF questions
+            const correct_answer = q.selectedOption === 'trueFalse' ? 
+                q.selectedTrueFalseAnswer.toString() : // Convert boolean to string
+                q.selectedOption === 'multipleChoice' ? 
+                    q.correctAnswers[0] : 
+                    q.identificationAnswers[0];
 
-
-        if (!hasError) {
-            setIsSuccessPublishModal(true);
-            const quizData = {
-                name: quizName,
-                settings: {
-                    ...toggleSettings,
-                    timeHours,
-                    timeMinutes,
-                    startDate,
-                    endDate,
-                    selectedClass
-                },
-                questions
+            const questionData = {
+                question_text: q.questionText,
+                question_type: q.selectedOption === 'multipleChoice' ? 'MC' : 
+                             q.selectedOption === 'trueFalse' ? 'TF' : 'ID',
+                correct_answer: correct_answer,
+                option_a: q.choices?.[0] || null,
+                option_b: q.choices?.[1] || null,
+                option_c: q.choices?.[2] || null,
+                option_d: q.choices?.[3] || null
             };
-            console.log("Quiz data to submit:", quizData);
-        }
-    };
 
+            console.log('Sending question data:', questionData);
+
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/questions/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(questionData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Question creation failed: ${JSON.stringify(errorData)}`);
+            }
+
+            return response.json();
+        }));
+
+        return responses.map(q => q.id);
+    } catch (error) {
+        console.error('Question creation error:', error);
+        throw error;
+    }
+};
+
+// Add this function to help with debugging
+const validateQuestionData = (question) => {
+    if (!question.questionText) throw new Error('Question text is required');
+    if (!question.selectedOption) throw new Error('Question type is required');
+    
+    if (question.selectedOption === 'multipleChoice' && (!question.choices || question.choices.length < 2)) {
+        throw new Error('Multiple choice questions require at least 2 choices');
+    }
+    
+    if (!question.correctAnswers?.length && !question.selectedTrueFalseAnswer && !question.identificationAnswers?.length) {
+        throw new Error('Correct answer is required');
+    }
+    
+    return true;
+};
+
+const createQuiz = async (accessToken, questionIds) => {
+    const formattedStartDate = new Date(startDate);
+    const formattedEndDate = new Date(endDate);
+    formattedStartDate.setHours(parseInt(timeHours), parseInt(timeMinutes));
+    formattedEndDate.setHours(parseInt(timeHours), parseInt(timeMinutes));
+
+    const response = await fetch('https://apiquizapp.pythonanywhere.com/api/quizzes/', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title: quizName,
+            classes: [selectedClass],
+            start_datetime: formattedStartDate.toISOString(),
+            end_datetime: formattedEndDate.toISOString(),
+            time_limit_minutes: (parseInt(timeHours) * 60) + parseInt(timeMinutes),
+            show_correct_answers: toggleSettings.showAnswer,
+            questions: questionIds
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error('Quiz creation failed');
+    }
+
+    return response.json();
+};
 
     const getStepContent = () => {
         switch (currentStep) {
             case 1:
-                return(
-                <div className="QuizzesTeacher__questions">
-                    <div className={`QuizzesTeacher__questions-next ${isScrolled ? 'scrolled' : ''}`}>
-                        <div className="QuizzesTeacher__header-container">
-                            <h2 className="QuizzesTeacher__header-question">Questions</h2>
-                            <p>Name and describe your quiz so that students can understand it</p>
-                        </div>
-                        <div>     
-                            <button 
-                                className="QuizzesTeacher__nextButton" 
-                                onClick={handleNext}
-                            >
-                                Next
-                            </button>  
-                        </div>
-                    </div>
-                    <div
-                        className={`QuizzesTeacher__questionCard`}
-                        ref={questionCardRef}
-                    >
+    return (
+        <div className="QuizzesTeacher__questions">
+            <div className={`QuizzesTeacher__questions-next ${isScrolled ? 'scrolled' : ''}`}>
+                <div className="QuizzesTeacher__header-container">
+                    <h2 className="QuizzesTeacher__header-question">Questions</h2>
+                    <p>Name and describe your quiz so that students can understand it</p>
+                </div>
+                <button className="QuizzesTeacher__nextButton" onClick={handleNext}>
+                    Next
+                </button>
+            </div>
+
+            <div className="QuizzesTeacher__questionCard" ref={questionCardRef}>
+                <div className="QuizzesTeacher__question-creation">
+                    {/* Selected Bank Questions */}
+                    {selectedBankQuestions.map((question, index) => (
+                        <div key={question.id} className="QuizzesTeacher__separator">
+                                <div className="QuizzesTeacher__sidebar">
+                                    <div className="QuizzesTeacher__sidebar-question">Question {index + 1}</div>
+                                    <div className="QuizzesTeacher__sidebar-question-select">
+                                        <label className="QuizzesTeacher__bank-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedBankQuestions.some(q => q.id === question.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedBankQuestions(prev => [...prev, question]);
+                                                    } else {
+                                                        setSelectedBankQuestions(prev => 
+                                                            prev.filter(q => q.id !== question.id)
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                            Select Question
+                                        </label>
+                                    </div>
+                                    <div className="QuizzesTeacher__sidebar-question-ans-key">
+                                        <LuClipboardCheck className="QuizzesTeacher__sidebar-question-ans-key-icon"/>
+                                        Answer Key: {question.correct_answer}
+                                    </div>
+                                </div>
+
+                                <div className="QuizzesTeacher__main">
+                                    <div className="QuizzesTeacher__ques-main-content">
+                                        <div className="QuizzesTeacher__input-container">
+                                            <label className="QuizzesTeacher__ques-main-label">Question Text</label>
+                                            <input
+                                                type="text"
+                                                className="QuizzesTeacher__input"
+                                                value={question.question_text}
+                                                disabled
+                                            />
+                                        </div>
+                                        <div className="QuizzesTeacher__type-point-container">
+                                            <div className="QuizzesTeacher__input-container">
+                                                <label className="QuizzesTeacher__ques-main-label">Question Type</label>
+                                                <input
+                                                    type="text"
+                                                    className="QuizzesTeacher__input"
+                                                    value={question.question_type}
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                    ))}
+
                         {questions.map((question, index) => (
                             <div key={question.id} className="QuizzesTeacher__separator">
                                 <div className="QuizzesTeacher__sidebar">
@@ -598,15 +820,44 @@ export const QuizzesTeacher = () => {
                                 </div>
                             </div>
                         ))}
-                        <div 
-                            className="QuizzesTeacher__add-question"
+                        {/* Add Question Options */}
+                    <div className="QuizzesTeacher__add-options">
+                        <button 
+                            className="QuizzesTeacher__add-bank"
+                            onClick={() => setIsUsingQuestionBank(true)}
+                        >
+                            Add from Question Bank +
+                        </button>
+                        <button 
+                            className="QuizzesTeacher__add-new"
                             onClick={handleAddQuestion}
                         >
                             Add new question +
-                        </div>
+                        </button>
                     </div>
+
+                    {/* Question Bank Modal */}
+                    {isUsingQuestionBank && (
+                    <QuestionBankModal
+                        isOpen={isUsingQuestionBank}
+                        onClose={() => setIsUsingQuestionBank(false)}
+                        questions={questionBank}
+                        selectedQuestions={selectedBankQuestions}
+                        onSelect={(question) => {
+                            if (selectedBankQuestions.some(q => q.id === question.id)) {
+                                setSelectedBankQuestions(prev => 
+                                    prev.filter(q => q.id !== question.id)
+                                );
+                            } else {
+                                setSelectedBankQuestions(prev => [...prev, question]);
+                            }
+                        }}
+                    />
+                )}
                 </div>
-                );
+            </div>
+        </div>
+    );
             case 2:
                 return(
                     <div className="QuizzesTeacher__questions">
@@ -732,8 +983,9 @@ export const QuizzesTeacher = () => {
                                     <CustomDropdown
                                         options={classOptions}
                                         selectedValue={selectedClass}
-                                        onOptionSelect={handleClassSelect}
-                                        heightDropdown='45'
+                                        onOptionSelect={(option) => setSelectedClass(option.value)}
+                                        placeholder="Select Class"
+                                        heightDropdown={40}
                                     />
                                 </div>
                                 <span 

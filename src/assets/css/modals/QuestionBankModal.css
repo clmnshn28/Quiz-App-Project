@@ -1,0 +1,74 @@
+.QuestionBankModal__content {
+    padding: 24px;
+    width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.QuestionBankModal__header {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.QuestionBankModal__filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.QuestionBankModal__search {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.QuestionBankModal__type-filter {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.QuestionBankModal__questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.QuestionBankModal__question-item {
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.QuestionBankModal__question-checkbox {
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.QuestionBankModal__question-details {
+    flex: 1;
+}
+
+.QuestionBankModal__question-type {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.QuestionBankModal__question-text {
+    margin-bottom: 8px;
+}
+
+.QuestionBankModal__answer-key {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}

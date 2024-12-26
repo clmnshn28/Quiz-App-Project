@@ -6,3 +6,4 @@ import './DeleteAccountModal.css';
 import './SuccessDeleteModal.css';
 import './AnswerKeyModal.css';
 import './SuccessPublishModal.css';
+import './QuestionBankModal.css';
