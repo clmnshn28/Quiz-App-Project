@@ -15,13 +15,12 @@ import { AnswerKeyModal, SuccessPublishModal, QuestionBankModal, QuizAnswerKeyPr
 export const QuizzesTeacher = () => {
     const [combinedQuestions, setCombinedQuestions] = useState([]);
     const [currentStep, setCurrentStep] = useState(1);
-    const totalSteps = 2;
     const [questions, setQuestions] = useState([{
         id: 1,
         questionText: "",
         selectedOption: 'multipleChoice',
         choices: [""],
-        points: "",
+        points: 1, // Default points value
         correctAnswers: [],
         identificationAnswers: [""],
         selectedTrueFalseAnswer: null,
@@ -62,7 +61,6 @@ export const QuizzesTeacher = () => {
             return q;
         }));
     };
-
 
      const handleAddChoice = (questionId) => {
         setQuestions(questions.map(q => {
@@ -521,6 +519,7 @@ const createQuestions = async (accessToken) => {
                 question_type: q.selectedOption === 'multipleChoice' ? 'MC' : 
                              q.selectedOption === 'trueFalse' ? 'TF' : 'ID',
                 correct_answer: correct_answer,
+                points: parseInt(q.points) || 1,
                 option_a: q.choices?.[0] || null,
                 option_b: q.choices?.[1] || null,
                 option_c: q.choices?.[2] || null,
@@ -697,7 +696,7 @@ const getQuestionTypeDisplay = (type) => {
                             <div key={question.id} className="QuizzesTeacher__separator">
                                 <div className="QuizzesTeacher__sidebar">
                                     <div className="QuizzesTeacher__sidebar-question">
-                                        Question {index + 1}
+                                    Question {selectedBankQuestions.length + index + 1}
                                     </div>
                                     <div className="QuizzesTeacher__sidebar-question-dup-del">
                                         <div 
