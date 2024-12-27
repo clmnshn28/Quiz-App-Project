@@ -257,49 +257,51 @@ const handlePreviewAnswerKey = (questionId) => (e) => {  // Changed to return a 
     
         // Validate new questions
         questions.forEach(question => {
-            if (!question.questionText.trim()) {
+            if (!question.questionText?.trim()) {
                 newErrorStates.questionText[question.id] = true;
                 hasErrors = true;
             }
-
-            // Points validation
-            if (!question.points.trim()) {
+    
+            // Points validation - handle as number
+            const points = parseInt(question.points);
+            if (isNaN(points) || points < 1) {
                 newErrorStates.pointText[question.id] = true;
                 hasErrors = true;
             }
-
+    
             // Multiple choice validation
             if (question.selectedOption === 'multipleChoice' && 
                 !question.choices.every(choice => choice.trim() !== "")) {
                 newErrorStates.multipleFilled[question.id] = true;
                 hasErrors = true;
             }
-
+    
             // Answer key validation
-            if (!question.correctAnswers.length && 
-                !question.identificationAnswers[0] && 
+            if (!question.correctAnswers?.length && 
+                !question.identificationAnswers?.[0] && 
                 question.selectedTrueFalseAnswer === null) {
                 newErrorStates.answerKey[question.id] = true;
                 hasErrors = true;
             }
         });
-
+    
         setErrorStates(newErrorStates);
+        
         // Validate bank questions
         if (selectedBankQuestions.length === 0 && questions.length === 0) {
             setQuestionsError(true);
             hasErrors = true;
         }
-
+    
         if (hasErrors) {
             setErrorStates(newErrorStates);
             return;
         }
-
+    
         // Combine questions for next step
         setCombinedQuestions([...selectedBankQuestions, ...questions]);
         setCurrentStep(currentStep + 1);
-        };
+    };
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -552,50 +554,67 @@ const createQuestions = async (accessToken) => {
     }
 };
 
-// Add this function to help with debugging
-const validateQuestionData = (question) => {
-    if (!question.questionText) throw new Error('Question text is required');
-    if (!question.selectedOption) throw new Error('Question type is required');
-    
-    if (question.selectedOption === 'multipleChoice' && (!question.choices || question.choices.length < 2)) {
-        throw new Error('Multiple choice questions require at least 2 choices');
-    }
-    
-    if (!question.correctAnswers?.length && !question.selectedTrueFalseAnswer && !question.identificationAnswers?.length) {
-        throw new Error('Correct answer is required');
-    }
-    
-    return true;
-};
-
 const createQuiz = async (accessToken, questionIds) => {
+
+    const allQuestionIds = [
+        ...selectedBankQuestions.map(q => q.id),
+        ...questionIds
+    ];
+    if (!allQuestionIds.length) {
+        throw new Error('No questions selected');
+    }
+    // Validate question IDs
+    if (!questionIds || !Array.isArray(questionIds) || questionIds.length === 0) {
+        throw new Error('No questions selected');
+    }
+    if (!startDate || !endDate || !timeHours || !timeMinutes) {
+        throw new Error('Missing date or time inputs');
+    }
+
+    // Format dates with timezone
     const formattedStartDate = new Date(startDate);
     const formattedEndDate = new Date(endDate);
+    
+    // Set hours and minutes
     formattedStartDate.setHours(parseInt(timeHours), parseInt(timeMinutes));
     formattedEndDate.setHours(parseInt(timeHours), parseInt(timeMinutes));
+    const totalMinutes = (parseInt(timeHours) * 60) + parseInt(timeMinutes);
+    
+    const quizData = {
+        title: quizName.trim(),
+        classes: [parseInt(selectedClass)],
+        start_datetime: formattedStartDate.toISOString(),
+        end_datetime: formattedEndDate.toISOString(),
+        time_limit_minutes: totalMinutes,
+        questions: allQuestionIds,
+        show_correct_answers: Boolean(toggleSettings.showAnswer)
+    };
 
-    const response = await fetch('https://apiquizapp.pythonanywhere.com/api/quizzes/', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            title: quizName,
-            classes: [selectedClass],
-            start_datetime: formattedStartDate.toISOString(),
-            end_datetime: formattedEndDate.toISOString(),
-            time_limit_minutes: (parseInt(timeHours) * 60) + parseInt(timeMinutes),
-            show_correct_answers: toggleSettings.showAnswer,
-            questions: questionIds
-        })
-    });
+    console.log('Full quiz data being sent:', quizData);
 
-    if (!response.ok) {
-        throw new Error('Quiz creation failed');
+    try {
+        const response = await fetch('https://apiquizapp.pythonanywhere.com/api/quizzes/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(quizData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Quiz creation error:', errorData);
+            throw new Error(JSON.stringify(errorData));
+        }
+
+        const result = await response.json();
+        console.log('Quiz creation response:', result);
+        return result;
+    } catch (error) {
+        console.error('Error creating quiz:', error);
+        throw error;
     }
-
-    return response.json();
 };
 
 const getQuestionTypeDisplay = (type) => {
