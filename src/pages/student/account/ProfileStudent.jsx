@@ -362,7 +362,7 @@ export const ProfileStudent = () => {
                         <label>Username</label>
                         <input
                         type="text"
-                        value={username || "-"}
+                        value={username}
                         onChange={handleUsernameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -378,7 +378,7 @@ export const ProfileStudent = () => {
                         <label>Email Address</label>
                         <input
                         type="text"
-                        value={email || "-"}
+                        value={email}
                         onChange={handleEmailChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"

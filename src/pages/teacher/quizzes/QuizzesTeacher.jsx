@@ -10,7 +10,7 @@ import { FiTrash2 } from "react-icons/fi";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 import { IoMdRadioButtonOn, IoIosCheckmarkCircleOutline, IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 
-import { AnswerKeyModal, SuccessPublishModal, QuestionBankModal } from "./modals";
+import { AnswerKeyModal, SuccessPublishModal, QuestionBankModal, QuizAnswerKeyPreview } from "./modals";
 
 export const QuizzesTeacher = () => {
     const [combinedQuestions, setCombinedQuestions] = useState([]);
@@ -39,7 +39,7 @@ export const QuizzesTeacher = () => {
     const [isAnswerKeyModal, setIsAnswerKeyModal] = useState(false); 
     const [currentQuestionId, setCurrentQuestionId] = useState(1);
     const [isSuccessPublishModal, setIsSuccessPublishModal] = useState(false); 
-
+    const [isPreviewModal, setIsPreviewModal] = useState(false);
     const questionCardRef = useRef(null);
 
      const [errorStates, setErrorStates] = useState({
@@ -140,6 +140,15 @@ export const QuizzesTeacher = () => {
         return q;
     }));
     setIsAnswerKeyModal(false);
+};
+
+const handlePreviewAnswerKey = (questionId) => (e) => {  // Changed to return a function
+    e.preventDefault();  // Prevent any default behavior
+    const question = selectedBankQuestions.find(q => q.id === questionId);
+    if (question) {
+        setCurrentQuestionId(questionId);
+        setIsPreviewModal(true);
+    }
 };
 
     const handleQuestionTextChange = (value, questionId) => {
@@ -590,6 +599,31 @@ const createQuiz = async (accessToken, questionIds) => {
     return response.json();
 };
 
+const getQuestionTypeDisplay = (type) => {
+    if (type === 'MC') {
+      return (
+        <div className="QUizzesTeacher__type-container-bank">
+          <span className="CustomDropdown__selected-icon"><IoMdRadioButtonOn/></span>
+          <span className="CustomDropdown__item-title">Multiple Choice</span>
+        </div>
+      );
+    } else if (type === 'ID') {
+      return (
+        <div className="QUizzesTeacher__type-container-bank">
+          <span className="CustomDropdown__selected-icon"><HiOutlineBars3BottomLeft/></span>
+          <span className="CustomDropdown__item-title">Identification</span>
+        </div>
+      );
+    } else if (type === 'TF') {
+      return (
+        <div className="QUizzesTeacher__type-container-bank">
+          <span className="CustomDropdown__selected-icon"><IoIosCheckmarkCircleOutline/></span>
+          <span className="CustomDropdown__item-title">True/False</span>
+        </div>
+      );
+    }
+  };
+
     const getStepContent = () => {
         switch (currentStep) {
             case 1:
@@ -598,7 +632,7 @@ const createQuiz = async (accessToken, questionIds) => {
             <div className={`QuizzesTeacher__questions-next ${isScrolled ? 'scrolled' : ''}`}>
                 <div className="QuizzesTeacher__header-container">
                     <h2 className="QuizzesTeacher__header-question">Questions</h2>
-                    <p>Name and describe your quiz so that students can understand it</p>
+                    <p className="QuizzesTeacher__para-question">Name and describe your quiz so that students can understand it</p>
                 </div>
                 <button className="QuizzesTeacher__nextButton" onClick={handleNext}>
                     Next
@@ -630,9 +664,10 @@ const createQuiz = async (accessToken, questionIds) => {
                                             Select Question
                                         </label>
                                     </div>
-                                    <div className="QuizzesTeacher__sidebar-question-ans-key">
+                                    <div className="QuizzesTeacher__sidebar-question-ans-key" onClick={handlePreviewAnswerKey(question.id)}>
                                         <LuClipboardCheck className="QuizzesTeacher__sidebar-question-ans-key-icon"/>
-                                        Answer Key: {question.correct_answer}
+                                        Answer Key: 
+                                        
                                     </div>
                                 </div>
 
@@ -650,12 +685,7 @@ const createQuiz = async (accessToken, questionIds) => {
                                         <div className="QuizzesTeacher__type-point-container">
                                             <div className="QuizzesTeacher__input-container">
                                                 <label className="QuizzesTeacher__ques-main-label">Question Type</label>
-                                                <input
-                                                    type="text"
-                                                    className="QuizzesTeacher__input"
-                                                    value={question.question_type}
-                                                    disabled
-                                                />
+                                                {getQuestionTypeDisplay(question.question_type)}
                                             </div>
                                         </div>
                                     </div>
@@ -666,7 +696,9 @@ const createQuiz = async (accessToken, questionIds) => {
                         {questions.map((question, index) => (
                             <div key={question.id} className="QuizzesTeacher__separator">
                                 <div className="QuizzesTeacher__sidebar">
-                                    <div className="QuizzesTeacher__sidebar-question">Question {index + 1}</div>
+                                    <div className="QuizzesTeacher__sidebar-question">
+                                        Question {index + 1}
+                                    </div>
                                     <div className="QuizzesTeacher__sidebar-question-dup-del">
                                         <div 
                                             className="QuizzesTeacher__duplicate"
@@ -822,22 +854,21 @@ const createQuiz = async (accessToken, questionIds) => {
                         ))}
                         {/* Add Question Options */}
                     <div className="QuizzesTeacher__add-options">
-                        <button 
+                        <div 
                             className="QuizzesTeacher__add-bank"
                             onClick={() => setIsUsingQuestionBank(true)}
                         >
                             Add from Question Bank +
-                        </button>
-                        <button 
-                            className="QuizzesTeacher__add-new"
+                        </div>
+                        <div 
+                            className="QuizzesTeacher__add-question"
                             onClick={handleAddQuestion}
                         >
                             Add new question +
-                        </button>
+                        </div>
                     </div>
 
                     {/* Question Bank Modal */}
-                    {isUsingQuestionBank && (
                     <QuestionBankModal
                         isOpen={isUsingQuestionBank}
                         onClose={() => setIsUsingQuestionBank(false)}
@@ -853,7 +884,7 @@ const createQuiz = async (accessToken, questionIds) => {
                             }
                         }}
                     />
-                )}
+                 
                 </div>
             </div>
         </div>
@@ -864,7 +895,7 @@ const createQuiz = async (accessToken, questionIds) => {
                         <div className={`QuizzesTeacher__questions-next ${isScrolled ? 'scrolled' : ''}`}>
                             <div className="QuizzesTeacher__header-container">
                                 <h2 className="QuizzesTeacher__header-question">Settings</h2>
-                                <p>Configure your quiz so that students can understand it</p>
+                                <p className="QuizzesTeacher__para-question">Configure your quiz so that students can understand it</p>
                             </div>
                             <div>     
                                 <button 
@@ -1070,7 +1101,7 @@ const createQuiz = async (accessToken, questionIds) => {
             {/* Header with Progress */}
             <div className="QuizzesTeacher__header-content">
                 <div className="QuizzesTeacher__header-container">
-                    <p>Step {currentStep}</p>
+                    <p className="QuizzesTeacher__para-container">Step {currentStep}</p>
                     <h2  className="QuizzesTeacher__header-header">
                         {currentStep === 1 && "Generate Quiz Questions and Answers"}
                         {currentStep === 2 && "Configure Quiz Settings"}
@@ -1084,7 +1115,6 @@ const createQuiz = async (accessToken, questionIds) => {
            
             {/* Dynamic Step Content */}
             {getStepContent()}
-
             
             <AnswerKeyModal
                 isOpen={isAnswerKeyModal}
@@ -1097,6 +1127,12 @@ const createQuiz = async (accessToken, questionIds) => {
                 identificationAnswers={currentQuestionId ? questions.find(q => q.id === currentQuestionId)?.identificationAnswers : []}
                 selectedTrueFalseAnswer={currentQuestionId ? questions.find(q => q.id === currentQuestionId)?.selectedTrueFalseAnswer : null}
                 markOthersIncorrect={currentQuestionId ? questions.find(q => q.id === currentQuestionId)?.markOthersIncorrect : false}
+            />
+
+            <QuizAnswerKeyPreview
+                isOpen={isPreviewModal}
+                onClose={() => setIsPreviewModal(false)}
+                question={selectedBankQuestions.find(q => q.id === currentQuestionId)}
             />
 
             <SuccessPublishModal
