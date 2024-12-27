@@ -686,6 +686,17 @@ const getQuestionTypeDisplay = (type) => {
                                                 <label className="QuizzesTeacher__ques-main-label">Question Type</label>
                                                 {getQuestionTypeDisplay(question.question_type)}
                                             </div>
+                                            <div className="QuizzesTeacher__input-container">
+                                                <label className="QuizzesTeacher__ques-main-label">
+                                                    Set Points<span className="QuizzesTeacher__ques-main-required">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="QuizzesTeacher__input"
+                                                    value={question.points}
+                                                    readOnly
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
