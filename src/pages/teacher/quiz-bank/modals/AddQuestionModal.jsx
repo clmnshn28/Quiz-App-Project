@@ -1,51 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { IoClose } from "react-icons/io5";
-import { IoMdAdd } from "react-icons/io";
+import React, { useState } from 'react';
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { BsCheck2Circle, BsXCircle, BsRecordCircle } from "react-icons/bs";
 import { RiRadioButtonFill } from "react-icons/ri";
 import CustomDropdown from 'components/CustomDropdown';
 import ButtonGroup from 'components/ButtonGroup';
-import "assets/css/modals/EditQuestionModal.css";
 
-export const EditQuestionModal = ({ onClose, onSave, initialData = {} }) => {
+export const AddQuestionModal = ({ onClose, onSave }) => {
     const [questionData, setQuestionData] = useState({
-        question_text: initialData.question_text || '',
-        question_type: initialData.question_type || 'ID',
-        points: initialData.points || '1',
-        correct_answer: initialData.correct_answer || '',
-        option_a: initialData.option_a || '',
-        option_b: initialData.option_b || '',
-        option_c: initialData.option_c || '',
-        option_d: initialData.option_d || ''
+        question_text: '',
+        question_type: 'ID',
+        points: '1',
+        correct_answer: '',
+        option_a: '',
+        option_b: '',
+        option_c: '',
+        option_d: ''
     });
-console.log(initialData);
-    // Initialize selectedAnswer based on the question type
-    const getInitialSelectedAnswer = () => {
-        if (initialData.question_type === 'MC') {
-            // Find which option matches the correct_answer
-            const options = {
-                'A': initialData.option_a,
-                'B': initialData.option_b,
-                'C': initialData.option_c,
-                'D': initialData.option_d
-            };
-            
-            // Find the letter whose option matches the correct_answer
-            const letter = Object.entries(options).find(
-                ([key, value]) => value === initialData.correct_answer
-            );
-            return letter ? letter[0] : '';
-        }
-        return initialData.correct_answer || '';
-    };
 
-    const [selectedAnswer, setSelectedAnswer] = useState(getInitialSelectedAnswer());
-
-    useEffect(() => {
-        // Update selected answer when initialData changes
-        setSelectedAnswer(getInitialSelectedAnswer());
-    }, [initialData]);
+    const [selectedAnswer, setSelectedAnswer] = useState('');
 
     const questionTypes = [
         { 
@@ -71,7 +43,6 @@ console.log(initialData);
             [option]: value
         }));
 
-        // If changing an MC option that was the correct answer, update correct_answer
         if (questionData.question_type === 'MC' && 
             option.startsWith('option_') && 
             selectedAnswer === option.charAt(option.length - 1).toUpperCase()) {
@@ -84,7 +55,7 @@ console.log(initialData);
 
     const handleTypeChange = (option) => {
         const newType = option.value;
-        const defaultAnswer = newType === 'TF' ? 'True' : '';
+        const defaultAnswer = newType === 'TF' ? 'true' : '';
         
         setQuestionData(prev => ({
             ...prev,
@@ -101,7 +72,6 @@ console.log(initialData);
     const handleAnswerSelect = (answer) => {
         setSelectedAnswer(answer);
         
-        // For MC, set the correct_answer to the selected option's text
         if (questionData.question_type === 'MC') {
             const optionKey = `option_${answer.toLowerCase()}`;
             setQuestionData(prev => ({
@@ -114,10 +84,8 @@ console.log(initialData);
     };
 
     const handleSave = () => {
-        // Create a copy of the question data for saving
         const saveData = { ...questionData };
         
-        // For MC questions, ensure correct_answer is the option text
         if (saveData.question_type === 'MC' && selectedAnswer) {
             saveData.correct_answer = saveData[`option_${selectedAnswer.toLowerCase()}`];
         }
@@ -130,7 +98,7 @@ console.log(initialData);
             <div className="modal-container">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h3 className="modal-title">Edit Question</h3>
+                        <h3 className="modal-title">Add New Question</h3>
                     </div>
                     
                     <div className="form-group">
@@ -199,12 +167,12 @@ console.log(initialData);
                                 <input 
                                     type="radio" 
                                     name="tfAnswer"
-                                    checked={selectedAnswer === 'True'}
-                                    onChange={() => handleAnswerSelect('True')}
+                                    checked={selectedAnswer === 'true'}
+                                    onChange={() => handleAnswerSelect('true')}
                                 />
                                 <BsCheck2Circle className="radio-icon" />
                                 <span>True</span>
-                                {selectedAnswer === 'True' && (
+                                {selectedAnswer === 'true' && (
                                     <span className="correct-indicator">
                                         Correct Answer
                                     </span>
@@ -217,12 +185,12 @@ console.log(initialData);
                                 <input 
                                     type="radio" 
                                     name="tfAnswer"
-                                    checked={selectedAnswer === 'False'}
-                                    onChange={() => handleAnswerSelect('False')}
+                                    checked={selectedAnswer === 'false'}
+                                    onChange={() => handleAnswerSelect('false')}
                                 />
                                 <BsXCircle className="radio-icon" />
                                 <span>False</span>
-                                {selectedAnswer === 'False' && (
+                                {selectedAnswer === 'false' && (
                                     <span className="correct-indicator">
                                         Correct Answer
                                     </span>
@@ -266,7 +234,7 @@ console.log(initialData);
                         <ButtonGroup
                             onSave={handleSave}
                             onCancel={onClose}
-                            saveText="Save"
+                            saveText="Add Question"
                             saveButtonColor="#70B6A5"
                         />
                     </div>
@@ -276,4 +244,4 @@ console.log(initialData);
     );
 };
 
-export default EditQuestionModal;
+export default AddQuestionModal;

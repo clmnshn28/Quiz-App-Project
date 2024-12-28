@@ -3,10 +3,8 @@ import 'assets/css/modals';
 import Modal from 'components/Modal';
 import ButtonGroup from 'components/ButtonGroup';
 import CustomDropdown from 'components/CustomDropdown';
-
 import { IoSearch } from "react-icons/io5";
 import { LuClipboardCheck } from 'react-icons/lu';
-
 
 export const QuestionBankModal = ({
     isOpen,
