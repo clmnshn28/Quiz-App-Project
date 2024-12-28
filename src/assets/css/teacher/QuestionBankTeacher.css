@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+.question-bank-wrapper {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.question-bank-main-header {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.header-section h2 {
+    font-size: 28px;
+    color: #4A4A4A;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.add-new-btn {
+    background-color: #67A292;
+    color: #F9FBFB;
+    padding: 10px 30px;
+    font-size: 19px;
+    font-weight: 500;
+    font-family: 'Inter';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.filter-section {
+    display: flex;
+    align-items: center;
+    width: 350px;
+}
+
+.filter-label {
+    color: #4A4A4A;
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    width: 50%;
+}
+
+.question-bank-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead tr {
+    background-color: white;
+}
+
+th {
+    text-align: left;
+    padding: 16px 20px;
+    color: #4A4A4A;
+    font-weight: 500;
+    font-size: 14px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+td {
+    padding: 14px 20px;
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #F4F9F8;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.edit-btn, .delete-btn {
+    width: 16px;
+    height: 16px;
+    border: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    cursor: pointer;
+    opacity: 0.8;
+    padding: 0;
+}
+
+.edit-btn {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2370B6A5' stroke-width='2'%3E%3Cpath d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'/%3E%3C/svg%3E");
+}
+
+.delete-btn {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23dc3545' stroke-width='2'%3E%3Cpath d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'/%3E%3C/svg%3E");
+}
+
+.edit-btn:hover, .delete-btn:hover {
+    opacity: 1;
+}
+
