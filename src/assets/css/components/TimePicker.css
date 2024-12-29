@@ -1,0 +1,73 @@
+.time-picker-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-radius: 4px;
+}
+
+.time-picker-input {
+    width: 190px;
+    height: 40px;
+    text-align: center;
+    background-color: #DDE9E6;
+    border: none;
+    color: #56575B;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    border-radius: 4px;
+    font-size: 19px;
+    cursor: pointer;
+    letter-spacing: 3px;
+    padding: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.time-picker-input:focus {
+    outline: none;
+    background-color: #d0e3de;
+}
+
+.time-picker-input:hover {
+    background-color: #d0e3de;
+}
+
+/* Style the time input icon (the clock that appears in some browsers) */
+.time-picker-input::-webkit-calendar-picker-indicator {
+    background-color: #A7CDC3;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.time-picker-input::-webkit-calendar-picker-indicator:hover {
+    background-color: #67A292;
+}
+
+/* For Firefox */
+.time-picker-input::-moz-calendar-picker-indicator {
+    background-color: #A7CDC3;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+/* Custom scrollbar styling */
+.time-picker-container ::-webkit-scrollbar {
+    width: 6px;
+}
+
+.time-picker-container ::-webkit-scrollbar-track {
+    background: #c8ded9;
+    border-radius: 3px;
+}
+
+.time-picker-container ::-webkit-scrollbar-thumb {
+    background: #7db7a7;
+    border-radius: 3px;
+}
+
+.time-picker-container ::-webkit-scrollbar-thumb:hover {
+    background: #71a899;
+}
