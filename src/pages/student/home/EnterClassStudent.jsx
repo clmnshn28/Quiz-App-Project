@@ -168,9 +168,14 @@ export const EnterClassStudent = () => {
                                         <h3>{quiz.title}</h3>
                                         <div className="quiz-info">
                                             {isQuizAvailable(quiz) ? (
+                                            <div className="quiz-timing">
                                                 <span className="quiz-status quiz-status--available">
                                                     Available now
                                                 </span>
+                                                <span className="quiz-due-date">
+                                                    Due: {new Date(quiz.end_datetime).toLocaleString()}
+                                                </span>
+                                            </div>
                                             ) : (
                                                 <div className="quiz-timing">
                                                     <span>
