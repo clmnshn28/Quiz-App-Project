@@ -1,17 +1,22 @@
 import React from 'react';
 import "assets/css/modals/DeleteQuestionModal.css";
 import ButtonGroup from 'components/ButtonGroup';
+import Modal from 'components/Modal';
+import { PiWarningCircle } from "react-icons/pi";
 
 export const DeleteQuestionModal = ({ onClose, onConfirm }) => {
     return (
-        <div className="modal-overlay">
-            <div className="delete-modal-container">
-                <div className="delete-modal-content">
-                    <h3 className="delete-modal-title">Question Deletion</h3>
-                    <p className="delete-modal-message">Are you sure you want to delete your question?</p>
-                    <p className="delete-modal-submessage">
-                        Please note that the question cannot be retrieved back after Deletion.
+        <Modal>
+            <div className="delete-modal-container">   
+                <h3 className="delete-modal-title">Question Deletion</h3>
+                <p className="DeleteAccountModal__content-desc">Are you sure you want to delete your question?</p>
+                <div className="DeleteAccountModal__note-container">
+                    <PiWarningCircle className="DeleteAccountModal__note-icon" />
+                    <p className="DeleteAccountModal__content-note">
+                    Please note that the question cannot be retrieved back after Deletion.
                     </p>
+                </div>
+                <div className="DeleteAccountModal__btn-actions">
                     <ButtonGroup
                         onSave={onConfirm}
                         onCancel={onClose}
@@ -20,6 +25,6 @@ export const DeleteQuestionModal = ({ onClose, onConfirm }) => {
                     />
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 };

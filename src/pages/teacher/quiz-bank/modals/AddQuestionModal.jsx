@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { HiOutlineMenuAlt2 } from "react-icons/hi";
-import { BsCheck2Circle, BsXCircle, BsRecordCircle } from "react-icons/bs";
+import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
+import { IoMdRadioButtonOn, IoIosCheckmarkCircleOutline,IoIosCloseCircleOutline} from "react-icons/io";
 import { RiRadioButtonFill } from "react-icons/ri";
 import CustomDropdown from 'components/CustomDropdown';
 import ButtonGroup from 'components/ButtonGroup';
+import Modal from "components/Modal";
 
 export const AddQuestionModal = ({ onClose, onSave }) => {
     const [questionData, setQuestionData] = useState({
@@ -17,30 +18,55 @@ export const AddQuestionModal = ({ onClose, onSave }) => {
         option_d: ''
     });
 
+    const [errors, setErrors] = useState({
+        question_text: false,
+        points: false,
+        correct_answer: false,
+        multiple_choice: false
+    });
+
     const [selectedAnswer, setSelectedAnswer] = useState('');
 
     const questionTypes = [
         { 
             value: 'ID', 
             title: 'Identification',
-            icon: <HiOutlineMenuAlt2 className="question-type-icon" />
+            icon: <HiOutlineBars3BottomLeft  />
         },
         { 
             value: 'TF', 
             title: 'True or False',
-            icon: <BsCheck2Circle className="question-type-icon" />
+            icon: <IoIosCheckmarkCircleOutline  />
         },
         {
             value: 'MC',
             title: 'Multiple Choice',
-            icon: <BsRecordCircle className="question-type-icon" />
+            icon: <IoMdRadioButtonOn  />
         }
     ];
 
     const handleOptionChange = (option, value) => {
+
+        if (option === 'points') {
+            // Convert to number and ensure it's positive
+            const numValue = Math.max(0, parseInt(value) || 0);
+            setQuestionData(prev => ({
+                ...prev,
+                [option]: numValue
+            }));
+
+            return;
+        }
+
         setQuestionData(prev => ({
             ...prev,
             [option]: value
+        }));
+
+        // clear error when user types
+        setErrors(prev => ({
+            ...prev,
+            [option]: false
         }));
 
         if (questionData.question_type === 'MC' && 
@@ -67,6 +93,14 @@ export const AddQuestionModal = ({ onClose, onSave }) => {
             option_d: newType === 'MC' ? '' : null
         }));
         setSelectedAnswer(defaultAnswer);
+
+        // clear errors on type change
+        setErrors({
+            question_text: false,
+            points: false,
+            correct_answer: false,
+            multiple_choice: false
+        });
     };
 
     const handleAnswerSelect = (answer) => {
@@ -81,9 +115,39 @@ export const AddQuestionModal = ({ onClose, onSave }) => {
         } else {
             handleOptionChange('correct_answer', answer);
         }
+
+        // clear multiple choice error when answer is selected
+        setErrors(prev => ({
+            ...prev,
+            multiple_choice: false
+        }));
+    };
+
+
+    const validateForm = () => {
+        const newErrors = {
+            question_text: !questionData.question_text.trim(),
+            points: !questionData.points || isNaN(questionData.points) || Number(questionData.points) <= 0,
+            correct_answer: questionData.question_type === 'ID' && !questionData.correct_answer.trim(),
+            multiple_choice: questionData.question_type === 'MC' && (
+                !questionData.option_a.trim() || 
+                !questionData.option_b.trim() || 
+                !questionData.option_c.trim() || 
+                !questionData.option_d.trim() ||
+                !selectedAnswer
+            )
+        };
+
+        setErrors(newErrors);
+        return !Object.values(newErrors).some(error => error);
     };
 
     const handleSave = () => {
+
+        if (!validateForm()) {
+            return;
+        }
+
         const saveData = { ...questionData };
         
         if (saveData.question_type === 'MC' && selectedAnswer) {
@@ -94,154 +158,185 @@ export const AddQuestionModal = ({ onClose, onSave }) => {
     };
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-container">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h3 className="modal-title">Add New Question</h3>
+        <Modal>
+            <div className="AddQuestionModal__container"> 
+                <h3 className="AddQuestionModal__header-title">Add New Question</h3>
+                <div className="form-group">
+                    <label className="AddQuestionModal__label">
+                        Question
+                        <span className="QuizzesTeacher__ques-main-required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        className="AddQuestionModal__input"
+                        value={questionData.question_text}
+                        onChange={(e) => handleOptionChange('question_text', e.target.value)}
+                        placeholder="Enter your question"
+                    />
+                     {errors.question_text && (
+                        <span className="QuizzesTeacher__error-question-text">
+                            Question is required
+                        </span>
+                    )}
+                </div>
+
+                <div className="AddQuestionModal__type-point-container">
+                    <div className="AddQuestionModal__question-type-content">
+                        <label className="AddQuestionModal__label">
+                            Question Type
+                            <span className="QuizzesTeacher__ques-main-required">*</span>
+                        </label>
+                        <CustomDropdown
+                            options={questionTypes}
+                            selectedValue={questionData.question_type}
+                            onOptionSelect={handleTypeChange}
+                            heightDropdown='45'
+                            placeholder="Select question type"
+                        />
                     </div>
                     
                     <div className="form-group">
-                        <label>Question *</label>
+                        <label className="AddQuestionModal__label">
+                            Set Points
+                            <span className="QuizzesTeacher__ques-main-required">*</span>
+                        </label>
                         <input
                             type="text"
-                            className="question-input"
-                            value={questionData.question_text}
-                            onChange={(e) => handleOptionChange('question_text', e.target.value)}
-                            placeholder="Enter your question"
+                            className="AddQuestionModal__input"
+                            value={questionData.points}
+                            onChange={(e) => handleOptionChange('points', e.target.value)}
                         />
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>Question Type *</label>
-                            <CustomDropdown
-                                options={questionTypes}
-                                selectedValue={questionData.question_type}
-                                onOptionSelect={handleTypeChange}
-                                heightDropdown={40}
-                                placeholder="Select question type"
-                            />
-                        </div>
-                        
-                        <div className="form-group">
-                            <label>Set Points *</label>
-                            <input
-                                type="number"
-                                min="1"
-                                className="points-input"
-                                value={questionData.points}
-                                onChange={(e) => handleOptionChange('points', e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Answer{questionData.question_type !== 'ID' && " (Select the correct answer)"} *</label>
-                    </div>
-
-                    {questionData.question_type === 'ID' ? (
-                        <div className="form-group">
-                            <div className="answer-input-container">
-                                <div className="radio-option" style={{ flex: 1 }}>
-                                    <BsCheck2Circle 
-                                        className="radio-icon"
-                                        style={{ color: '#70B6A5' }}
-                                    />
-                                    <input
-                                        type="text"
-                                        className="answer-input"
-                                        value={questionData.correct_answer}
-                                        onChange={(e) => handleOptionChange('correct_answer', e.target.value)}
-                                        placeholder="Enter the correct answer"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    ) : questionData.question_type === 'TF' ? (
-                        <div className="true-false-options">
-                            <label className="radio-option" style={{ 
-                                backgroundColor: selectedAnswer === 'true' ? '#E8F1F0' : 'white',
-                                border: '1px solid #E5E7EB'
-                            }}>
-                                <input 
-                                    type="radio" 
-                                    name="tfAnswer"
-                                    checked={selectedAnswer === 'true'}
-                                    onChange={() => handleAnswerSelect('true')}
-                                />
-                                <BsCheck2Circle className="radio-icon" />
-                                <span>True</span>
-                                {selectedAnswer === 'true' && (
-                                    <span className="correct-indicator">
-                                        Correct Answer
-                                    </span>
-                                )}
-                            </label>
-                            <label className="radio-option" style={{ 
-                                backgroundColor: selectedAnswer === 'false' ? '#E8F1F0' : 'white',
-                                border: '1px solid #E5E7EB'
-                            }}>
-                                <input 
-                                    type="radio" 
-                                    name="tfAnswer"
-                                    checked={selectedAnswer === 'false'}
-                                    onChange={() => handleAnswerSelect('false')}
-                                />
-                                <BsXCircle className="radio-icon" />
-                                <span>False</span>
-                                {selectedAnswer === 'false' && (
-                                    <span className="correct-indicator">
-                                        Correct Answer
-                                    </span>
-                                )}
-                            </label>
-                        </div>
-                    ) : (
-                        <div className="multiple-choice-options">
-                            {['A', 'B', 'C', 'D'].map((letter) => (
-                                <div key={letter} className="multiple-choice-option">
-                                    <label className="radio-option" style={{ 
-                                        backgroundColor: selectedAnswer === letter ? '#E8F1F0' : 'white',
-                                        border: '1px solid #E5E7EB'
-                                    }}>
-                                        <input 
-                                            type="radio" 
-                                            name="mcAnswer"
-                                            checked={selectedAnswer === letter}
-                                            onChange={() => handleAnswerSelect(letter)}
-                                        />
-                                        <RiRadioButtonFill className="radio-icon" />
-                                        <input
-                                            type="text"
-                                            className="option-input"
-                                            value={questionData[`option_${letter.toLowerCase()}`] || ''}
-                                            onChange={(e) => handleOptionChange(`option_${letter.toLowerCase()}`, e.target.value)}
-                                            placeholder={`Option ${letter}`}
-                                        />
-                                        {selectedAnswer === letter && (
-                                            <span className="correct-indicator">
-                                                Correct Answer
-                                            </span>
-                                        )}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="modal-footer">
-                        <ButtonGroup
-                            onSave={handleSave}
-                            onCancel={onClose}
-                            saveText="Add Question"
-                            saveButtonColor="#70B6A5"
-                        />
+                        {errors.points && (
+                            <span className="QuizzesTeacher__error-question-text">
+                                Points must be a valid number greater than 0
+                            </span>
+                        )}
                     </div>
                 </div>
+
+                <div className='AddQuestionModal__answer-label-container'>
+                    <label className="AddQuestionModal__label">
+                        Answer {questionData.question_type !== 'ID' && 
+                        <span  className="AddQuestionModal__label-selected"> 
+                            (Select the correct answer)
+                        </span>}
+                        <span className="QuizzesTeacher__ques-main-required">*</span>
+                    </label>
+                    {errors.correct_answer && (
+                        <span className="QuizzesTeacher__error-question-text">
+                            Answer is required
+                        </span>
+                    )}
+                </div>
+
+                {questionData.question_type === 'ID' ? (
+                    <div className="form-group">
+                        <div className="AddQuestionModal__answer-container" style={{ flex: 1 }}>
+                            <IoIosCheckmarkCircleOutline 
+                                className="AddQuestionModal__question-type-icon"
+                            />
+                            <input
+                                type="text"
+                                className="AddQuestionModal__answer-identification-input"
+                                value={questionData.correct_answer}
+                                onChange={(e) => handleOptionChange('correct_answer', e.target.value)}
+                                placeholder="Enter the correct answer"
+                            />
+                        </div>
+                    </div>
+                ) : questionData.question_type === 'TF' ? (
+                    <div className="AddQuestionModal__true-false-options">
+                        <label className="AddQuestionModal__answer-container" style={{ 
+                            backgroundColor: selectedAnswer === 'true' ? '#d4edda' : 'white',
+                            border: '1px solid #E5E7EB'
+                        }}>
+                            <input 
+                                type="radio" 
+                                name="tfAnswer"
+                                checked={selectedAnswer === 'true'}
+                                onChange={() => handleAnswerSelect('true')}
+                            />
+                            <IoIosCheckmarkCircleOutline 
+                                className="AddQuestionModal__question-type-icon"
+                            />
+                            <span>True</span>
+                            {selectedAnswer === 'true' && (
+                                <div className="AddQuestionModal__correct-indicator-container">
+                                  <span className="AddQuestionModal__correct-indicator">
+                                      Correct Answer
+                                  </span>
+                              </div>
+                            )}
+                        </label>
+                        <label className="AddQuestionModal__answer-container" style={{ 
+                            backgroundColor: selectedAnswer === 'false' ? '#f8d7da' : 'white',
+                            border: '1px solid #E5E7EB'
+                        }}>
+                            <input 
+                                type="radio" 
+                                name="tfAnswer"
+                                checked={selectedAnswer === 'false'}
+                                onChange={() => handleAnswerSelect('false')}
+                            />
+                            <IoIosCloseCircleOutline 
+                                className="AddQuestionModal__question-type-icon"
+                                style={{color: '#A26768'}}
+                            />
+                            <span>False</span>
+                            {selectedAnswer === 'false' && (
+                                <div className="AddQuestionModal__correct-indicator-container">
+                                    <span className="AddQuestionModal__correct-indicator">
+                                        Correct Answer
+                                    </span>
+                                </div>
+                            )}
+                        </label>
+                    </div>
+                ) : (
+                    <div className="multiple-choice-options">
+                        {['A', 'B', 'C', 'D'].map((letter) => (
+                            <div key={letter} className="AddQuestionModal__multiple-choice-option">
+                                <label className="AddQuestionModal__answer-container" style={{ 
+                                    backgroundColor: selectedAnswer === letter ? '#d4edda' : 'white',
+                                    border: '1px solid #E5E7EB'
+                                }}>
+                                    <input 
+                                        type="radio" 
+                                        name="mcAnswer"
+                                        checked={selectedAnswer === letter}
+                                        onChange={() => handleAnswerSelect(letter)}
+                                    />
+                                    <RiRadioButtonFill className="radio-icon" />
+                                    <input
+                                        type="text"
+                                        className="option-input"
+                                        value={questionData[`option_${letter.toLowerCase()}`] || ''}
+                                        onChange={(e) => handleOptionChange(`option_${letter.toLowerCase()}`, e.target.value)}
+                                        placeholder={`Option ${letter}`}
+                                    />
+                                    {selectedAnswer === letter && (
+                                     
+                                       <span className="AddQuestionModal__correct-indicator">
+                                           Correct Answer
+                                       </span>
+                                  
+                                    )}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <div className="AddQuestionModal__btn-action">
+                    <ButtonGroup
+                        onSave={handleSave}
+                        onCancel={onClose}
+                        saveText="Add Question"
+                        saveButtonColor="#67A292"
+                    />
+                </div>
             </div>
-        </div>
+        </Modal>
     );
 };
 
-export default AddQuestionModal;

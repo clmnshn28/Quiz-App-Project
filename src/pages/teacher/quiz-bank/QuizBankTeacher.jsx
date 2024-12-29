@@ -3,7 +3,11 @@ import CustomDropdown from "components/CustomDropdown";
 import { EditQuestionModal } from "./modals/EditQuestionModal";
 import { AddQuestionModal } from "./modals/AddQuestionModal";
 import { DeleteQuestionModal } from "./modals/DeleteQuestionModal";
+
 import { IoSearch } from "react-icons/io5";
+import { MdOutlineEdit } from "react-icons/md";
+import { FiTrash2 } from "react-icons/fi";
+import { IoIosArrowRoundBack, IoIosArrowRoundForward  } from "react-icons/io";
 
 export const QuizBankTeacher = () => {
     const [showEditModal, setShowEditModal] = useState(false);
@@ -17,6 +21,9 @@ export const QuizBankTeacher = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all');
     
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    
     const questionTypeOptions = [
         { value: 'all', title: 'All Types' },
         { value: 'MC', title: 'Multiple Choice' },
@@ -29,6 +36,18 @@ export const QuizBankTeacher = () => {
         const matchesType = filterType === 'all' || q.question_type === filterType;
         return matchesSearch && matchesType;
     });
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const paginatedQuestions = filteredQuestions.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const totalPages = Math.ceil(filteredQuestions.length / itemsPerPage);
+
 
     useEffect(() => {
         fetchQuestions();
@@ -160,80 +179,112 @@ export const QuizBankTeacher = () => {
         }
     };
 
-    if (loading) return <div className="question-bank-wrapper">Loading...</div>;
-
+    const getQuestionTypeDisplay = (type) => {
+        switch (type) {
+            case 'MC':
+                return 'Multiple Choice';
+            case 'ID':
+                return 'Identification';
+            case 'TF':
+                return 'True/False';
+            default:
+                return type;
+        }
+    };
+    
     return (
-        <div className="question-bank-wrapper">
-            <div className="question-bank-main-header">
-                <div className="header-section">
-                    <h2>Question Bank</h2>
-                    <button className="add-new-btn" onClick={handleAddClick}>
-                        Add New Question
-                    </button>
+        <>
+            <div className="QuizBankTeacher__header-section">
+                <h1 className="QuizBankTeacher__header">Question Bank</h1>
+                <button className="QuizBankTeacher__add-new-btn" onClick={handleAddClick}>
+                    Add New Question
+                </button>
+            </div>
+            
+            <div className="QuizBankTeacher__filter-section">
+                <div className="QuizBankTeacher__search-container">
+                    <input
+                        type="text"
+                        placeholder="Search questions..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="QuizBankTeacher__search-input"
+                    />
+                    <IoSearch className="QuizBankTeacher__search-icon"/>
                 </div>
-                
-                <div className="filter-section">
-                    <div className="type-filter">
-                        <span className="filter-label">Question Type</span>
-                        <CustomDropdown
-                            options={questionTypeOptions}
-                            selectedValue={filterType}
-                            onOptionSelect={(option) => setFilterType(option.value)}
-                            heightDropdown={35}
-                            placeholder="Select question type"
-                        />
-                    </div>
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="Search questions..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="search-input"
-                        />
-                        <IoSearch className="search-icon"/>
-                    </div>
+                <div className="QuizBankTeacher__type-filter">
+                    {/* <span className="QuizBankTeacher__filter-label">Question Type</span> */}
+                    <CustomDropdown
+                        options={questionTypeOptions}
+                        selectedValue={filterType}
+                        onOptionSelect={(option) => setFilterType(option.value)}
+                        heightDropdown='40'
+                        placeholder="Select question type"
+                    />
                 </div>
             </div>
-
-            <div className="question-bank-container">
-                <div className="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Question</th>
-                                <th>Type</th>
-                                <th>Correct Answer</th>
-                                <th>Points</th>
-                                <th>Actions</th>
+      
+            <div className="QuizBankTeacher__table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Type</th>
+                            <th>Correct Answer</th>
+                            <th>Points</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {paginatedQuestions.map((item) => (
+                            <tr key={item.id}>
+                                <td>{item.question_text}</td>
+                                <td>{getQuestionTypeDisplay(item.question_type)}</td>
+                                <td>{getDisplayAnswer(item)}</td>
+                                <td>{item.points}</td>
+                                <td>
+                                    <div className="QuizBankTeacher__action-buttons">
+                                        <button 
+                                            className="edit-btn"
+                                            onClick={() => handleEditClick(item)}
+                                        >
+                                        <MdOutlineEdit className="QuizBankTeacher__edit-btn-icon"/>
+                                        </button>
+                                        <button 
+                                            className="delete-btn"
+                                            onClick={() => handleDeleteClick(item)}
+                                        >
+                                        <FiTrash2 className="QuizBankTeacher__trash-btn-icon"/>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {filteredQuestions.map((item) => (
-                                <tr key={item.id}>
-                                    <td>{item.question_text}</td>
-                                    <td>{item.question_type}</td>
-                                    <td>{getDisplayAnswer(item)}</td>
-                                    <td>{item.points}</td>
-                                    <td>
-                                        <div className="action-buttons">
-                                            <button 
-                                                className="edit-btn"
-                                                onClick={() => handleEditClick(item)}
-                                            />
-                                            <button 
-                                                className="delete-btn"
-                                                onClick={() => handleDeleteClick(item)}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
+                {filteredQuestions.length > itemsPerPage && (
+                    <div className="QuizBankTeacher__pagination">
+                        <button 
+                            className="pagination-arrow" 
+                            disabled={currentPage === 1} 
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                            <IoIosArrowRoundBack  className="pagination-arrow-icon"/>
+                        </button>
+                        <span className="pagination-number">
+                            {currentPage} of {totalPages}
+                        </span>
+                        <button 
+                            className="pagination-arrow" 
+                            disabled={currentPage === totalPages} 
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                        <IoIosArrowRoundForward className="pagination-arrow-icon"/>
+                        </button>
+                    </div>
+                    )}
             </div>
-
+            
             {showEditModal && (
                 <EditQuestionModal
                     onClose={() => {
@@ -263,6 +314,6 @@ export const QuizBankTeacher = () => {
             )}
 
             {error && <div className="error-message">{error}</div>}
-        </div>
+        </>
     );
 };
