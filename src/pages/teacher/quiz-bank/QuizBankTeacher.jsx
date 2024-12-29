@@ -173,7 +173,7 @@ export const QuizBankTeacher = () => {
                 };
                 return options[question.correct_answer] || question.correct_answer;
             case 'TF':
-                return question.correct_answer === 'true' ? 'True' : 'False';
+                return question.correct_answer === 'True' ? 'True' : 'False';
             default:
                 return question.correct_answer;
         }
