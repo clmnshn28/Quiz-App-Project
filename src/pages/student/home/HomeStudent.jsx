@@ -54,7 +54,6 @@ export const HomeStudent = () => {
             if (response.ok) {
                 const classesData = await response.json();
                 setClasses(classesData.sort((a, b) => b.id - a.id));
-                console.log(classesData);
             } else {
                 console.error('Failed to fetch classes');
             }

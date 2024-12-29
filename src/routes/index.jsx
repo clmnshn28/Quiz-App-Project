@@ -8,6 +8,8 @@ import { StudentLayout, TeacherLayout } from 'layouts/main_layouts';
 
 import { HomeStudent, EnterClassStudent } from 'pages/student/home';
 import { ProfileStudent } from 'pages/student/account';
+import { TakeQuiz } from 'pages/student/home';
+import { QuizResult } from 'pages/student/home';
 
 import { HomeTeacher, EnterClassTeacher } from 'pages/teacher/home';
 import { QuizzesTeacher } from 'pages/teacher/quizzes';
@@ -30,6 +32,8 @@ const MainRoutes = () =>{
                 }>
                     <Route path="home" element={<HomeStudent />} /> 
                     <Route path="home/class/:classId" element={<EnterClassStudent />} />
+                    <Route path="home/class/:classId/quiz/:quizId" element={<TakeQuiz />} />
+                    <Route path="home/class/:classId/quiz/:quizId/results" element={<QuizResult />} />
                     <Route path="settings" element={<ProfileStudent />} />
                 </Route>
 
