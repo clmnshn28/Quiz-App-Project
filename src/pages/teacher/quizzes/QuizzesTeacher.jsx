@@ -3,7 +3,7 @@ import 'assets/css/teacher';
 import CustomDropdown from "components/CustomDropdown";
 import CustomDatePicker from 'components/CustomDatePicker';
 import ScrollableTimePicker from 'components/ScrollableTimePicker';
-
+import TimePicker from "../../../components/TimePicker";
 import { LuClipboardCheck } from "react-icons/lu";
 import { TbCopy } from "react-icons/tb";
 import { FiTrash2 } from "react-icons/fi";
@@ -320,6 +320,8 @@ const handlePreviewAnswerKey = (questionId) => (e) => {  // Changed to return a 
     const [timeMinutes, setTimeMinutes] = useState('30');
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [startTime, setStartTime] = useState(''); // Default 5:00 PM
+    const [endTime, setEndTime] = useState(''); // Default 11:59 PM
     const [scheduleError, setScheduleError] = useState(false);
 
     // Quiz details state
@@ -388,18 +390,34 @@ const handlePreviewAnswerKey = (questionId) => (e) => {  // Changed to return a 
     };
 
     // Date
-    const handleStartDateChange = (date) => {
-        setStartDate(date);
-        if (date && endDate) {
-            setScheduleError(false);
-        }
+    const combineDateAndTime = (date, time) => {
+        if (!date || !time) return null;
+        
+        const [hours, minutes] = time.split(':').map(Number);
+        const dateObj = new Date(date);
+        dateObj.setHours(hours, minutes, 0, 0);
+        
+        return dateObj;
     };
 
+    const handleStartTimeChange = (time) => {
+        setStartTime(time);
+        setScheduleError(false);
+    };
+    
+    const handleEndTimeChange = (time) => {
+        setEndTime(time);
+        setScheduleError(false);
+    };
+    
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+        if (date && endDate) setScheduleError(false);
+    };
+    
     const handleEndDateChange = (date) => {
         setEndDate(date);
-        if (startDate && date) {
-            setScheduleError(false);
-        }
+        if (startDate && date) setScheduleError(false);
     };
 
     // Add these state declarations at the top with other states
@@ -498,7 +516,16 @@ const validateForm = () => {
         setQuestionsError(true);
         isValid = false;
     }
-    if (!startDate || !endDate) {
+    if (!startDate || !endDate || !startTime || !endTime) {
+        setScheduleError(true);
+        isValid = false;
+    }
+    
+    // Validate that end date/time is after start date/time
+    const startDateTime = combineDateAndTime(startDate, startTime);
+    const endDateTime = combineDateAndTime(endDate, endTime);
+    
+    if (startDateTime && endDateTime && startDateTime >= endDateTime) {
         setScheduleError(true);
         isValid = false;
     }
@@ -576,15 +603,21 @@ const createQuiz = async (accessToken, questionIds) => {
     const formattedEndDate = new Date(endDate);
     
     // Set hours and minutes
-    formattedStartDate.setHours(parseInt(timeHours), parseInt(timeMinutes));
-    formattedEndDate.setHours(parseInt(timeHours), parseInt(timeMinutes));
-    const totalMinutes = (parseInt(timeHours) * 60) + parseInt(timeMinutes);
+    // Combine dates and times
+    const startDateTime = combineDateAndTime(startDate, startTime);
+    const endDateTime = combineDateAndTime(endDate, endTime);
+
+    if (!startDateTime || !endDateTime) {
+        throw new Error('Missing date or time inputs');
+    }
+
+    const totalMinutes = parseInt(timeHours) * 60 + parseInt(timeMinutes);
     
     const quizData = {
         title: quizName.trim(),
         classes: [parseInt(selectedClass)],
-        start_datetime: formattedStartDate.toISOString(),
-        end_datetime: formattedEndDate.toISOString(),
+        start_datetime: startDateTime.toISOString(),  // Use the combined datetime
+        end_datetime: endDateTime.toISOString(),      // Use the combined datetime
         time_limit_minutes: totalMinutes,
         questions: allQuestionIds,
         show_correct_answers: Boolean(toggleSettings.showAnswer)
@@ -1084,19 +1117,39 @@ const getQuestionTypeDisplay = (type) => {
                                     <p className="QuizzesTeacher__input-description">Set a schedule for when the quiz will be released and accessible</p>
                                 </div>
                                 <div className="QuizzesTeacher__schedule-container">
-                                    <div className="QuizzesTeacher__date-group">
-                                        <label className="QuizzesTeacher__date-label">Start Date</label>
-                                        <CustomDatePicker
-                                            selectedDate={startDate}
-                                            onChange={handleStartDateChange}
+                                    <div className="QuizzesTeacher__datetime-row">
+                                        <div className="QuizzesTeacher__date-picker">
+                                            <CustomDatePicker
+                                                selectedDate={startDate}
+                                                onChange={handleStartDateChange}
+                                                label="Start Date"
+                                            />
+                                            <TimePicker
+                                            value={startTime}
+                                            onChange={handleStartTimeChange}
+                                            label=""
+                                            className="QuizzesTeacher__time-picker"
+                                            placeholder="Start Time"
                                         />
+                                        </div>
+                                        
                                     </div>
-                                    <div className="QuizzesTeacher__date-group">
-                                        <label className="QuizzesTeacher__date-label">End Date</label>
-                                        <CustomDatePicker
-                                            selectedDate={endDate}
-                                            onChange={handleEndDateChange}
+                                    <div className="QuizzesTeacher__datetime-row">
+                                        <div className="QuizzesTeacher__date-picker">
+                                            <CustomDatePicker
+                                                selectedDate={endDate}
+                                                onChange={handleEndDateChange}
+                                                label="End Date"
+                                            />
+                                            <TimePicker
+                                            value={endTime}
+                                            onChange={handleEndTimeChange}
+                                            label=""
+                                            className="QuizzesTeacher__time-picker"
+                                            placeholder="End Time"
                                         />
+                                        </div>
+                                        
                                     </div>
                                 </div>
                                 <span 
