@@ -12,19 +12,46 @@ const TimePicker = ({
     const [isOpen, setIsOpen] = useState(false);
     const [selectedHour, setSelectedHour] = useState('--');
     const [selectedMinute, setSelectedMinute] = useState('--');
-    const [period, setPeriod] = useState('--');
+    const [period, setPeriod] = useState('AM');
     const dropdownRef = useRef(null);
 
     const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
     const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
 
+    // Parse the 24-hour format time to 12-hour format
+    const parseTime = (timeString) => {
+        if (!timeString) return null;
+        
+        let [hours, minutes] = timeString.split(':').map(Number);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        
+        return {
+            hours: hours.toString().padStart(2, '0'),
+            minutes: minutes.toString().padStart(2, '0'),
+            period
+        };
+    };
+
+    // Convert 12-hour format back to 24-hour format
+    const formatTo24Hour = (hour, minute, period) => {
+        if (hour === '--' || minute === '--') return '';
+        
+        let hours = parseInt(hour);
+        if (period === 'PM' && hours !== 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+        
+        return `${hours.toString().padStart(2, '0')}:${minute}`;
+    };
+
     useEffect(() => {
         if (value) {
-            const [time, meridian] = value.split(' ');
-            const [hour, minute] = time.split(':');
-            setSelectedHour(hour);
-            setSelectedMinute(minute);
-            setPeriod(meridian || 'AM');
+            const parsed = parseTime(value);
+            if (parsed) {
+                setSelectedHour(parsed.hours);
+                setSelectedMinute(parsed.minutes);
+                setPeriod(parsed.period);
+            }
         }
     }, [value]);
 
@@ -41,11 +68,15 @@ const TimePicker = ({
 
     const handleTimeSelect = (hour, minute, newPeriod) => {
         const selectedPeriod = newPeriod || period;
-        const formattedTime = `${hour}:${minute} ${selectedPeriod}`;
         setSelectedHour(hour);
         setSelectedMinute(minute);
         setPeriod(selectedPeriod);
-        onChange?.(formattedTime);
+        
+        // Convert to 24-hour format before calling onChange
+        const time24 = formatTo24Hour(hour, minute, selectedPeriod);
+        if (time24) {
+            onChange?.(time24);
+        }
     };
 
     const togglePeriod = () => {
@@ -53,7 +84,9 @@ const TimePicker = ({
         handleTimeSelect(selectedHour, selectedMinute, newPeriod);
     };
 
-    const displayTime = `${selectedHour}:${selectedMinute} ${period}`;
+    const displayTime = selectedHour === '--' || selectedMinute === '--' 
+        ? placeholder 
+        : `${selectedHour}:${selectedMinute} ${period}`;
 
     return (
         <div className={`TimePicker__time-picker-container ${className || ''}`} ref={dropdownRef}>
@@ -82,7 +115,7 @@ const TimePicker = ({
                                 <div
                                     key={hour}
                                     onClick={() => handleTimeSelect(hour, selectedMinute)}
-                                    className="time-option"
+                                    className={`time-option ${selectedHour === hour ? 'active' : ''}`}
                                 >
                                     {hour}
                                 </div>
@@ -93,7 +126,7 @@ const TimePicker = ({
                                 <div
                                     key={minute}
                                     onClick={() => handleTimeSelect(selectedHour, minute)}
-                                    className="time-option"
+                                    className={`time-option ${selectedMinute === minute ? 'active' : ''}`}
                                 >
                                     {minute}
                                 </div>
