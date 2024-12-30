@@ -248,30 +248,38 @@ export const QuizBankTeacher = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {paginatedQuestions.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.question_text}</td>
-                                <td>{getQuestionTypeDisplay(item.question_type)}</td>
-                                <td>{getDisplayAnswer(item)}</td>
-                                <td>{item.points}</td>
-                                <td>
-                                    <div className="QuizBankTeacher__action-buttons">
-                                        <button 
-                                            className="edit-btn"
-                                            onClick={() => handleEditClick(item)}
-                                        >
-                                        <MdOutlineEdit className="QuizBankTeacher__edit-btn-icon"/>
-                                        </button>
-                                        <button 
-                                            className="delete-btn"
-                                            onClick={() => handleDeleteClick(item)}
-                                        >
-                                        <FiTrash2 className="QuizBankTeacher__trash-btn-icon"/>
-                                        </button>
-                                    </div>
+                        {paginatedQuestions.length > 0 ? (
+                            paginatedQuestions.map((item) => (
+                                <tr key={item.id}>
+                                    <td>{item.question_text}</td>
+                                    <td>{getQuestionTypeDisplay(item.question_type)}</td>
+                                    <td>{getDisplayAnswer(item)}</td>
+                                    <td>{item.points}</td>
+                                    <td>
+                                        <div className="QuizBankTeacher__action-buttons">
+                                            <button 
+                                                className="edit-btn"
+                                                onClick={() => handleEditClick(item)}
+                                            >
+                                            <MdOutlineEdit className="QuizBankTeacher__edit-btn-icon"/>
+                                            </button>
+                                            <button 
+                                                className="delete-btn"
+                                                onClick={() => handleDeleteClick(item)}
+                                            >
+                                            <FiTrash2 className="QuizBankTeacher__trash-btn-icon"/>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )) 
+                        ) : (
+                            <tr>
+                                <td colSpan="5" className="QuizBankTeacher__no-questions" style={{textAlign:'center', fontWeight:'500', color: '#94969a'}}>
+                                    No Questions Available
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
                 {filteredQuestions.length > itemsPerPage && (
