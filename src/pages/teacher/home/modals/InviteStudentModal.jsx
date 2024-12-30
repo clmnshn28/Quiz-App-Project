@@ -38,6 +38,19 @@ export const InviteStudentModal = ({ isOpen, onClose, classId }) => {
         fetchJoinCode();
     }, [isOpen, classId]);
 
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(joinCode);
+            const tooltipButton = document.querySelector('.InviteStudentModal__copy-button');
+            if (tooltipButton) {
+                tooltipButton.setAttribute("data-tooltip", "Copied!");
+                setTimeout(() => tooltipButton.setAttribute("data-tooltip", "Copy Code"), 1000);
+            }
+        } catch (err) {
+            console.error('Failed to copy code:', err);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -74,8 +87,9 @@ export const InviteStudentModal = ({ isOpen, onClose, classId }) => {
                                     className="InviteStudentModal__input"
                                 />
                                 <button 
+                                    data-tooltip="Copy Code" 
                                     className="InviteStudentModal__copy-button"
-                                    onClick={() => navigator.clipboard.writeText(joinCode)}
+                                    onClick={handleCopy}
                                 >
                                     <TbCopy className="InviteStudentModal__copy-button-icon"/>
                                 </button>

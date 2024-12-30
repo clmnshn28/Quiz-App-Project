@@ -82,9 +82,9 @@ export const LandingPage = () =>{
             <header >
                 <img className="LandingPage__logo" src={images.loginLogo} alt="LOGO"/>
                 <nav>
-                    <a href="#home">Home</a>
-                    <a href="#overview">Overview</a>
-                    <a href="#about">About Us</a>
+                    <a className="LandingPage__logo-nav" href="#home">Home</a>
+                    <a className="LandingPage__logo-nav" href="#overview">Overview</a>
+                    <a className="LandingPage__logo-nav" href="#about">About Us</a>
                     <button onClick={goToSignIn} className="LandingPage__sign-in-btn mob">Log In</button>
                     <button onClick={goToSignUp} className="LandingPage__sign-up-btn">Sign Up</button>
                 </nav>

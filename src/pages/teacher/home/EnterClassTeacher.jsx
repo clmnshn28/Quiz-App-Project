@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { LuClipboardList } from "react-icons/lu";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaSortAlphaUp } from "react-icons/fa";
+import { FaSortAlphaUp, FaSortAlphaDown  } from "react-icons/fa";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { InviteStudentModal, DeleteQuizModal, RemoveStudentModal, QuizReportModal } from "./modals";
 import { CiCircleRemove } from "react-icons/ci";
@@ -25,6 +25,23 @@ export const EnterClassTeacher = () => {
         studentId: null, 
         studentName: '' 
     });
+    const [isAscending, setIsAscending] = useState(true);
+
+    // Add sorting function
+    const handleSort = () => {
+        const sortedStudents = [...students].sort((a, b) => {
+            const nameA = `${a.last_name}, ${a.first_name}`;
+            const nameB = `${b.last_name}, ${b.first_name}`;
+            
+            if (isAscending) {
+                return nameB.localeCompare(nameA); // descending
+            }
+            return nameA.localeCompare(nameB); // ascending
+        });
+        
+        setStudents(sortedStudents);
+        setIsAscending(!isAscending);
+    };
 
     const [quizzes, setQuizzes] = useState([]);
     const [students, setStudents] = useState([]);
@@ -156,9 +173,9 @@ export const EnterClassTeacher = () => {
     return (
         <>
             <nav className="QuizzesTeacher__breadcrumb">
-            <a href="/teacher/home" className="">
+                <a href="/teacher/home" className="QuizzesTeacher__breadcrumb-nav">
                         <span>Home</span>
-                    </a>
+                </a>
                 <span> &gt; </span>
                 <span>{classData?.name || 'Loading...'}</span>
             </nav>
@@ -257,11 +274,17 @@ export const EnterClassTeacher = () => {
                             <div className="EnterClassTeacher__students-header">
                                 <div className="EnterClassTeacher__students-flex">
                                     <span className="EnterClassTeacher__students-name">Students Name</span> 
-                                    <FaSortAlphaUp className="EnterClassTeacher__students-sort"/>
+                                    <div onClick={handleSort} style={{ cursor: 'pointer' }}>
+                                        {isAscending ? (
+                                            <FaSortAlphaUp className="EnterClassTeacher__students-sort"/>
+                                        ) : (
+                                            <FaSortAlphaDown className="EnterClassTeacher__students-sort"/>
+                                        )}
+                                    </div>
                                 </div>
                                 
                                 <div className="EnterClassTeacher__students-flexs">
-                                    <span className="EnterClassTeacher__students-count">{students.length} Students</span>
+                                    <span className="EnterClassTeacher__students-count">{students.length} {`Student${students.length === 1 ? '': 's'} `}</span>
                                     <span className="EnterClassTeacher__students-add-container" onClick={() => setInviteStudentModal(true)}>
                                         <IoPersonAddSharp className="EnterClassTeacher__students-add" />
                                     </span>
@@ -275,15 +298,19 @@ export const EnterClassTeacher = () => {
                                         className={`EnterClassTeacher__student-item ${index % 2 === 0 ? 'even' : ''}`}
                                     >
                                         <div className="EnterClassTeacher__student-info">
-                                            <div className="EnterClassTeacher__student-avatar">
                                                 {student.profile_picture ? (
-                                                    <img src={student.profile_picture} alt={student.username} />
+                                                    <img 
+                                                    src={student.profile_picture} 
+                                                    alt={student.last_name} 
+                                                    className="EnterClassTeacher__student-stored-avatar"
+                                                    />
                                                 ) : (
-                                                    student.username.charAt(0)
+                                                    <div className="EnterClassTeacher__student-avatar">
+                                                        {student.last_name.charAt(0)}
+                                                    </div>
                                                 )}
-                                            </div>
                                             <span className="EnterClassTeacher__student-name">
-                                                {student.first_name} {student.last_name}
+                                                {student.last_name}, {student.first_name} 
                                             </span>
                                         </div>
                                         <CiCircleRemove 

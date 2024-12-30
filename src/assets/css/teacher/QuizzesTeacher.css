@@ -7,8 +7,23 @@
     margin-bottom: 30px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
     
+}
+
+.QuizzesTeacher__breadcrumb-nav{
+    margin: 0;
+    color: #a3a5aa;
+    transition: color 1s;
+}
+
+
+.QuizzesTeacher__breadcrumb-nav:hover{
+    color: #5e5f63;
+}
+
+.QuizzesTeacher__breadcrumb-nav:active{
+    opacity: 0.8;
 }
 
 .QuizzesTeacher__header-content {

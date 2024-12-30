@@ -41,6 +41,18 @@ export const QuizBankTeacher = () => {
         setCurrentPage(pageNumber);
     };
 
+    // Reset page when search term changes
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1); // Reset to first page
+    };
+
+    // Reset page when filter type changes
+    const handleFilterTypeChange = (option) => {
+        setFilterType(option.value);
+        setCurrentPage(1); // Reset to first page
+    };
+
     const paginatedQuestions = filteredQuestions.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
@@ -207,7 +219,7 @@ export const QuizBankTeacher = () => {
                         type="text"
                         placeholder="Search questions..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={handleSearchChange}
                         className="QuizBankTeacher__search-input"
                     />
                     <IoSearch className="QuizBankTeacher__search-icon"/>
@@ -217,7 +229,7 @@ export const QuizBankTeacher = () => {
                     <CustomDropdown
                         options={questionTypeOptions}
                         selectedValue={filterType}
-                        onOptionSelect={(option) => setFilterType(option.value)}
+                        onOptionSelect={handleFilterTypeChange}
                         heightDropdown='40'
                         placeholder="Select question type"
                     />

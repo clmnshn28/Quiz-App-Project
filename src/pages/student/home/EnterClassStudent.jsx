@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import 'assets/css/student';
+import { LuClipboardList } from "react-icons/lu";
+import { FaClockRotateLeft } from "react-icons/fa6";
 
 export const EnterClassStudent = () => {
     const { classId } = useParams();
@@ -119,88 +121,101 @@ export const EnterClassStudent = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-            </div>
-        );
-    }
 
-    if (error) {
-        return (
-            <div className="error-container">
-                <span className="error-icon">⚠️</span>
-                <span className="error-message">{error}</span>
-            </div>
-        );
-    }
+
+    // if (error) {
+    //     return (
+    //         <div className="error-container">
+    //             <span className="error-icon">⚠️</span>
+    //             <span className="error-message">{error}</span>
+    //         </div>
+    //     );
+    // }
 
     return (
-        <div className="student-class">
-            <div className="student-class__content">
-                {/* Breadcrumb Navigation */}
-                <div className="student-class__breadcrumb">
-                    <a href="/student/home" className="nav-item">
+        <>
+            <nav className="QuizzesTeacher__breadcrumb">
+                <a href="/student/home" className="QuizzesTeacher__breadcrumb-nav">
                         <span>Home</span>
-                    </a>
-                    <span className="separator">{'>'}</span>
-                    <span>{classData?.name || 'Loading...'}</span>
-                </div>
+                </a>
+                <span> &gt; </span>
+                <span>{classData?.name || 'Loading...'}</span>
+            </nav>
+            
 
-                {/* Quiz Section */}
-                <div className="student-classcontent">
-                    <h1 className="student-classtitle">Class Quizzes</h1>
-                    
-                    {/* Quiz List */}
-                    <div className="student-class__quiz-list">
-                        {quizzes.length > 0 ? (
-                            quizzes.map((quiz) => (
-                                <div 
-                                    key={quiz.id}
-                                    className={`quiz-item ${getQuizStatusClass(quiz)}`}
-                                    onClick={() => handleQuizClick(quiz)}
-                                >
-                                    <div className="quiz-icon">
-                                        <span className="icon">📝</span>
-                                    </div>
-                                    <div className="quiz-details">
-                                        <h3>{quiz.title}</h3>
-                                        <div className="quiz-info">
-                                            {isQuizAvailable(quiz) ? (
-                                            <div className="quiz-timing">
-                                                <span className="quiz-status quiz-status--available">
-                                                    Available now
-                                                </span>
-                                                <span className="quiz-due-date">
-                                                    Due: {new Date(quiz.end_datetime).toLocaleString()}
-                                                </span>
-                                            </div>
-                                            ) : (
-                                                <div className="quiz-timing">
-                                                    <span>
-                                                        Starts: {new Date(quiz.start_datetime).toLocaleString()}
-                                                    </span>
-                                                    <span>
-                                                        Ends: {new Date(quiz.end_datetime).toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            <span className="quiz-duration">
-                                                ⏱️ {quiz.time_limit_minutes} minutes
+            {/* Quiz Section */}
+            <div className="EnterClassTeacher__main-content">
+                <div className="EnterClassTeacher__tabs">
+                    <button 
+                        className={'EnterClassTeacher__tab active'}
+                    >
+                        Quizzes
+                    </button>
+                </div>
+        
+                {loading ? (
+                    <div className="EnterClassStudent__loading-container">
+                        <div className="loading-spinner"></div>
+                    </div>
+                ) : (
+                <div className="EnterClassStudent__quiz-list">
+                    {quizzes.length > 0 ? (
+                        quizzes.map((quiz) => (
+                            <div 
+                                key={quiz.id}
+                                className={`EnterClassStudent__quiz-item ${getQuizStatusClass(quiz)}`}
+                                onClick={() => handleQuizClick(quiz)}
+                            >
+                                <span className="EnterClassStudent__quiz-icon-container">
+                                    <LuClipboardList className="EnterClassStudent__quiz-icon"/>
+                                </span>
+                                <span className="EnterClassStudent__quiz-name">{quiz.title}</span>
+                        
+                                <div className="EnterClassStudent__quiz-info">
+                                    {isQuizAvailable(quiz) ? (
+                                        <div className="EnterClassStudent__quiz-timing">
+                                            <span className="EnterClassStudent__quiz-status">
+                                                <span 
+                                                    className={`UsersAdmin__dot UsersAdmin__active`}   
+                                                />  
+                                                Available now
+                                            </span>
+                                            <span className="EnterClassStudent__quiz-due-date">
+                                                Due: {new Date(quiz.end_datetime).toLocaleString('en-US', {
+                                                    month: '2-digit',
+                                                    day: '2-digit',
+                                                    year: 'numeric',
+                                                    hour: 'numeric',
+                                                    minute: '2-digit',
+                                                    hour12: true
+                                                })}
+                                            </span>
+                                            <span className="EnterClassStudent__quiz-duration">
+                                                <FaClockRotateLeft/>
+                                                {quiz.time_limit_minutes} minutes
                                             </span>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="quiz-timing">
+                                             <span className="EnterClassStudent__quiz-closed">
+                                                Closed
+                                            </span>
+                                        </div>
+                                    )}
+                                   
                                 </div>
-                            ))
-                        ) : (
-                            <div className="empty-state">
-                                No quizzes available for this class yet.
+                            
                             </div>
-                        )}
-                    </div>
+                        ))
+                    ) : (
+                        <div className="EnterClassStudent__no-available">
+                            No quizzes available for this class yet.
+                        </div>
+                    )}
                 </div>
+                )}
             </div>
-        </div>
+        
+        </>
     );
 };

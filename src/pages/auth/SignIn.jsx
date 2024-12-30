@@ -121,7 +121,7 @@ export const SignIn = () => {
                                 </div>
                             </div>
                             <div className="LoginUser__forgot-password-container">
-                                <Link to="/forgot-password">Forgot password</Link>
+                                {/* <Link to="/forgot-password">Forgot password</Link> */}
                             </div>
 
                             <button 

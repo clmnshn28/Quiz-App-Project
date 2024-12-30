@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Modal from "components/Modal";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaDownload } from 'react-icons/fa';
 import html2pdf from 'html2pdf.js';
-import 'assets/css/modals/QuizReportModal.css';
+import 'assets/css/modals';
 
 export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
     const [loading, setLoading] = useState(true);
@@ -93,7 +94,7 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
         const element = reportRef.current;
         const opt = {
             margin: 1,
-            filename: `${quizTitle.replace(/\s+/g, '-')}-report.pdf`,
+            filename: `${quizTitle.replace(/\s+/g, '-')}_report.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
                 scale: 2,
@@ -112,25 +113,27 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2 className="modal-title">Report: {quizTitle}</h2>
-                    {reportData && (
-                        <button 
-                            className="download-button"
-                            onClick={handleDownloadPDF}
-                            title="Download PDF"
-                        >
-                            <FaDownload className="download-icon" />
-                        </button>
-                    )}
-                    <button className="close-button" onClick={onClose}>&times;</button>
+        <Modal>
+            <div className="QuizReportModal__content">
+                <div className="QuizReportModal__header-container">
+                    <div className="QuizReportModal__pdf-container">
+                        <h2 className="QuizReportModal__title">Report: {quizTitle}</h2>
+                        {reportData && (
+                            <button 
+                                className="QuizReportModal__download-button"
+                                onClick={handleDownloadPDF}
+                                title="Download PDF"
+                            >
+                                <FaDownload className="download-icon" /> Generate PDF
+                            </button>
+                        )}
+                    </div>
+                    <button className="QuizReportModal__close-button" onClick={onClose}>&times;</button>
                 </div>
 
-                <div ref={reportRef}>
+                <div ref={reportRef} className="QuizReportModal__main-content">
                     {loading ? (
-                        <div className="loading-container">
+                        <div className="QuizReportModal__loading-container">
                             <div className="loading-spinner"></div>
                             <p>Loading report data...</p>
                         </div>
@@ -139,52 +142,70 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                     ) : !reportData ? (
                         <div className="no-data-message">No attempts recorded for this quiz yet.</div>
                     ) : (
-                        <div className="report-container">
-                            <div className="stats-grid">
-                                <div className="stat-card">
-                                    <div className="stat-label">Total Attempts</div>
-                                    <div className="stat-value">{reportData.totalAttempts}</div>
+                        <div className="QuizReportModal__report-container">
+                            <div className="QuizReportModal__stats-grid">
+                                <div className="QuizReportModal__stat-card">
+                                    <div className="QuizReportModal__stat-label">Total Attempts</div>
+                                    <div className="QuizReportModal__stat-value">{reportData.totalAttempts}</div>
                                 </div>
-                                <div className="stat-card">
-                                    <div className="stat-label">Average Score</div>
-                                    <div className="stat-value">{reportData.averageScore}%</div>
+                                <div className="QuizReportModal__stat-card">
+                                    <div className="QuizReportModal__stat-label">Average Score</div>
+                                    <div className="QuizReportModal__stat-value">{reportData.averageScore}%</div>
                                 </div>
-                                <div className="stat-card">
-                                    <div className="stat-label">Highest Score</div>
-                                    <div className="stat-value">{reportData.highestScore}%</div>
+                                <div className="QuizReportModal__stat-card">
+                                    <div className="QuizReportModal__stat-label">Highest Score</div>
+                                    <div className="QuizReportModal__stat-value">{reportData.highestScore}%</div>
                                 </div>
-                                <div className="stat-card">
-                                    <div className="stat-label">Lowest Score</div>
-                                    <div className="stat-value">{reportData.lowestScore}%</div>
+                                <div className="QuizReportModal__stat-card">
+                                    <div className="QuizReportModal__stat-label">Lowest Score</div>
+                                    <div className="QuizReportModal__stat-value">{reportData.lowestScore}%</div>
                                 </div>
                             </div>
 
-                            <div className="charts-container">
-                                <div className="chart-section">
-                                    <h3 className="chart-title">Score Distribution</h3>
+                            <div className="QuizReportModal__charts-container">
+                                <div className="QuizReportModal__chart-section">
+                                    <h3 className="QuizReportModal__chart-title">Score Distribution</h3>
                                     <div className="chart-wrapper">
                                         <ResponsiveContainer width="100%" height={300}>
-                                            <BarChart data={reportData.distribution}>
-                                                <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="grade" />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Bar dataKey="count" fill="#4F46E5" />
+                                            <BarChart data={reportData.distribution} >
+                                                <CartesianGrid strokeDasharray="3 3"  stroke="#a9d8cb" />
+                                                <XAxis dataKey="grade" tick={{ fontWeight: '600'}}/>
+                                                <YAxis  tick={{ fontWeight: '600'}}/>
+                                                <Tooltip  
+                                                cursor={{ fill: '#e0e0e0' }}  
+                                                contentStyle={{ 
+                                                    backgroundColor: '#a9d8cb',
+                                                    borderRadius: '10px',
+                                                    height: '70px',
+                                                    fontWeight: '600',
+                                                    color: '#56575B',
+                                                }} />
+                                                <Bar dataKey="count" fill="#67A292" 
+                
+                                                />
                                             </BarChart>
                                         </ResponsiveContainer>
                                     </div>
                                 </div>
 
-                                <div className="chart-section">
-                                    <h3 className="chart-title">Score Trends</h3>
+                                <div className="QuizReportModal__chart-section">
+                                    <h3 className="QuizReportModal__chart-title">Score Trends</h3>
                                     <div className="chart-wrapper">
                                         <ResponsiveContainer width="100%" height={300}>
                                             <LineChart data={reportData.timeData}>
-                                                <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="date" />
-                                                <YAxis domain={[0, 100]} />
-                                                <Tooltip />
-                                                <Line type="monotone" dataKey="score" stroke="#4F46E5" />
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#a9d8cb"/>
+                                                <XAxis dataKey="date"  tick={{ fontWeight: '600'}}/>
+                                                <YAxis domain={[0, 100]}  tick={{ fontWeight: '600'}}/>
+                                                <Tooltip 
+                                                cursor={{ fill: '#e0e0e0' }}  
+                                                contentStyle={{ 
+                                                    backgroundColor: '#a9d8cb',
+                                                    borderRadius: '10px',
+                                                    height: '70px',
+                                                    fontWeight: '600',
+                                                    color: '#56575B',
+                                                }} />
+                                                <Line type="monotone" dataKey="score" stroke="#67A292" />
                                             </LineChart>
                                         </ResponsiveContainer>
                                     </div>
@@ -194,6 +215,6 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                     )}
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 };

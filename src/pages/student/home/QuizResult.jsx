@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import '../../../assets/css/student/QuizResult.css';
+import 'assets/css/student';
 
 const CheckIcon = () => (
     <svg
@@ -124,125 +124,122 @@ export const QuizResult = () => {
         fetchData();
     }, [quizId, location.state, navigate]);
 
-    if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-            </div>
-        );
-    }
+    // if (error) {
+    //     return (
+    //         <div className="no-results">
+    //             <p>{error}</p>
+    //             <button 
+    //                 className="back-button"
+    //                 onClick={() => navigate(-1)}
+    //             >
+    //                 Back to Quiz
+    //             </button>
+    //         </div>
+    //     );
+    // }
 
-    if (error) {
-        return (
-            <div className="no-results">
-                <p>{error}</p>
-                <button 
-                    className="back-button"
-                    onClick={() => navigate(-1)}
-                >
-                    Back to Quiz
-                </button>
-            </div>
-        );
-    }
+    // // Additional check to ensure results exist before rendering
+    // if (!results || !results.results) {
+    //     return (
+    //         <div className="no-results">
+    //             <p>No results available for this quiz</p>
+    //             <button 
+    //                 className="back-button"
+    //                 onClick={() => navigate(-1)}
+    //             >
+    //                 Back to Quiz
+    //             </button>
+    //         </div>
+    //     );
+    // }
 
-    // Additional check to ensure results exist before rendering
-    if (!results || !results.results) {
-        return (
-            <div className="no-results">
-                <p>No results available for this quiz</p>
-                <button 
-                    className="back-button"
-                    onClick={() => navigate(-1)}
-                >
-                    Back to Quiz
-                </button>
-            </div>
-        );
-    }
-
-    const handleDone = () => {
-        navigate(-2);
-    };
 
     return (
-        <div className="quiz-result-container">
-            <div className="student-class__breadcrumb">
-                <a href="/student/home" className="nav-item">
+        <>
+            <nav className="QuizzesTeacher__breadcrumb">
+                <a href="/student/home" className="QuizzesTeacher__breadcrumb-nav">
                     <span>Home</span>
                 </a>
-                <span className="separator">{'>'}</span>
-                <a href={`/student/class/${classData?.id}`} className="nav-item">
+                <span> &gt; </span>
+                <a href={`/student/home/class/${classData?.id}`} className="QuizzesTeacher__breadcrumb-nav">
                     <span>{classData?.name || 'Loading...'}</span>
                 </a>
-                <span className="separator">{'>'}</span>
-                <span>{quiz?.title || 'Loading...'}</span>
-            </div>
+                <span> &gt; </span>
+                <span >{quiz?.title || 'Loading...'}</span>
+            </nav>
+
+            {loading ? (
+                <div className="EnterClassStudent__loading-container">
+                    <div className="loading-spinner"></div>
+                </div>
+            ) : (
+                <div className='TakeQuiz__box-shadow'>
+                    <div className="TakeQuiz__quiz-header">
+                        <div className="TakeQuiz__title-section">
+                            <h1 className="TakeQuiz__section-header">{quiz?.title || 'Quiz Results'}</h1>
+                            <p className="TakeQuiz__quiz-subtitle">Read each question carefully before answering.</p>
+                        </div>
+                    </div>
             
-            <div className="quiz-header">
-                <div className="quiz-title-section">
-                    <h1>{quiz?.title || 'Quiz Results'}</h1>
-                    <p className="quiz-subtitle">Quiz Results</p>
-                </div>
-            </div>
-
-            <div className="result-summary">
-                <div className="score-circle">
-                    <div className="score-value">{results?.score.toFixed(1)}%</div>
-                    <div className="score-label">Score</div>
-                </div>
-                
-                <div className="stats-container">
-                    <div className="stat-item">
-                        <span className="stat-label">Questions:</span>
-                        <span className="stat-value">
-                            {results?.correct_questions} / {results?.total_questions} correct
-                        </span>
-                    </div>
-                    <div className="stat-item">
-                        <span className="stat-label">Points:</span>
-                        <span className="stat-value">
-                            {results?.total_points} / {results?.max_points} points
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Only show detailed results if show_correct_answers is true */}
-            {results?.show_correct_answers && (
-                <div className="results-detail">
-                    {results.results && results.results.map((result, index) => (
-                        <div key={index} className={`question-result ${result.correct ? 'correct' : 'incorrect'}`}>
-                            <div className="result-header">
-                                <div className="question-number">Question {index + 1}</div>
-                                <div className="result-icon">
-                                    {result.correct ? <CheckIcon /> : <XIcon />}
-                                </div>
+                    <div className="QuizResult__result-summary">
+                        <div className="QuizResult__score-circle">
+                            <div className="QuizResult__score-value">{results?.score.toFixed(1)}%</div>
+                            <div className="QuizResult__score-label">Score</div>
+                        </div>
+                        
+                        <div className="QuizResult__stats-container">
+                            <div className="QuizResult__stat-item">
+                                <span className="QuizResult__stat-label">Correct Items:</span>
+                                <span className="QuizResult__stat-value">
+                                    {results?.correct_questions} out of {results?.total_questions}
+                                </span>
                             </div>
-                            <div className="answer-details">
-                                <div className="answer-row">
-                                    <span className="answer-label">Your answer:</span>
-                                    <span className="answer-value">{result.user_answer}</span>
-                                </div>
-                                <div className="answer-row">
-                                    <span className="answer-label">Correct answer:</span>
-                                    <span className="answer-value">{result.correct_answer}</span>
-                                </div>
-                                <div className="points-row">
-                                    <span className="points-label">Points:</span>
-                                    <span className="points-value">{result.points} / {result.max_points}</span>
-                                </div>
+                            <div className="QuizResult__stat-item">
+                                <span className="QuizResult__stat-label">Score:</span>
+                                <span className="QuizResult__stat-value">
+                                    {results?.total_points} / {results?.max_points} 
+                                </span>
                             </div>
                         </div>
-                    ))}
+                    </div>
+
+                    {/* Only show detailed results if show_correct_answers is true */}
+                    {results?.show_correct_answers && (
+                        <div className="results-detail">
+                            {results.results && results.results.map((result, index) => (
+                                <div key={index} className={`question-result ${result.correct ? 'correct' : 'incorrect'}`}>
+                                    <div className="result-header">
+                                        <div className="question-number">Question {index + 1}</div>
+                                        <div className="result-icon">
+                                            {result.correct ? <CheckIcon /> : <XIcon />}
+                                        </div>
+                                    </div>
+                                    <div className="answer-details">
+                                        <div className="answer-row">
+                                            <span className="answer-label">Your answer:</span>
+                                            <span className="answer-value">{result.user_answer}</span>
+                                        </div>
+                                        <div className="answer-row">
+                                            <span className="answer-label">Correct answer:</span>
+                                            <span className="answer-value">{result.correct_answer}</span>
+                                        </div>
+                                        <div className="points-row">
+                                            <span className="points-label">Points:</span>
+                                            <span className="points-value">{result.points} / {result.max_points}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="QuizResult__quiz-navigation">
+                        <button onClick={() => navigate(-2)} className="QuizResult__done-button">
+                            Done
+                        </button>
+                    </div>
                 </div>
             )}
-
-            <div className="quiz-navigation">
-                <button onClick={() => navigate(-2)} className="done-button">
-                    Done
-                </button>
-            </div>
-        </div>
+        </>
     );
 };

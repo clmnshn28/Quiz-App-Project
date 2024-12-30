@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import '../../../assets/css/student/TakeQuiz.css';
+import 'assets/css/student';
+import { FaRegClock } from "react-icons/fa";
+import { FaRegCircleCheck } from "react-icons/fa6";
 
 export const TakeQuiz = () => {
     const { quizId } = useParams();
@@ -12,6 +14,10 @@ export const TakeQuiz = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
+    const [validationErrors, setValidationErrors] = useState({});
+    const [isCompleted, setIsCompleted] = useState(false);
+    const [quizResults, setQuizResults] = useState(null);
+
     const questionsPerPage = 5;
 
     useEffect(() => {
@@ -77,35 +83,70 @@ export const TakeQuiz = () => {
         return () => clearInterval(timer);
     }, [timeLeft]);
 
+
+    const validateCurrentPage = () => {
+        const startIndex = currentPage * questionsPerPage;
+        const endIndex = Math.min(startIndex + questionsPerPage, quiz.questions.length);
+        const currentQuestions = quiz.questions.slice(startIndex, endIndex);
+        
+        let newValidationErrors = {};
+        let isValid = true;
+
+        currentQuestions.forEach(question => {
+            if (!answers[question.id] || answers[question.id].trim() === '') {
+                newValidationErrors[question.id] = 'This question requires an answer';
+                isValid = false;
+            }
+        });
+
+        setValidationErrors(newValidationErrors);
+        return isValid;
+    };
+
+
+
     const handleAnswerChange = (questionId, answer) => {
         setAnswers(prev => ({
             ...prev,
             [questionId]: answer
         }));
+
+        setValidationErrors(prev => ({
+            ...prev,
+            [questionId]: undefined
+        }));
     };
 
     const handleSubmit = async () => {
-        try {
-            const accessToken = localStorage.getItem('accessToken');
-            const response = await fetch(`https://apiquizapp.pythonanywhere.com/api/quizzes/${quizId}/take_quiz/`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ answers })
-            });
+        if (validateCurrentPage()) {
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const response = await fetch(`https://apiquizapp.pythonanywhere.com/api/quizzes/${quizId}/take_quiz/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ answers })
+                });
 
-            if (!response.ok) {
-                throw new Error('Failed to submit quiz');
+                if (!response.ok) {
+                    throw new Error('Failed to submit quiz');
+                }
+
+                const result = await response.json();
+                setQuizResults(result); // Store the results
+                setIsCompleted(true);
+            } catch (err) {
+                setError(err.message);
             }
-
-            const result = await response.json();
-            navigate(`results`, { state: { results: result } });
-        } catch (err) {
-            setError(err.message);
         }
     };
+
+    const handleViewScore = () => {
+        navigate(`results`, { state: { results: quizResults } });
+    };
+
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
@@ -114,8 +155,11 @@ export const TakeQuiz = () => {
     };
 
     const goToNextPage = () => {
-        if (currentPage < Math.ceil(quiz.questions.length / questionsPerPage) - 1) {
-            setCurrentPage(prev => prev + 1);
+        if (validateCurrentPage()) {
+            if (currentPage < Math.ceil(quiz.questions.length / questionsPerPage) - 1) {
+                setCurrentPage(prev => prev + 1);
+                setValidationErrors({}); // Clear validation errors when changing page
+            }
         }
     };
 
@@ -128,7 +172,7 @@ export const TakeQuiz = () => {
     if (loading) {
         return (
             <div className="quiz-loading">
-                <div className="quiz-loader"></div>
+                 <div className="loading-spinner"></div>
             </div>
         );
     }
@@ -155,111 +199,176 @@ export const TakeQuiz = () => {
     const totalPages = Math.ceil(quiz.questions.length / questionsPerPage);
 
     return (
-        <div className="quiz-container">
-            <div className="student-class__breadcrumb">
-                <a href="/student/home" className="nav-item">
+        <>
+            <nav className="QuizzesTeacher__breadcrumb">
+                <a href="/student/home" className="QuizzesTeacher__breadcrumb-nav">
                     <span>Home</span>
                 </a>
-                <span className="separator">{'>'}</span>
-                <a href={`/student/class/${classData?.id}`} className="nav-item">
+                <span> &gt; </span>
+                <a href={`/student/home/class/${classData?.id}`} className="QuizzesTeacher__breadcrumb-nav">
                     <span>{classData?.name || 'Loading...'}</span>
                 </a>
-                <span className="separator">{'>'}</span>
+                <span> &gt; </span>
                 <span>{quiz?.title || 'Loading...'}</span>
-            </div>
-            
-            <div className="quiz-header">
-                <div className="quiz-title-section">
-                    <h1>{quiz.title}</h1>
-                    <p className="quiz-subtitle">Read each question carefully before answering.</p>
+            </nav>
+
+            <div className='TakeQuiz__box-shadow'>
+                <div className="TakeQuiz__quiz-header">
+                    <div className="TakeQuiz__title-section">
+                        <h1 className="TakeQuiz__section-header">{quiz.title}</h1>
+                        <p className="TakeQuiz__quiz-subtitle">Read each question carefully before answering.</p>
+                    </div>
+                    {!isCompleted && (
+                        <div className="TakeQuiz__quiz-timer">
+                            <span className="TakeQuiz__quiz-timer-clock">{formatTime(timeLeft)}</span>
+                            <FaRegClock/>
+                        </div>
+                    )}
                 </div>
-                <div className="quiz-timer">
-                    <span>{formatTime(timeLeft)}</span>
-                </div>
-            </div>
 
-            <div className="questions-page-info">
-                Page {currentPage + 1} of {totalPages}
-            </div>
+                {!isCompleted ? (
+                    <div className="TakeQuiz__quiz-main-take">
+                        {currentQuestions.map((questionData, index) => (
+                            <div key={questionData.id}   className={`TakeQuiz__question-container ${
+                                index === currentQuestions.length - 1 ? 'last' : ''
+                            }`}
+                            >
+                                <p className="TakeQuiz__question-text">
+                                    {startIndex + index + 1}. {questionData.question_text}
+                                    <span className="QuizzesTeacher__ques-main-required">*</span>
+                                </p>
 
-            {currentQuestions.map((questionData, index) => (
-                <div key={questionData.id} className="question-container">
-                    <p className="question-text">
-                        {startIndex + index + 1}. {questionData.question_text}
-                    </p>
+                                {questionData.question_type === 'MC' && (
+                                    <div className="TakeQuiz__multi-options-container">
+                                        {['option_a', 'option_b', 'option_c', 'option_d'].map((option, optionIndex) => (
+                                            questionData[option] && (
+                                                <label key={option} className="TakeQuiz__option-label">
+                                                    <input
+                                                        type="radio"
+                                                        name={`question-${questionData.id}`}
+                                                        value={optionIndex}
+                                                        checked={answers[questionData.id] === optionIndex.toString()}
+                                                        onChange={(e) => handleAnswerChange(questionData.id, e.target.value)}
+                                                        required
+                                                    />
+                                                    <span className="TakeQuiz__option-text">{questionData[option]}</span>
+                                                </label>
+                                            )
+                                        ))}
+                                        {validationErrors[questionData.id] && (
+                                            <div className="TakeQuiz__validation-error" style={{
+                                                color: 'red',
+                                                fontSize: '0.875rem',
+                                                marginTop: '4px'
+                                            }}>
+                                                {validationErrors[questionData.id]}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
-                    {questionData.question_type === 'MC' && (
-                        <div className="options-container">
-                            {['option_a', 'option_b', 'option_c', 'option_d'].map((option, optionIndex) => (
-                                questionData[option] && (
-                                    <label key={option} className="option-label">
+                                {questionData.question_type === 'TF' && (
+                                    <div className="options-container">
+                                        {['True', 'False'].map((option) => (
+                                            <label key={option} className="TakeQuiz__option-label">
+                                                <input
+                                                    type="radio"
+                                                    name={`question-${questionData.id}`}
+                                                    value={option}
+                                                    checked={answers[questionData.id] === option}
+                                                    onChange={(e) => handleAnswerChange(questionData.id, e.target.value)}
+                                                    required
+                                                />
+                                                <span className="TakeQuiz__option-text">{option}</span>
+                                            </label>
+                                        ))}
+                                        {validationErrors[questionData.id] && (
+                                            <div className="TakeQuiz__validation-error">
+                                                {validationErrors[questionData.id]}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {questionData.question_type === 'ID' && (
+                                    <div className='TakeQuiz__input-short-container'>
                                         <input
-                                            type="radio"
-                                            name={`question-${questionData.id}`}
-                                            value={optionIndex}
-                                            checked={answers[questionData.id] === optionIndex.toString()}
+                                            type="text"
+                                            className="TakeQuiz__identification-input"
+                                            value={answers[questionData.id] || ''}
                                             onChange={(e) => handleAnswerChange(questionData.id, e.target.value)}
+                                            placeholder="Type your answer here..."
+                                            required
                                         />
-                                        <span className="option-text">{questionData[option]}</span>
-                                    </label>
-                                )
-                            ))}
-                        </div>
-                    )}
+                                        {validationErrors[questionData.id] && (
+                                            <div className="TakeQuiz__validation-error" style={{
+                                                color: 'red',
+                                                fontSize: '0.875rem',
+                                                marginTop: '4px'
+                                            }}>
+                                                {validationErrors[questionData.id]}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
 
-                    {questionData.question_type === 'TF' && (
-                        <div className="options-container">
-                            {['True', 'False'].map((option) => (
-                                <label key={option} className="option-label">
-                                    <input
-                                        type="radio"
-                                        name={`question-${questionData.id}`}
-                                        value={option}
-                                        checked={answers[questionData.id] === option}
-                                        onChange={(e) => handleAnswerChange(questionData.id, e.target.value)}
-                                    />
-                                    <span className="option-text">{option}</span>
-                                </label>
-                            ))}
+                        <div className="TakeQuiz__quiz-navigation">
+                            {currentPage > 0 && (
+                                <button 
+                                    className="TakeQuiz__back-quiz-button"
+                                    onClick={goToPreviousPage}
+                                >
+                                    Back
+                                </button>
+                            )}
+                            {currentPage === totalPages - 1 ? (
+                                <button 
+                                    className="TakeQuiz__submit-quiz-button"
+                                    onClick={handleSubmit}
+                                >
+                                    Submit
+                                </button>
+                            ) : (
+                                <button 
+                                    className="TakeQuiz__submit-quiz-button"
+                                    onClick={goToNextPage}
+                                >
+                                    Next
+                                </button>
+                            )}
                         </div>
-                    )}
+                        
+                    </div>
+                ) : (
+                    <div className='ThankyouSubmit__content'>
+                        <div className='ThankyouSubmit__header'>
+                            <FaRegCircleCheck className='ThankyouSubmit__header-icon'/>
+                            <span className='ThankyouSubmit__header-text'>Thank You!</span>
+                        </div>
+                        <p className='ThankyouSubmit__header-sub-text'>Your response has been submitted.</p>
 
-                    {questionData.question_type === 'ID' && (
-                        <input
-                            type="text"
-                            className="identification-input"
-                            value={answers[questionData.id] || ''}
-                            onChange={(e) => handleAnswerChange(questionData.id, e.target.value)}
-                            placeholder="Type your answer here..."
-                        />
-                    )}
+                        <div className='ThankyouSubmit__btn-actions'>
+                            <button className='ThankyouSubmit__btn-view-score'
+                            onClick={handleViewScore}
+                            >
+                                View Score
+                            </button>
+                            <button className='ThankyouSubmit__btn-done'
+                            onClick={() => navigate(`/student/home/class/${classData?.id}`)}
+                            >
+                                Done
+                            </button>
+
+                        </div>
+                        
                 </div>
-            ))}
-
-            <div className="quiz-navigation">
-                <button 
-                    className="nav-button"
-                    onClick={goToPreviousPage}
-                    disabled={currentPage === 0}
-                >
-                    Previous Page
-                </button>
-
-                <button 
-                    className="submit-button"
-                    onClick={handleSubmit}
-                >
-                    Submit Quiz
-                </button>
-
-                <button 
-                    className="nav-button"
-                    onClick={goToNextPage}
-                    disabled={currentPage === totalPages - 1}
-                >
-                    Next Page
-                </button>
+                )}
             </div>
-        </div>
+
+           
+
+        </>
     );
 };
