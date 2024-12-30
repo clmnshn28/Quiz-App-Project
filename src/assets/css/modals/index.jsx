@@ -9,3 +9,4 @@ import './SuccessPublishModal.css';
 import './QuestionBankModal.css';
 import './DeleteQuestionModal.css';
 import './EditQuestionModal.css';
+import './QuizReportModal.css';
