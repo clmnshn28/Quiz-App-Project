@@ -122,23 +122,24 @@ export const AnswerKeyModal = ({
                                         type="text"
                                         className="AnswerKeyModal__answer-input"
                                         value={answer}
+                                        placeholder="Type the answer here"
                                         onChange={(e) => handleIdentificationAnswerChange(e.target.value, index)}
                                     />
-                                    <button
+                                    {/* <button
                                         className="QuizzesTeacher__delete-choice"
                                         onClick={() => handleDeleteIdentificationAnswer(index)}
                                     >
                                         ✖
-                                    </button>
+                                    </button> */}
                                 </div>
                             ))}
-                            <button
+                            {/* <button
                                 className="QuizzesTeacher__add-choice"
                                 onClick={handleAddIdentificationAnswer}
                             >
                                 <IoIosAddCircleOutline className="QuizzesTeacher__add-choice-icon"/>
                                 Add a correct answer
-                            </button>
+                            </button> */}
                         </div>
                     )}
 
@@ -168,7 +169,7 @@ export const AnswerKeyModal = ({
 
                 <div className="AnswerKeyModal__btn-actions">
                     <div className="AnswerKeyModal__checkbox-container">
-                        {questionType === "identification" && (
+                        {/* {questionType === "identification" && (
                             <label className="AnswerKeyModal__incorrect-checkbox">
                                 <input
                                     type="checkbox"
@@ -178,7 +179,7 @@ export const AnswerKeyModal = ({
                                 />
                                 Mark all other answer as incorrect
                             </label>
-                        )}
+                        )} */}
                     </div>
                     <ButtonGroup
                         onCancel={handleCancelAnswerKey}
