@@ -630,6 +630,15 @@
     position: relative;
 }
 
+.QuizzesTeacher__quiz-name-group-date-time{
+    margin: 20px 20px 10px 3px;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    position: relative;
+}
+
+
 .QuizzesTeacher__input-label {
     display: block;
     font-weight: 500;
@@ -797,6 +806,14 @@
     font-size: 13px;
 }
 
+.QuizzesTeacher__error-quiz-namess{
+    position: absolute;
+    top: -15%;
+    right: -1%;
+    color: rgb(201, 0, 0);
+    font-size: 13px;
+}
+
 
 /* added question in question bank */
 .QuizzesTeacher__sidebar-question-select{
@@ -890,3 +907,7 @@
     gap: 5px;
 }
 
+
+.QuizzesTeacher__time-div{
+    margin-top: 20px;
+}

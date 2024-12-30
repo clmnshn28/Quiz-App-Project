@@ -110,7 +110,7 @@ export const QuestionBankModal = ({
                                     />
                                     <div className="QuestionBankModal__question-details">
                                         <span className="QuestionBankModal__question-type">
-                                            {question.question_type}
+                                            {questionTypeOptions.find(opt => opt.value === question.question_type)?.title || question.question_type}
                                         </span>
                                         <p className="QuestionBankModal__question-text">
                                             {question.question_text}

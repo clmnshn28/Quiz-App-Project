@@ -1,0 +1,420 @@
+
+.EnterClassTeacher__header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.EnterClassTeacher__class-name {
+    color: #56575B;
+    margin: 0;
+    font-size: 34px;
+}
+.EnterClassTeacher__sub-section{
+    margin: 0;
+    color: #87888d;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.EnterClassTeacher__create-quiz-btn{
+    background-color: #67A292;
+    color: #F9FBFB;
+    padding: 12px 23px;
+    font-size: 19px;
+    font-weight: 500;
+    font-family: 'Inter';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.EnterClassTeacher__create-quiz-btn:active {
+    opacity: 0.8;
+}
+
+.EnterClassTeacher__create-quiz-btn:focus {
+    outline: none;
+}
+
+
+
+/* TABS */
+
+.EnterClassTeacher__tabs {
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+    
+}
+
+.EnterClassTeacher__tab {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0;
+    background: none;
+    cursor: pointer;
+    font-weight: 400;
+    font-size: 20px;
+    color: #56575B;
+    
+}
+
+.EnterClassTeacher__tab.active {
+    border-bottom: 3px solid #5BA092;
+    color: #5BA092;
+    font-weight: 600;
+}
+
+
+.EnterClassTeacher__tab:focus {
+    outline: none;
+}
+
+
+/* main content */
+
+.EnterClassTeacher__quiz-item {
+    display: flex;
+    align-items: center;
+    padding: 13px 20px;
+    background-color: #c8dfd9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.EnterClassTeacher__quiz-item:active {
+    opacity: 0.9;
+}
+
+.EnterClassTeacher__quiz-icon-container{
+    background-color: #5BA092;
+    padding: 9px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 25px;
+}
+
+.EnterClassTeacher__quiz-icon{
+    width: 23px;
+    height: 23px;
+    min-height: 23px;
+    min-width: 23px;
+}
+
+.EnterClassTeacher__quiz-name{
+    color: #56575B;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.EnterClassTeacher__dots-wrapper {
+    position: relative;
+    margin-left: auto;
+}
+
+.EnterClassTeacher__3dots-icon{
+    width: 23px;
+    height: 23px;
+    min-height: 23px;
+    min-width: 23px;
+    cursor: pointer;
+    color: #56575B;
+}
+
+
+/* dropdown */
+.EnterClassTeacher__dropdown {
+    position: absolute;
+    right: 53%;
+    top: 40%;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 9px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    min-width: 180px;
+    padding: 5px;
+}
+
+.EnterClassTeacher__dropdown-item {
+    width: 100%;
+    padding: 13px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #56575B;
+    transition: background-color 1s;
+}
+
+.EnterClassTeacher__dropdown-item:hover {
+   background-color: #ebebeb;
+}
+.EnterClassTeacher__dropdown-item:focus {
+    outline: none;
+ }
+
+/* student */
+.EnterClassTeacher__students-list{
+    box-shadow: 0 0px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.EnterClassTeacher__students-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 40px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.EnterClassTeacher__students-flex{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.EnterClassTeacher__students-name{
+    color: #56575B;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0;
+}
+
+.EnterClassTeacher__students-sort{
+    color: #818387;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+
+.EnterClassTeacher__students-flexs{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
+.EnterClassTeacher__students-count{
+    color: #56575B;
+    font-weight: 600;
+
+}
+
+.EnterClassTeacher__students-add-container{
+    background-color: #f3f3f3;
+    padding: 8px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 1s;
+    cursor: pointer;
+}
+
+.EnterClassTeacher__students-add{
+    color: #818387;
+    width: 23px;
+    height: 23px;
+    min-width: 23px;
+    min-height: 23px;
+    transform: scaleX(-1);
+}
+
+.EnterClassTeacher__students-add-container:hover{
+    background-color: #e7e7e7;
+}
+.EnterClassTeacher__students-add-container:active{
+    opacity: 0.8;
+}
+
+/* list */
+.EnterClassTeacher__students-items {
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.EnterClassTeacher__student-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.EnterClassTeacher__student-item.even {
+    background-color: #d9e5e2;
+}
+
+.EnterClassTeacher__student-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.EnterClassTeacher__student-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #c6c6c6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+}
+
+.EnterClassTeacher__student-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+}
+
+.EnterClassTeacher__remove-student {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;  
+    color: #56575B;  
+    opacity: 0.6;
+    margin-right: 10px;
+    transition: color 1s;
+}
+
+.EnterClassTeacher__remove-student:hover {
+    opacity: 1;
+    color: #333;
+}
+
+
+
+
+
+/* MODAL OF INVITE STUDENT  */
+.InviteStudentModal__content{
+    background: #fff;
+    padding: 25px 34px 34px;
+    border-radius: 15px;
+    width: 550px;
+    max-width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    position: relative;
+}
+
+.InviteStudentModal__close{
+    position: absolute;
+    top: 9%;
+    right: 5%;
+    color: #56575B;
+    font-size: 26px;
+}
+
+.InviteStudentModal__title{
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: left;
+    color: #56575B;
+    margin: 0;
+}
+
+.InviteStudentModal__sub-desc{
+    font-size: 15px;
+    font-weight: 400;
+    text-align: left;
+    color: #56575B;
+    margin: 0 0 13px;
+}
+
+.InviteStudentModal__title-container{
+    width: 100%;
+    border-bottom: 2px solid #c9c9c9;
+}
+
+
+/* Input Section Styles */
+.InviteStudentModal__input-container {
+    margin-top: 16px;
+    width: 100%;
+}
+
+.InviteStudentModal__input-label {
+    display: block;
+    font-size: 17px;
+    color: #56575B;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.InviteStudentModal__input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    position: relative;
+}
+
+.InviteStudentModal__input {
+    flex: 1;
+    width: 100%;
+    border: none;
+    border-radius: 15px;
+    background-color: #DDE9E6;
+    font-size: 20px;
+    color: #56575B;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    height: 55px;
+    padding-left: 25px;
+    box-sizing: border-box;
+}
+
+.InviteStudentModal__input:focus {
+    outline: none;
+}
+
+.InviteStudentModal__copy-button {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 4%;
+    transition: background-color 1s;
+}
+
+.InviteStudentModal__copy-button:hover {
+    background-color: #eaeaea;
+    border-radius: 4px;
+}
+.InviteStudentModal__copy-button:active {
+    opacity: 0.8;
+}
+.InviteStudentModal__copy-button:focus {
+    outline: none;
+}
+
+.InviteStudentModal__copy-button-icon{
+    color: #56575B;
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    min-height: 25px;
+    transform: scaleX(-1);
+}

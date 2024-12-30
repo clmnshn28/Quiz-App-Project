@@ -317,7 +317,7 @@ const handlePreviewAnswerKey = (questionId) => (e) => {  // Changed to return a 
 
     // Time and schedule state
     const [timeHours, setTimeHours] = useState('00');
-    const [timeMinutes, setTimeMinutes] = useState('30');
+    const [timeMinutes, setTimeMinutes] = useState('00');
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [startTime, setStartTime] = useState(''); // Default 5:00 PM
@@ -516,6 +516,13 @@ const validateForm = () => {
         setQuestionsError(true);
         isValid = false;
     }
+    
+    // Check if timer is set (not 00:00)
+    if (timeHours === '00' && timeMinutes === '00') {
+        setTimerError(true);
+        isValid = false;
+    }
+
     if (!startDate || !endDate || !startTime || !endTime) {
         setScheduleError(true);
         isValid = false;
@@ -1015,7 +1022,7 @@ const getQuestionTypeDisplay = (type) => {
                                 </label>
                             </div>
 
-                            <div className="QuizzesTeacher__quiz-name-group">
+                            {/* <div className="QuizzesTeacher__quiz-name-group">
                                 <div>
                                     <label className="QuizzesTeacher__input-label">Point values</label>
                                     <p className="QuizzesTeacher__input-description">Students can see total points and points received for each question</p>
@@ -1058,7 +1065,7 @@ const getQuestionTypeDisplay = (type) => {
                                     />
                                     <span className="QuizzesTeacher__toggle-slider"></span>
                                 </label>
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="QuizzesTeacher__general-container">
@@ -1108,7 +1115,7 @@ const getQuestionTypeDisplay = (type) => {
                                     Set timer is required
                                 </span>
                             </div>
-                            <div className="QuizzesTeacher__quiz-name-group">
+                            <div className="QuizzesTeacher__quiz-name-group-date-time">
                                 <div>
                                     <label className="QuizzesTeacher__input-label">
                                         Schedule quiz
@@ -1124,13 +1131,15 @@ const getQuestionTypeDisplay = (type) => {
                                                 onChange={handleStartDateChange}
                                                 label="Start Date"
                                             />
-                                            <TimePicker
-                                            value={startTime}
-                                            onChange={handleStartTimeChange}
-                                            label=""
-                                            className="QuizzesTeacher__time-picker"
-                                            placeholder="Start Time"
-                                        />
+                                            <div className="QuizzesTeacher__time-div">
+                                                <TimePicker
+                                                value={startTime}
+                                                onChange={handleStartTimeChange}
+                                                label=""
+                                                className="QuizzesTeacher__time-picker"
+                                                placeholder="Start Time"
+                                                />
+                                            </div>
                                         </div>
                                         
                                     </div>
@@ -1141,19 +1150,21 @@ const getQuestionTypeDisplay = (type) => {
                                                 onChange={handleEndDateChange}
                                                 label="End Date"
                                             />
-                                            <TimePicker
-                                            value={endTime}
-                                            onChange={handleEndTimeChange}
-                                            label=""
-                                            className="QuizzesTeacher__time-picker"
-                                            placeholder="End Time"
-                                        />
+                                            <div className="QuizzesTeacher__time-div">
+                                                <TimePicker
+                                                value={endTime}
+                                                onChange={handleEndTimeChange}
+                                                label=""
+                                                className="QuizzesTeacher__time-picker"
+                                                placeholder="End Time"
+                                                />
+                                            </div>
                                         </div>
                                         
                                     </div>
                                 </div>
                                 <span 
-                                    className="QuizzesTeacher__error-quiz-name"
+                                    className="QuizzesTeacher__error-quiz-namess"
                                     style={{ display: scheduleError ? 'block' : 'none' }}
                                 >
                                     Schedule quiz is required

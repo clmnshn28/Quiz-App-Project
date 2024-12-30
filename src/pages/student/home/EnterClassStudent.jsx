@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import '../../../assets/css/student/EnterClassStudent.css';
+import 'assets/css/student';
 
 export const EnterClassStudent = () => {
     const { classId } = useParams();
