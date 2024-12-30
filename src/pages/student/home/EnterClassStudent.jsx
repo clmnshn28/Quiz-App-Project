@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import 'assets/css/student';
 import { LuClipboardList } from "react-icons/lu";
 import { FaClockRotateLeft } from "react-icons/fa6";
+import { ClosedClassModal } from './modals/ClosedClassModal';
 
 export const EnterClassStudent = () => {
     const { classId } = useParams();
@@ -13,6 +14,7 @@ export const EnterClassStudent = () => {
     const [error, setError] = useState(null);
     const [processingQuiz, setProcessingQuiz] = useState(null);
     const [quizAttempts, setQuizAttempts] = useState({});
+    const [closedClassModal, setClosedClassModal] = useState(false);
 
     // Modified fetchAllQuizAttempts to properly handle the response
     const fetchAllQuizAttempts = async (quizzes, accessToken) => {
@@ -97,6 +99,14 @@ export const EnterClassStudent = () => {
     const handleQuizClick = async (quiz) => {
         if (processingQuiz) return;
         
+        const now = new Date();
+        const start = new Date(quiz.start_datetime);
+        const end = new Date(quiz.end_datetime);
+        
+        if (now < start || now > end) {
+            setClosedClassModal(true);
+            return;
+        }
         // Check if we have attempts for this quiz
         const attempts = quizAttempts[quiz.id] || [];
         const hasAttempt = attempts.length > 0;
@@ -236,6 +246,12 @@ export const EnterClassStudent = () => {
                 </div>
                 )}
             </div>
+
+            <ClosedClassModal
+                isOpen={closedClassModal}
+                onClose={() => setClosedClassModal(false)}
+        
+            />
         </>
     );
 };

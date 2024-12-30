@@ -309,9 +309,15 @@ export const EnterClassTeacher = () => {
                                                         {student.last_name.charAt(0)}
                                                     </div>
                                                 )}
-                                            <span className="EnterClassTeacher__student-name">
-                                                {student.last_name}, {student.first_name} 
-                                            </span>
+                                                {!student.first_name || !student.last_name ? (
+                                                    <span className="EnterClassTeacher__student-name">
+                                                        {student.username} 
+                                                    </span>
+                                                ) : (
+                                                    <span className="EnterClassTeacher__student-name">
+                                                        {student.last_name}, {student.first_name} 
+                                                    </span>
+                                                )}
                                         </div>
                                         <CiCircleRemove 
                                             className="EnterClassTeacher__remove-student"

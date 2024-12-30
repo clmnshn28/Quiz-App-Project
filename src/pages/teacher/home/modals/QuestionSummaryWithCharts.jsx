@@ -59,13 +59,13 @@ const QuestionSummaryWithCharts = ({ questionStats }) => {
               contentStyle={{ 
                 backgroundColor: '#a9d8cb',
                 borderRadius: '10px',
-                height: '70px',
+                height: '110px',
                 fontWeight: '600',
                 color: '#56575B',
               }}
             />
             <Bar dataKey="avgPoints" fill="#67A292" name="Average Points" />
-            <Bar dataKey="maxPoints" fill="#A7CDC3" name="Maximum Points" />
+            <Bar dataKey="maxPoints" fill="#67A292" name="Maximum Points" />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -75,21 +75,21 @@ const QuestionSummaryWithCharts = ({ questionStats }) => {
         <table>
           <thead>
             <tr>
-              <th>Question #</th>
-              <th>Correct Answers</th>
-              <th>Success Rate</th>
-              <th>Avg Points</th>
-              <th>Max Points</th>
+              <th style={{fontSize:'15px', padding:'15px 0 15px 35px', width:'20%'}}>Question #</th>
+              <th style={{fontSize:'15px', padding:'15px',textAlign: 'center'}}>Correct Answers</th>
+              <th style={{fontSize:'15px', padding:'15px', textAlign: 'center'}}>Success Rate</th>
+              <th style={{fontSize:'15px', padding:'15px', width:'20%', textAlign: 'center'}}>Avg Points</th>
+              <th style={{fontSize:'15px', padding:'15px', textAlign: 'center' }}>Max Points</th>
             </tr>
           </thead>
           <tbody>
             {questionStats.map((stat, index) => (
               <tr key={stat.questionId}>
-                <td>Question {index + 1}</td>
-                <td>{stat.correctAttempts}/{stat.totalAttempts}</td>
-                <td>{stat.correctPercentage}%</td>
-                <td>{stat.averagePoints}</td>
-                <td>{stat.points}</td>
+                <td style={{ width:'20%'}}>Question {index + 1}</td>
+                <td style={{ textAlign: 'center'}}>{stat.correctAttempts}/{stat.totalAttempts}</td>
+                <td style={{textAlign: 'center'}}>{stat.correctPercentage}%</td>
+                <td style={{ width:'20%',textAlign: 'center'}}>{stat.averagePoints}</td>
+                <td style={{ textAlign: 'center'}}>{stat.points}</td>
               </tr>
             ))}
           </tbody>

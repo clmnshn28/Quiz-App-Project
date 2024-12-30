@@ -35,7 +35,7 @@
 
 .QuizResult__stats-container {
     margin-left: 30px;
-    width: 28%;
+    width: 31%;
 }
 
 .QuizResult__stat-item {
@@ -44,7 +44,7 @@
 }
 
 .QuizResult__stat-label {
-    flex: 1.9;
+    flex: 2.3;
     font-weight: 500;
     color: #666;
     font-size: 20px;
@@ -52,7 +52,7 @@
 }
 
 .QuizResult__stat-value {
-    flex: 1.1;
+    flex: 1.5;
     color: #fff;
     font-size: 18px;
     font-weight: 500;
@@ -68,28 +68,26 @@
 
 /* SHOW ANSWER  */
 
-.results-detail {
-    margin-top: 30px;
-}
 
 .question-result {
-    background-color: white;
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px 50px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.result-header {
+.QuizResult__result-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+
 }
 
-.question-number {
-    font-weight: 500;
-    color: #333;
+.QuizResult__question-number {
+    font-weight: Bold;
+    color: #56575B;
+    font-size: 20px;
 }
 
 .result-icon {
@@ -98,8 +96,23 @@
 }
 
 .result-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
+}
+
+.QuizResult__question-text{
+    width: 100%; 
+    border: none;
+    border-radius: 7px;
+    background-color: #DDE9E6;
+    font-size: 16px;
+    color: #56575B;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    height: 45px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
 }
 
 .question-result.correct .result-icon svg {
@@ -110,28 +123,48 @@
     color: #f44336;
 }
 
-.answer-details {
-    border-top: 1px solid #eee;
-    padding-top: 15px;
+.QuizResult__answer-details {
+    border-top: 2px solid #c4c4c4;
+    padding-top: 10px;
+    margin-top: 20px;
 }
 
-.answer-row, .points-row {
+
+.QuizResult__answer-row, .QuizResult__points-row {
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
 }
 
-.answer-label, .points-label {
-    color: #666;
+.QuizResult__answer-label, .QuizResult__points-label {
+    color: #56575B;
     font-weight: 500;
 }
 
-.answer-value, .points-value {
-    color: #333;
+.QuizResult__answer-value, .QuizResult__points-value {
+    color: #56575B;
+    font-weight: 500;
     text-align: right;
 }
 
+.QuizResult__answer-value.answer-correct {
+    background-color: #d4edda; 
+    color: #155724; 
+    padding: 5px 10px;
+    border-radius: 4px;
+}
 
+.QuizResult__answer-value.answer-incorrect {
+    background-color: #f8d7da; 
+    color: #721c24; 
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.QuizResult__points-value {
+    margin-right: 7px;
+    font-weight: bolder;
+}
 
 
 

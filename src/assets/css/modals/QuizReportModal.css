@@ -133,13 +133,15 @@
 /* main report */
 .QuizReportModal__report-container {
     padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .QuizReportModal__stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
-    margin-bottom: 30px;
 }
 
 .QuizReportModal__stat-card {
@@ -248,11 +250,16 @@
     height: 16px;
 }
 
+
+
 .pdf-section {
     break-inside: avoid;
     background: white;
     border-radius: 8px;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .QuizReportModal__student-scores {
@@ -268,3 +275,4 @@
         page-break-inside: avoid;
     }
 }
+

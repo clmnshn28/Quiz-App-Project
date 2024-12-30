@@ -28,9 +28,27 @@
 
 .TakeQuiz__quiz-subtitle {
     font-size: 16px;
-    font-weight: 300;
+    font-weight: 400;
     color: #56575B;
     margin: 0;
+    margin-top: 10px;
+}
+
+.TakeQuiz__quiz-subtitle-total{
+    font-size: 16px;
+    font-weight: 400;
+    color: #727378;
+    position: absolute;
+    top: 20%;
+    right: 3%;
+}
+.TakeQuiz__quiz-subtitle-totaled{
+    margin-left: 5px;
+    padding: 5px;
+    border-radius: 7px;
+    color: #56575B;
+    background-color: #a0b8b1;
+    
 }
 
 .TakeQuiz__quiz-timer {
@@ -143,7 +161,9 @@
 .TakeQuiz__option-text {
     font-size: 1rem;
     color: #444;
+    margin-left: 15px;
 }
+
 
 /* True false */
 .options-container{
@@ -274,6 +294,8 @@
 .TakeQuiz__validation-error{
     color: #b72727;
     font-size: 0.875rem;
+    margin-top: 5px;
+    margin-left: 5px;
 }
 
 

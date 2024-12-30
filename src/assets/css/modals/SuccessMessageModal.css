@@ -20,6 +20,14 @@
     color: #5da693;
 }
 
+.ClosedClassModal__icon{
+    width: 65px;
+    height: 65px;
+    min-height: 65px;
+    min-width: 65px;
+    color: #A26768;
+}
+
 .SuccessMessageModal__message{
     color: #8f8f8f;
     font-weight: 500;

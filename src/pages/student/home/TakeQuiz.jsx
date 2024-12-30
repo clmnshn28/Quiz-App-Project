@@ -233,10 +233,14 @@ export const TakeQuiz = () => {
                                 index === currentQuestions.length - 1 ? 'last' : ''
                             }`}
                             >
-                                <p className="TakeQuiz__question-text">
-                                    {startIndex + index + 1}. {questionData.question_text}
-                                    <span className="QuizzesTeacher__ques-main-required">*</span>
-                                </p>
+                                <div className="ViewQuiz__question-header">
+                                    <p className="TakeQuiz__question-text">
+                                        {startIndex + index + 1}. {questionData.question_text}
+                                    </p>
+                                    <span className="ViewQuiz__question-points">
+                                        {questionData.points} {questionData.points === 1 ? 'point' : 'points'}
+                                    </span>
+                                </div>
 
                                 {questionData.question_type === 'MC' && (
                                     <div className="TakeQuiz__multi-options-container">
@@ -256,11 +260,7 @@ export const TakeQuiz = () => {
                                             )
                                         ))}
                                         {validationErrors[questionData.id] && (
-                                            <div className="TakeQuiz__validation-error" style={{
-                                                color: 'red',
-                                                fontSize: '0.875rem',
-                                                marginTop: '4px'
-                                            }}>
+                                            <div className="TakeQuiz__validation-error">
                                                 {validationErrors[questionData.id]}
                                             </div>
                                         )}
@@ -279,7 +279,7 @@ export const TakeQuiz = () => {
                                                     onChange={(e) => handleAnswerChange(questionData.id, e.target.value)}
                                                     required
                                                 />
-                                                <span className="TakeQuiz__option-text">{option}</span>
+                                                <span className="TakeQuiz__true-false-option-text">{option}</span>
                                             </label>
                                         ))}
                                         {validationErrors[questionData.id] && (
@@ -301,11 +301,7 @@ export const TakeQuiz = () => {
                                             required
                                         />
                                         {validationErrors[questionData.id] && (
-                                            <div className="TakeQuiz__validation-error" style={{
-                                                color: 'red',
-                                                fontSize: '0.875rem',
-                                                marginTop: '4px'
-                                            }}>
+                                            <div className="TakeQuiz__validation-error">
                                                 {validationErrors[questionData.id]}
                                             </div>
                                         )}

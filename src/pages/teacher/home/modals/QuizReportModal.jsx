@@ -257,7 +257,7 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                                     </div>
                                 </div>
 
-                            {/* Score Distribution Section */}   
+                                {/* Score Distribution Section */}   
                                 <div className="QuizReportModal__chart-section">
                                     <h3 className="QuizReportModal__chart-title">Score Distribution</h3>
                                     <div className="chart-wrapper">
@@ -282,7 +282,7 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                                     </div>
                                 </div>
 
-                            {/* Score Trends Section */}
+                                {/* Score Trends Section */}
                                 <div className="QuizReportModal__chart-section">
                                     <h3 className="QuizReportModal__chart-title">Score Trends</h3>
                                     <div className="chart-wrapper">
@@ -296,7 +296,7 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                                                     contentStyle={{ 
                                                         backgroundColor: '#a9d8cb',
                                                         borderRadius: '10px',
-                                                        height: '70px',
+                                                        height: '10px',
                                                         fontWeight: '600',
                                                         color: '#56575B',
                                                     }}
@@ -323,10 +323,10 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th>Student Name</th>
-                                                    <th>Score</th>
-                                                    <th>Points</th>
-                                                    <th>Date Taken</th>
+                                                    <th style={{fontSize:'15px', padding:'15px 0 15px 35px'}}>Student Name</th>
+                                                    <th style={{fontSize:'15px', padding:'15px'}}>Score</th>
+                                                    <th style={{fontSize:'15px', padding:'15px'}}>Points</th>
+                                                    <th style={{fontSize:'15px', padding:'15px'}}>Date Taken</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

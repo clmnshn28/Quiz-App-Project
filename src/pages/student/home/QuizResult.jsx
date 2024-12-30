@@ -67,8 +67,14 @@ export const QuizResult = () => {
                 }
 
                 const quizData = await quizResponse.json();
+                
+                // Create a map of questions by ID for efficient lookup
+                const questionsMap = new Map(
+                    quizData.questions.map(q => [q.id, q])
+                );
+                quizData.questionsMap = questionsMap;
+                
                 setQuiz(quizData);
-                console.log('Quiz Data:', quizData); // Add this
 
                 // Fetch class data if we have quiz data
                 if (quizData.classes && quizData.classes.length > 0) {
@@ -106,16 +112,11 @@ export const QuizResult = () => {
                     }
             
                     const attemptsData = await resultsResponse.json();
-                    console.log('Attempts Data:', attemptsData);
-            
                     if (attemptsData.length > 0) {
-                        console.log('First Attempt Data:', attemptsData[0]);
-                        console.log('Results field:', attemptsData[0].results);
                         setResults(attemptsData[0]);
                     } else {
                         throw new Error('No quiz attempt found. Please take the quiz first.');
                     }
-                    setLoading(false);
                 }
             } catch (err) {
                 setError(err.message);
@@ -129,6 +130,49 @@ export const QuizResult = () => {
 
         fetchData();
     }, [quizId, location.state, navigate]);
+
+    const renderQuestionResult = (result, index) => {
+        const question = quiz?.questionsMap?.get(result.question_id);
+        
+        if (!question) {
+            return null;
+        }
+
+        return (
+            <div key={result.question_id} className={`question-result ${result.correct ? 'correct' : 'incorrect'}`}>
+                <div className="QuizResult__result-header">
+                    <div className="QuizResult__question-number">Question {index + 1}</div>
+                    <div className="result-icon">
+                        {result.correct ? <CheckIcon /> : <XIcon />}
+                    </div>
+                </div>
+                <div className="QuizResult__question-text">
+                    <p>{question.question_text}</p>
+                    {!question.question_text && <p className="error-text">Question text not found</p>}
+                </div>
+                <div className="QuizResult__answer-details">
+                    <div className="QuizResult__answer-row">
+                        <span className="QuizResult__answer-label">Your answer:</span>
+                        <span className={`QuizResult__answer-value ${
+                            result.correct ? 'answer-correct' : 'answer-incorrect'
+                        }`}>{result.user_answer || 'No answer recorded'}</span>
+                    </div>
+                    {quiz.show_correct_answers && (
+                        <div className="QuizResult__answer-row">
+                            <span className="QuizResult__answer-label">Correct answer:</span>
+                            <span className="QuizResult__answer-value answer-correct">
+                                {result.correct_answer || 'No correct answer recorded'}
+                            </span>
+                        </div>
+                    )}
+                    <div className="QuizResult__points-row">
+                        <span className="QuizResult__points-label">Points:</span>
+                        <span className="QuizResult__points-value">{result.points} / {result.max_points}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <>
@@ -159,7 +203,9 @@ export const QuizResult = () => {
             
                     <div className="QuizResult__result-summary">
                         <div className="QuizResult__score-circle">
-                            <div className="QuizResult__score-value">{results?.score.toFixed(1)}%</div>
+                            <div className="QuizResult__score-value">
+                                {results?.score?.toFixed(1)}%
+                            </div>
                             <div className="QuizResult__score-label">Score</div>
                         </div>
                         
@@ -181,44 +227,8 @@ export const QuizResult = () => {
 
                     {quiz?.show_correct_answers && results?.results ? (
                         <div className="results-detail">
-                            {console.log('Rendering results:', results.results)}
                             {Array.isArray(results.results) ? (
-                                results.results.map((result, index) => {
-                                    console.log('Processing result item:', result);
-                                    const question = quiz.questions[index];
-                                    return (
-                                        <div key={index} className={`question-result ${result.correct ? 'correct' : 'incorrect'}`}>
-                                            <div className="result-header">
-                                                <div className="question-number">Question {index + 1}</div>
-                                                <div className="result-icon">
-                                                    {result.correct ? <CheckIcon /> : <XIcon />}
-                                                </div>
-                                            </div>
-                                            {question && (
-                                                <div className="question-text">
-                                                    <p>{question.question_text}</p>
-                                                    {!question.question_text && <p className="error-text">Question text not found</p>}
-                                                </div>
-                                            )}
-                                            <div className="answer-details">
-                                                <div className="answer-row">
-                                                    <span className="answer-label">Your answer:</span>
-                                                    <span className="answer-value">{result.user_answer || 'No answer recorded'}</span>
-                                                </div>
-                                                {quiz.show_correct_answers && (
-                                                    <div className="answer-row">
-                                                        <span className="answer-label">Correct answer:</span>
-                                                        <span className="answer-value">{result.correct_answer || 'No correct answer recorded'}</span>
-                                                    </div>
-                                                )}
-                                                <div className="points-row">
-                                                    <span className="points-label">Points:</span>
-                                                    <span className="points-value">{result.points} / {result.max_points}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })
+                                results.results.map((result, index) => renderQuestionResult(result, index))
                             ) : (
                                 <div className="error-message">
                                     Results data is not in the expected format.
@@ -235,14 +245,15 @@ export const QuizResult = () => {
                     )}
 
                     <div className="QuizResult__quiz-navigation">
-                    <button onClick={() => navigate(`/student/home/class/${classData?.id}`)} className="QuizResult__done-button">
-                        Done
-                    </button>
+                        <button 
+                            onClick={() => navigate(`/student/home/class/${classData?.id}`)} 
+                            className="QuizResult__done-button"
+                        >
+                            Done
+                        </button>
                     </div>
                 </div>
             )}
         </>
     );
 };
-
-export default QuizResult;

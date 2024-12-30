@@ -82,8 +82,6 @@ export const ViewQuiz = () => {
     const endIndex = Math.min(startIndex + questionsPerPage, quiz.questions.length);
     const currentQuestions = quiz.questions.slice(startIndex, endIndex);
     const totalPages = Math.ceil(quiz.questions.length / questionsPerPage);
-
-    const getOptionLetter = (index) => ['A', 'B', 'C', 'D'][index];
     
     return (
         <>
@@ -103,7 +101,11 @@ export const ViewQuiz = () => {
                 <div className="TakeQuiz__quiz-header">
                     <div className="TakeQuiz__title-section">
                         <h1 className="TakeQuiz__section-header">{quiz?.title || 'Quiz Title'}</h1>
-                        <p className="TakeQuiz__quiz-subtitle">Total Questions: {quiz?.questions.length || 0}</p>
+                        <p className="TakeQuiz__quiz-subtitle">Read each question carefully before answering.</p>
+                        <p className="TakeQuiz__quiz-subtitle-total">
+                            Total Questions: 
+                            <strong className="TakeQuiz__quiz-subtitle-totaled">{quiz?.questions.length || 0}</strong>
+                        </p>
                     </div>
                 </div>
 
@@ -112,11 +114,11 @@ export const ViewQuiz = () => {
                     <div key={questionData.id} className={`TakeQuiz__question-container ${
                         index === currentQuestions.length - 1 ? 'last' : ''
                     }`}>
-                        <div className="TakeQuiz__question-header">
+                        <div className="ViewQuiz__question-header">
                             <p className="TakeQuiz__question-text">
                                 {startIndex + index + 1}. {questionData.question_text}
                             </p>
-                            <span className="TakeQuiz__question-points">
+                            <span className="ViewQuiz__question-points">
                                 {questionData.points} {questionData.points === 1 ? 'point' : 'points'}
                             </span>
                         </div>
@@ -135,16 +137,19 @@ export const ViewQuiz = () => {
                                     return (
                                         <div 
                                             key={option.key} 
-                                            className={`TakeQuiz__option-label ${isCorrect ? 'correct' : ''}`}
+                                            className={`ViewQuiz__option-label ${isCorrect ? 'correct' : ''}`}
                                         >
-                                            <div className="TakeQuiz__option-number">
-                                                {getOptionLetter(optionIndex)}.
-                                            </div>
+                                            <input
+                                                type="radio"
+                                                name={`question-${questionData.id}`}
+                                                checked={isCorrect} 
+                                                readOnly
+                                            />
                                             <div className="TakeQuiz__option-text">
                                                 {option.value}
                                             </div>
                                             {isCorrect && (
-                                                <div className="TakeQuiz__correct-mark">✓</div>
+                                                <div className="ViewQuiz__correct-mark">✓</div>
                                             )}
                                         </div>
                                     );
@@ -160,13 +165,19 @@ export const ViewQuiz = () => {
                                     return (
                                         <div 
                                             key={option} 
-                                            className={`TakeQuiz__option-label ${isCorrectAnswer ? 'correct' : ''}`}
+                                            className={`ViewQuiz__option-label ${isCorrectAnswer ? 'correct' : ''}`}
                                         >
-                                            <div className="TakeQuiz__option-text">
+                                            <input
+                                                type="radio"
+                                                name={`question-${questionData.id}`}
+                                                checked={isCorrectAnswer} 
+                                                readOnly
+                                            />
+                                            <div className="TakeQuiz__true-false-option-text">
                                                 {option}
                                             </div>
                                             {isCorrectAnswer && (
-                                                <div className="TakeQuiz__correct-mark">✓</div>
+                                                <div className="ViewQuiz__correct-mark">✓</div>
                                             )}
                                         </div>
                                     );
@@ -176,7 +187,7 @@ export const ViewQuiz = () => {
 
                         {questionData.question_type === 'ID' && (
                             <div className='TakeQuiz__input-short-container'>
-                                <div className="TakeQuiz__correct-answer-display">
+                                <div className="ViewQuiz__correct-answer-display">
                                     Correct Answer: {questionData.correct_answer}
                                 </div>
                             </div>
@@ -193,14 +204,21 @@ export const ViewQuiz = () => {
                                 Back
                             </button>
                         )}
-                        {currentPage < totalPages - 1 && (
-                            <button 
-                                className="TakeQuiz__submit-quiz-button"
-                                onClick={goToNextPage}
-                            >
-                                Next
-                            </button>
-                        )}
+                        {currentPage === totalPages - 1 ? (
+                                <button 
+                                    className="TakeQuiz__submit-quiz-button"
+                                    onClick={() => navigate(`/teacher/home/class/${classData?.id}`)}
+                                >
+                                    Done
+                                </button>
+                            ) : (
+                                <button 
+                                    className="TakeQuiz__submit-quiz-button"
+                                    onClick={goToNextPage}
+                                >
+                                    Next
+                                </button>
+                            )}
                     </div>
                 </div>
             </div>
