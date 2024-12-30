@@ -1,0 +1,24 @@
+
+.delete-modal-container {
+    background: #fff;
+    padding: 25px 34px;
+    border-radius: 10px;
+    width: 550px;
+    max-width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.delete-modal-content {
+    padding: 20px;
+}
+
+.delete-modal-title {
+    color: #A26768;
+    margin: 0;
+    margin-bottom: 20px;
+    font-size: 27px;
+    font-family: 'Inter', sans-serif;
+}

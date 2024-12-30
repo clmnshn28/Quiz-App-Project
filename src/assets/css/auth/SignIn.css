@@ -118,7 +118,7 @@ body{
 /* forgot pass */
 .LoginUser__forgot-password-container {
     text-align: right;
-    margin-bottom:50px;
+    margin-bottom:80px;
 }
 
 .LoginUser__forgot-password-container a {

@@ -1,0 +1,255 @@
+
+.AddQuestionModal__container {
+    background: white;
+    border-radius: 12px;
+    width: 47%;
+    padding: 17px 30px 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.AddQuestionModal__header-title{
+    font-size: 28px;
+    color: #56575B;
+    font-weight: 600;
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+    width: 100%;
+    position: relative;
+}
+
+.AddQuestionModal__label{
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.AddQuestionModal__label-selected{
+    color: #a7a7a7;
+}
+
+.AddQuestionModal__input {
+    width: 100%; 
+    border: none;
+    border-radius: 7px;
+    background-color: #DDE9E6;
+    font-size: 15px;
+    color: #56575B;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    height: 45px;
+    padding: 10px 16px;
+    box-sizing: border-box; 
+}
+
+.AddQuestionModal__input:focus{
+    outline: none; 
+}
+
+/* question type */
+.AddQuestionModal__question-type-content{
+    width: 100%;
+    position: relative;
+}
+/* points */
+.AddQuestionModal__type-point-container{
+    display: flex;
+    gap: 20px;
+}
+
+.AddQuestionModal__answer-label-container{
+    margin-top: 10px;
+    position: relative;
+}
+
+
+
+
+
+
+/* IDENTIFICATION ANSWER */
+.AddQuestionModal__answer-identification-input{
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #E5E7EB;
+    border-radius: 4px;
+    font-family: 'inter';
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    background: white;
+}
+
+.AddQuestionModal__answer-identification-input:focus{
+    outline: none;
+}
+
+.AddQuestionModal__question-type-icon {
+    width: 23px;
+    height: 23px;
+    min-height: 23px;
+    min-width: 23px;
+    color: #70B6A5;
+}
+
+
+.AddQuestionModal__answer-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background-color: #E8F1F0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    width: 100%;
+}
+
+.AddQuestionModal__answer-container input[type="radio"] {
+    display: none;
+}
+
+
+.AddQuestionModal__answer-container span {
+    font-size: 14px;
+}
+
+
+/* true false */
+.AddQuestionModal__true-false-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.AddQuestionModal__correct-indicator-container{
+    width: 100%;
+    text-align: end;
+}
+
+.AddQuestionModal__correct-indicator{
+    font-weight: 500;
+    color: #fff;
+    background-color: #70B6A5;
+    padding: 4px 8px;
+    border-radius: 5px;
+}
+
+
+
+
+
+
+
+/* 
+.remove-answer-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-answer-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.add-answer-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 14px;
+    padding: 0;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.add-answer-btn svg {
+    width: 16px;
+    height: 16px;
+} */
+
+
+
+
+/* Multiple Choice specific styles */
+.multiple-choice-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.AddQuestionModal__multiple-choice-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.AddQuestionModal__multiple-choice-option .radio-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #E8F1F0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 0;
+}
+
+.AddQuestionModal__multiple-choice-option .radio-icon {
+    width: 18px;
+    height: 18px;
+    color: #70B6A5;
+}
+
+.option-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'inter';
+    color: #333;
+    width: 100%;
+    padding: 6px 0;
+}
+
+.option-input:focus {
+    outline: none;
+}
+
+/* .multiple-choice-option .remove-answer-btn {
+    padding: 4px;
+    margin-left: 4px;
+}
+
+.multiple-choice-option .remove-answer-btn svg {
+    width: 16px;
+    height: 16px;
+    color: #666;
+} */
+
+
+/* button */
+.AddQuestionModal__btn-action{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}

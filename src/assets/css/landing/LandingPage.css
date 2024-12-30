@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 
+html {
+    scroll-behavior: smooth;
+}
+
 .LandingPage__content{
     min-width: 100vw;
     min-height: 100vh;
@@ -8,13 +12,12 @@
 }
 
 
-
 header{
     background-color: #A7CDC3;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 30px 80px 30px 110px;
+    padding: 25px 80px 25px 110px;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -41,7 +44,7 @@ header{
 }
 
 /* navigation */
-nav a {
+.LandingPage__logo-nav {
     position: relative;
     margin-right: 100px;
     text-decoration: none;
@@ -53,7 +56,7 @@ nav a {
     text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
 }
 
-nav a::after {
+.LandingPage__logo-nav::after {
     content: '';
     position: absolute;
     bottom: -5px; 
@@ -65,11 +68,11 @@ nav a::after {
     transform: translateX(-50%);
 }
 
-nav a:hover {
+.LandingPage__logo-nav:hover {
     color: #56575B;
 }
 
-nav a:hover::after {
+.LandingPage__logo-nav:hover::after {
     width: 100%; 
 }
 
@@ -216,10 +219,206 @@ nav a:hover::after {
 
 
 
+
+
+
+
 /* section 2 */
+.LandingPage__overview{
+    background: linear-gradient(to bottom, #67A292, #dff1ec); 
+    height: 50em;
+    padding: 150px 20px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
+.LandingPage__overview-header{
+    font-size: 4em;
+    margin: 20px 0 50px ;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    cursor: context-menu;
+}
+
+.LandingPage__overview-left{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 30px 0 80px;
+}
+
+.LandingPage__overview-left h3{
+    font-size: 60px;
+    margin: 0;
+    margin-bottom: 20px;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+.LandingPage__overview-left p{
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    text-indent: 2em;
+    text-align: justify;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3); 
+}
+
+
+.LandingPage__overview-right{
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.LandingPage__overview-card-content{
+    margin: 0 50px 0 20px;
+    list-style-type: none;
+}
+
+
+.LandingPage__overview-list-content{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.LandingPage__overview-list-icon{
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+
+.LandingPage__overview-card {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    background: #578a7d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  .LandingPage__overview-card::before,
+  .LandingPage__overview-card::after {
+    position: absolute;
+    content: "";
+    width: 20%;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    background-color: #67A292;
+    transition: all 1s;
+    z-index: 0;
+  }
+  
+  .LandingPage__overview-card::before {
+    top: 0;
+    right: 0;
+    border-radius: 0 15px 0 100%;
+  }
+  
+  .LandingPage__overview-card::after {
+    bottom: 0;
+    left: 0;
+    border-radius: 0 100%  0 15px;
+  }
+
+  .span_overview{
+    font-size: 40px;
+  }
+  
+  .LandingPage__overview-card-content {
+    display: none; 
+    list-style-type: none;
+    padding: 10px;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 3s ease;
+    z-index: 1; 
+  }
+  
+  .LandingPage__overview-card-content.visible {
+    display: block; 
+    opacity: 1; 
+    transition: opacity  3s ease;
+  }
+
+  .LandingPage__overview-card.hovered::before,
+  .LandingPage__overview-card.hovered::after {
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    transition: all 1s;
+  }
+
+
+
+
+
+
+/* section 3 */
 .LandingPage__about-us{
-    background: linear-gradient(to bottom, #67A292, white); 
-    height: 60em;
+    background: linear-gradient(to bottom, #dff1ec, #67A292); 
+    height: 50em;
+    padding: 100px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.LandingPage__about-us-header-container{
+    position: relative;
+}
+
+.LandingPage__about-us-header{
+    font-size: 4em;
+    margin: 20px 0 50px ;
+    color: #67A292;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+    cursor: context-menu;
+}
+
+.LandingPage__about-us-details-container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.LandingPage__about-us-person{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 17em;
+    margin-bottom: 20px;
+}
+
+.LandingPage__about-us-person img{
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.LandingPage__about-us-person p{
+    font-size: 18px;
+    font-weight: 600;
+    color: #56575B;
 }
 
 
@@ -227,7 +426,7 @@ nav a:hover::after {
 
 /* footer */
 footer {
-    background-color: #67A292;
+    background-color: #639588;
     color: white;
     text-align: center;
 }

@@ -1,0 +1,147 @@
+
+.EnterClassStudent__loading-container{
+    margin-top: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Content Section */
+
+.EnterClassStudent__quiz-item {
+    display: flex;
+    align-items: center;
+    padding: 13px 20px;
+    background-color: #c8dfd9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    position: relative;
+}
+
+.EnterClassStudent__quiz-item:active {
+    opacity: 0.9;
+}
+
+
+.EnterClassStudent__quiz-icon-container{
+    background-color: #5BA092;
+    padding: 9px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 25px;
+}
+
+.EnterClassStudent__quiz-icon{
+    width: 23px;
+    height: 23px;
+    min-height: 23px;
+    min-width: 23px;
+}
+
+.EnterClassStudent__quiz-name{
+    color: #56575B;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.EnterClassStudent__quiz-info{
+    /* background-color: bisque; */
+    margin-left: auto;
+    flex-direction: column;
+    display: flex;
+    align-items: end;
+    /* position: relative; */
+}
+
+
+.EnterClassStudent__quiz-timing{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 3px;
+}
+
+
+.EnterClassStudent__quiz-status{
+    color: #5BA092;
+    font-size: 14px;
+    font-weight: 600;
+    position: absolute;
+    right: 25%;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* status */
+.UsersAdmin__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block; 
+    background-color: #6aafa2; 
+    position: relative; 
+  }
+  
+  .UsersAdmin__active::after {
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    border-radius: 50%; 
+    background-color: rgba(1, 204, 1, 0.5); 
+    animation: echo-simple 1.5s infinite ease-out; 
+  }
+  
+  @keyframes echo-simple {
+    0% {
+        transform: scale(1); 
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2.3);
+        opacity: 0; /* Fade out */
+    }
+  }
+  
+
+
+.EnterClassStudent__quiz-due-date{
+    color: #6c6d70;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.EnterClassStudent__quiz-duration{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    background-color: #7cb4aa;
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
+.EnterClassStudent__quiz-closed{
+    background-color: #a2a3a6;
+    padding: 4px 7px;
+    border-radius: 5px;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.EnterClassStudent__no-available{
+    color: #c6c8cd;
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 auto;
+    margin-top: 30px;
+}

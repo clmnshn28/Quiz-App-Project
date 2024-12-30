@@ -1,11 +1,15 @@
 import React, {useState, useEffect} from "react";
 import 'assets/css/student';
+import { useNavigate } from 'react-router-dom';
+
 import { FiLogIn } from "react-icons/fi";
 import { TbCopy } from "react-icons/tb";
 import { CreateClassModal } from "./modals/CreateClassModal";
 import { SuccessMessageModal } from "./modals";
 
 export const HomeTeacher = () => {
+    const navigate = useNavigate();
+
     const [isCreateClassModalOpen, setIsCreateClassModalOpen] = useState(false);
     const [fname, setFname] = useState('');
     const [classes, setClasses] = useState([]);
@@ -143,6 +147,10 @@ export const HomeTeacher = () => {
         return `It's ${dayName}, ${day} ${month} ${year}`;
     };
 
+    const handleStartClass = (classId) => {
+        navigate(`class/${classId}`);
+    };
+
     return(
         <>
             <div className="HomeStudent__main-header">
@@ -189,6 +197,7 @@ export const HomeTeacher = () => {
                                 <button 
                                     className="card-start"
                                     style={{ backgroundColor: colors.startColor }}
+                                    onClick={() => handleStartClass(classItem.id)}
                                 >
                                     <FiLogIn className="HomeStudent__join-icon"/> 
                                 </button>

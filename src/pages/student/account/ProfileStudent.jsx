@@ -1,13 +1,16 @@
 import React, {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import 'assets/css/student';
 import PasswordRequirements from 'components/PasswordRequirements';
 import ButtonGroup from 'components/ButtonGroup';
 import * as images from 'assets/images';
 
 import { BiEditAlt } from "react-icons/bi";
-import { SuccessMessageModal } from "./modals";
+import { DeleteAccountModal, SuccessDeleteModal, SuccessMessageModal } from "./modals";
 
 export const ProfileStudent = () => {
+    const navigate = useNavigate();
+    
     const [fname, setFname] = useState('');
     const [lname, setLname] = useState('');
     const [username, setUsername] = useState('');
@@ -23,6 +26,9 @@ export const ProfileStudent = () => {
       
     const [successMessageModal, setSuccessMessageModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+
+    const [deleteAccountModal, setDeleteAccountModal] = useState(false);
+    const [successDeleteAccountModal, setSuccessDeleteAccountModal] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -249,16 +255,46 @@ export const ProfileStudent = () => {
         }
     };
 
+    // DELETE ACCOUNT
+    const handleDeleteAccount = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await fetch('https://apiquizapp.pythonanywhere.com/api/users/delete_account/', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+
+            if (response.ok) {
+                // Clear all local storage data
+                localStorage.clear();
+                
+                setSuccessDeleteAccountModal(true);
+                setDeleteAccountModal(false);
+            } else {
+                const data = await response.json();
+                console.error('Failed to delete account:', data.error);
+                // You might want to show an error message to the user here
+            }
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            // Handle error appropriately
+        }
+    };
+
+    // success delete modal
+    const handleSuccessDeleteAccount = () =>{
+        // Navigate to sign-in page
+        navigate('/sign-in');
+        setSuccessDeleteAccountModal(false);
+    };
+
     return(
         <>
             <div className="HomeStudent__main-header">
                 <h1>Settings</h1>
             </div>
-            {successMessage && (
-                <div className="ProfileStudent__success-message">
-                    {successMessage}
-                </div>
-            )}
             <div className="ProfileStudent__profile-container">
                 <div className="ProfileStudent__card-header">
                     <h5 className="ProfileStudent__card-header-user fw-bold">User Profile</h5>
@@ -304,7 +340,7 @@ export const ProfileStudent = () => {
                         <label>First Name</label>
                         <input
                         type="text"
-                        value={fname || "-"}
+                        value={fname}
                         onChange={handleFnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -315,7 +351,7 @@ export const ProfileStudent = () => {
                         <label>Last Name</label>
                         <input
                         type="text"
-                        value={lname || "-"}
+                        value={lname}
                         onChange={handleLnameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -326,7 +362,7 @@ export const ProfileStudent = () => {
                         <label>Username</label>
                         <input
                         type="text"
-                        value={username || "-"}
+                        value={username}
                         onChange={handleUsernameChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -342,7 +378,7 @@ export const ProfileStudent = () => {
                         <label>Email Address</label>
                         <input
                         type="text"
-                        value={email || "-"}
+                        value={email}
                         onChange={handleEmailChange}
                         disabled={!isEditingProfile}
                         className="ProfileStudent__input"
@@ -443,10 +479,27 @@ export const ProfileStudent = () => {
                     )}
                 </form>
             </div>
+
+            <div className="ProfileStudent__profile-container">
+                <h5 className="ProfileStudent__card-header-user delete-account">Account Deletion</h5>
+                <p className="ProfileStudent__delete-desc">Deleting your account is permanent and cannot be undone.</p>
+                <button  className="ProfileStudent__button-delete" onClick={()=> setDeleteAccountModal(true)}>
+                    Delete Account
+                </button>
+            </div>
             <SuccessMessageModal
                 isOpen={successMessageModal}
                 onClose={()=>setSuccessMessageModal(false)}
                 successMessage={successMessage}
+            />
+            <DeleteAccountModal
+                isOpen={deleteAccountModal}
+                onClose={()=> setDeleteAccountModal(false)}
+                onDelete ={handleDeleteAccount}
+            />
+            <SuccessDeleteModal
+                isOpen={successDeleteAccountModal}
+                onClose={handleSuccessDeleteAccount}
             />
         </>
     );

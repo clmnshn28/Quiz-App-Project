@@ -1,10 +1,14 @@
 import React, {useState, useEffect} from "react";
 import 'assets/css/student';
+import { useNavigate } from 'react-router-dom';
+
 import { FiLogIn } from "react-icons/fi";
 import { JoinClassModal } from "./modals/JoinClassModal";
 import { SuccessMessageModal } from "./modals";
 
 export const HomeStudent = () => {
+    const navigate = useNavigate();
+
     const [isJoinClassModalOpen, setIsJoinClassModalOpen] = useState(false);
     const [fname, setFname] = useState('');
     const [classes, setClasses] = useState([]);
@@ -50,7 +54,6 @@ export const HomeStudent = () => {
             if (response.ok) {
                 const classesData = await response.json();
                 setClasses(classesData.sort((a, b) => b.id - a.id));
-                console.log(classesData);
             } else {
                 console.error('Failed to fetch classes');
             }
@@ -130,6 +133,10 @@ export const HomeStudent = () => {
         return `It's ${dayName}, ${day} ${month} ${year}`;
     };
 
+    const handleStartClass = (classId) => {
+        navigate(`class/${classId}`);
+    };
+
     return(
         <>
             <div className="HomeStudent__main-header">
@@ -160,7 +167,6 @@ export const HomeStudent = () => {
                                 style={{ backgroundColor: colors.cardColor }}
                             >
                                 <p className="card-title">{classItem.name}</p>
-                                <p className="card-instructor">{classItem.section}</p>
                                 <p className="card-instructor">
                                     Instructor: {classItem.teacher?.first_name && classItem.teacher?.last_name
                                         ? `${classItem.teacher.first_name} ${classItem.teacher.last_name}`
@@ -169,6 +175,7 @@ export const HomeStudent = () => {
                                 <button
                                     className="card-start"
                                     style={{ backgroundColor: colors.startColor }}
+                                    onClick={() => handleStartClass(classItem.id)}
                                 >
                                     <FiLogIn className="HomeStudent__join-icon" />
                                 </button>

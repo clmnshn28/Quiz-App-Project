@@ -1,0 +1,104 @@
+.QuizzesTeacher__time-picker {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-radius: 4px;
+}
+
+.QuizzesTeacher__time-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.QuizzesTeacher__time-input {
+    width: 100px;
+    height: 40px;
+    text-align: center;
+    background-color: #DDE9E6;
+    border: none;
+    color: #56575B;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    border-radius: 4px;
+    font-size: 19px;
+    cursor: pointer;
+    letter-spacing: 3px;
+}
+
+.QuizzesTeacher__time-input:focus {
+    outline: none;
+}
+
+.QuizzesTeacher__time-dropdown {
+    position: absolute;
+    top: -500%;
+    left: 0;
+    width: 100px;
+    max-height: 200px;
+    font-weight: 600;
+    overflow-y: auto;
+    color: #56575B;
+    background: #A7CDC3;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.QuizzesTeacher__time-option {
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.5s, color 0.5s ;
+}
+
+.QuizzesTeacher__time-option:hover {
+    background-color: #67A292;
+    color: #ffffff;
+}
+
+.QuizzesTeacher__time-option.selected {
+    background-color: #79b9a8;
+    color: #ffffff;
+}
+
+.QuizzesTeacher__time-label {
+    color: #9E9E9E;
+    font-size: 20px;
+}
+
+.QuizzesTeacher__time-colon-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.QuizzesTeacher__time-colon {
+    color: #B1CAC3;
+    width: 20px;
+    height: 20px;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+/* Scrollbar styling */
+.QuizzesTeacher__time-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.QuizzesTeacher__time-dropdown::-webkit-scrollbar-track {
+    background: #c8ded9;
+    border-radius: 3px;
+}
+
+.QuizzesTeacher__time-dropdown::-webkit-scrollbar-thumb {
+    background: #7db7a7;
+    border-radius: 3px;
+}
+
+.QuizzesTeacher__time-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #71a899;
+}

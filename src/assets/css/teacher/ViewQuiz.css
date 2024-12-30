@@ -1,0 +1,106 @@
+
+
+/* Question header with points */
+.ViewQuiz__question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.ViewQuiz__question-points {
+    background-color: #DDE9E6;
+    color: #67A292;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+/* Option styling */
+.ViewQuiz__option-label {
+    display: flex;
+    width: 40%;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    position: relative;
+}
+
+.ViewQuiz__option-label.correct {
+    background-color: #DDE9E6;
+    border: 2px solid #67A292;
+}
+
+
+/* radio */
+.ViewQuiz__option-label input[type="radio"]{
+    appearance: none; 
+    width: 20px; 
+    height: 20px;
+    border: 2px solid #77787c; 
+    border-radius: 50%; 
+    background-color: #f8f9fa; 
+    display: inline-block;
+    position: relative;
+  
+}
+
+.ViewQuiz__option-label input[type="radio"]:checked {
+    background-color: #f8f9fa; 
+    border-color: #56575B; 
+}
+
+.ViewQuiz__option-label input[type="radio"]::after {
+    content: '';
+    width: 10px; 
+    height: 10px;
+    background-color: #56575B; 
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden; 
+}
+
+.ViewQuiz__option-label input[type="radio"]:checked::after {
+    visibility: visible; 
+}
+
+
+.ViewQuiz__correct-mark {
+    position: absolute;
+    right: 4%;
+    font-size: 25px;
+    color: #67A292;
+    font-weight: bold;
+}
+
+
+/* Identification answer display */
+.ViewQuiz__correct-answer-display {
+    background-color: #DDE9E6;
+    border: 1px solid #67A292;
+    padding: 12px 16px;
+    border-radius: 6px;
+    color: #56575B;
+    font-weight: 500;
+}
+
+/* Multiple choice container */
+.ViewQuiz__multi-options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.TakeQuiz__true-false-option-text {
+    font-size: 1rem;
+    color: #444;
+    margin-left: 15px;
+}

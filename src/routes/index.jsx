@@ -6,10 +6,10 @@ import { LandingPage } from 'pages/landing';
 import {SignIn, SignUp} from 'pages/auth';
 import { StudentLayout, TeacherLayout } from 'layouts/main_layouts';
 
-import { HomeStudent } from 'pages/student/home';
+import { HomeStudent, EnterClassStudent, TakeQuiz, QuizResult } from 'pages/student/home';
 import { ProfileStudent } from 'pages/student/account';
 
-import { HomeTeacher } from 'pages/teacher/home';
+import { HomeTeacher, EnterClassTeacher, ViewQuiz } from 'pages/teacher/home';
 import { QuizzesTeacher } from 'pages/teacher/quizzes';
 import { QuizBankTeacher } from 'pages/teacher/quiz-bank';
 import { ProfileTeacher } from 'pages/teacher/account';
@@ -29,6 +29,9 @@ const MainRoutes = () =>{
                     </PrivateRoute>
                 }>
                     <Route path="home" element={<HomeStudent />} /> 
+                    <Route path="home/class/:classId" element={<EnterClassStudent />} />
+                    <Route path="home/class/:classId/quiz/:quizId" element={<TakeQuiz />} />
+                    <Route path="home/class/:classId/quiz/:quizId/results" element={<QuizResult />} />
                     <Route path="settings" element={<ProfileStudent />} />
                 </Route>
 
@@ -38,8 +41,10 @@ const MainRoutes = () =>{
                     </PrivateRoute>
                 }>
                     <Route path="home" element={<HomeTeacher />} />
+                    <Route path="home/class/:classId" element={<EnterClassTeacher />} />
+                    <Route path="home/class/:classId/quiz/:quizId" element={<ViewQuiz />} />
                     <Route path="quizzes" element={<QuizzesTeacher />} /> 
-                    <Route path="quiz-bank" element={<QuizBankTeacher />} />  
+                    <Route path="question-bank" element={<QuizBankTeacher />} />  
                     <Route path="settings" element={<ProfileTeacher />} />
                 </Route>
             </Routes>
