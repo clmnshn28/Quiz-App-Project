@@ -2,13 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import Modal from "components/Modal";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaDownload } from 'react-icons/fa';
-import html2pdf from 'html2pdf.js';
+import QuestionSummaryWithCharts from './QuestionSummaryWithCharts';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import 'assets/css/modals';
 
 export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reportData, setReportData] = useState(null);
+    const [questionStats, setQuestionStats] = useState([]);
+    const [studentScores, setStudentScores] = useState([]);
     const reportRef = useRef();
 
     useEffect(() => {
@@ -33,11 +37,64 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
 
             const attempts = await response.json();
             processReportData(attempts);
+            processQuestionStats(attempts);
+            processStudentScores(attempts);
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const processQuestionStats = (attempts) => {
+        if (!attempts.length || !attempts[0].results) return;
+
+        // Initialize question statistics
+        const questionStats = {};
+
+        attempts.forEach(attempt => {
+            attempt.results.forEach(result => {
+                if (!questionStats[result.question_id]) {
+                    questionStats[result.question_id] = {
+                        questionId: result.question_id,
+                        totalAttempts: 0,
+                        correctAttempts: 0,
+                        points: result.max_points,
+                        averagePoints: 0,
+                    };
+                }
+
+                questionStats[result.question_id].totalAttempts++;
+                if (result.correct) {
+                    questionStats[result.question_id].correctAttempts++;
+                }
+                questionStats[result.question_id].averagePoints += result.points;
+            });
+        });
+
+        // Calculate percentages and averages
+        const statsArray = Object.values(questionStats).map(stat => ({
+            ...stat,
+            correctPercentage: ((stat.correctAttempts / stat.totalAttempts) * 100).toFixed(1),
+            averagePoints: (stat.averagePoints / stat.totalAttempts).toFixed(1),
+        }));
+
+        setQuestionStats(statsArray);
+        console.log(questionStats);
+    };
+
+    const processStudentScores = (attempts) => {
+        const scores = attempts.map(attempt => ({
+            studentName: `${attempt.student.first_name} ${attempt.student.last_name}`,
+            score: attempt.score,
+            attemptDate: new Date(attempt.attempt_datetime).toLocaleDateString(),
+            totalPoints: attempt.total_points,
+            maxPoints: attempt.max_points,
+        }));
+
+        // Sort by score in descending order
+        scores.sort((a, b) => b.score - a.score);
+        setStudentScores(scores);
     };
 
     const processReportData = (attempts) => {
@@ -90,24 +147,60 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
         });
     };
 
-    const handleDownloadPDF = () => {
-        const element = reportRef.current;
-        const opt = {
-            margin: 1,
-            filename: `${quizTitle.replace(/\s+/g, '-')}_report.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2,
-                useCORS: true,
-                logging: true
-            },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
+    const handleDownloadPDF = async () => {
+        try {
+            const element = reportRef.current;
+            const sections = element.querySelectorAll('.pdf-section');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: 'a4'
+            });
 
-        // Wait for charts to be fully rendered
-        setTimeout(() => {
-            html2pdf().set(opt).from(element).save();
-        }, 500);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const margin = 40; // margin in pixels
+
+            // Function to add a section to PDF
+            const addSectionToPDF = async (section, isFirstPage) => {
+                const canvas = await html2canvas(section, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    windowWidth: 1200, // Force consistent width
+                    onclone: (clonedDoc) => {
+                        // Ensure charts are rendered properly
+                        const charts = clonedDoc.getElementsByClassName('recharts-wrapper');
+                        Array.from(charts).forEach(chart => {
+                            chart.style.width = '100%';
+                            chart.style.height = '300px';
+                        });
+                    }
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const aspectRatio = canvas.width / canvas.height;
+                const imgWidth = pdfWidth - (margin * 2);
+                const imgHeight = imgWidth / aspectRatio;
+
+                if (!isFirstPage) {
+                    pdf.addPage();
+                }
+
+                pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
+            };
+
+            // Process each section
+            for (let i = 0; i < sections.length; i++) {
+                await addSectionToPDF(sections[i], i === 0);
+            }
+
+            pdf.save(`${quizTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase()}_report.pdf`);
+        } catch (error) {
+            console.error('PDF generation failed:', error);
+            alert('Failed to generate PDF. Please try again.');
+        }
     };
 
     if (!isOpen) return null;
@@ -124,7 +217,7 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                                 onClick={handleDownloadPDF}
                                 title="Download PDF"
                             >
-                                <FaDownload className="download-icon" /> Generate PDF
+                                <FaDownload className="download-icon" /> Download PDF
                             </button>
                         )}
                     </div>
@@ -143,71 +236,110 @@ export const QuizReportModal = ({ isOpen, onClose, quizId, quizTitle }) => {
                         <div className="no-data-message">No attempts recorded for this quiz yet.</div>
                     ) : (
                         <div className="QuizReportModal__report-container">
-                            <div className="QuizReportModal__stats-grid">
-                                <div className="QuizReportModal__stat-card">
-                                    <div className="QuizReportModal__stat-label">Total Attempts</div>
-                                    <div className="QuizReportModal__stat-value">{reportData.totalAttempts}</div>
+                            {/* Stats Grid Section */}
+                            <div className="pdf-section">
+                                <div className="QuizReportModal__stats-grid">
+                                    <div className="QuizReportModal__stat-card">
+                                        <div className="QuizReportModal__stat-label">Total Attempts</div>
+                                        <div className="QuizReportModal__stat-value">{reportData.totalAttempts}</div>
+                                    </div>
+                                    <div className="QuizReportModal__stat-card">
+                                        <div className="QuizReportModal__stat-label">Average Score</div>
+                                        <div className="QuizReportModal__stat-value">{reportData.averageScore}%</div>
+                                    </div>
+                                    <div className="QuizReportModal__stat-card">
+                                        <div className="QuizReportModal__stat-label">Highest Score</div>
+                                        <div className="QuizReportModal__stat-value">{reportData.highestScore}%</div>
+                                    </div>
+                                    <div className="QuizReportModal__stat-card">
+                                        <div className="QuizReportModal__stat-label">Lowest Score</div>
+                                        <div className="QuizReportModal__stat-value">{reportData.lowestScore}%</div>
+                                    </div>
                                 </div>
-                                <div className="QuizReportModal__stat-card">
-                                    <div className="QuizReportModal__stat-label">Average Score</div>
-                                    <div className="QuizReportModal__stat-value">{reportData.averageScore}%</div>
-                                </div>
-                                <div className="QuizReportModal__stat-card">
-                                    <div className="QuizReportModal__stat-label">Highest Score</div>
-                                    <div className="QuizReportModal__stat-value">{reportData.highestScore}%</div>
-                                </div>
-                                <div className="QuizReportModal__stat-card">
-                                    <div className="QuizReportModal__stat-label">Lowest Score</div>
-                                    <div className="QuizReportModal__stat-value">{reportData.lowestScore}%</div>
-                                </div>
-                            </div>
 
-                            <div className="QuizReportModal__charts-container">
+                            {/* Score Distribution Section */}   
                                 <div className="QuizReportModal__chart-section">
                                     <h3 className="QuizReportModal__chart-title">Score Distribution</h3>
                                     <div className="chart-wrapper">
                                         <ResponsiveContainer width="100%" height={300}>
-                                            <BarChart data={reportData.distribution} >
-                                                <CartesianGrid strokeDasharray="3 3"  stroke="#a9d8cb" />
+                                            <BarChart data={reportData.distribution}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#a9d8cb" />
                                                 <XAxis dataKey="grade" tick={{ fontWeight: '600'}}/>
-                                                <YAxis  tick={{ fontWeight: '600'}}/>
-                                                <Tooltip  
-                                                cursor={{ fill: '#e0e0e0' }}  
-                                                contentStyle={{ 
-                                                    backgroundColor: '#a9d8cb',
-                                                    borderRadius: '10px',
-                                                    height: '70px',
-                                                    fontWeight: '600',
-                                                    color: '#56575B',
-                                                }} />
-                                                <Bar dataKey="count" fill="#67A292" 
-                
+                                                <YAxis tick={{ fontWeight: '600'}}/>
+                                                <Tooltip 
+                                                    cursor={{ fill: '#e0e0e0' }}  
+                                                    contentStyle={{ 
+                                                        backgroundColor: '#a9d8cb',
+                                                        borderRadius: '10px',
+                                                        height: '70px',
+                                                        fontWeight: '600',
+                                                        color: '#56575B',
+                                                    }}
                                                 />
+                                                <Bar dataKey="count" fill="#67A292" />
                                             </BarChart>
                                         </ResponsiveContainer>
                                     </div>
                                 </div>
 
+                            {/* Score Trends Section */}
                                 <div className="QuizReportModal__chart-section">
                                     <h3 className="QuizReportModal__chart-title">Score Trends</h3>
                                     <div className="chart-wrapper">
                                         <ResponsiveContainer width="100%" height={300}>
                                             <LineChart data={reportData.timeData}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#a9d8cb"/>
-                                                <XAxis dataKey="date"  tick={{ fontWeight: '600'}}/>
-                                                <YAxis domain={[0, 100]}  tick={{ fontWeight: '600'}}/>
+                                                <XAxis dataKey="date" tick={{ fontWeight: '600'}}/>
+                                                <YAxis domain={[0, 100]} tick={{ fontWeight: '600'}}/>
                                                 <Tooltip 
-                                                cursor={{ fill: '#e0e0e0' }}  
-                                                contentStyle={{ 
-                                                    backgroundColor: '#a9d8cb',
-                                                    borderRadius: '10px',
-                                                    height: '70px',
-                                                    fontWeight: '600',
-                                                    color: '#56575B',
-                                                }} />
+                                                    cursor={{ fill: '#e0e0e0' }}  
+                                                    contentStyle={{ 
+                                                        backgroundColor: '#a9d8cb',
+                                                        borderRadius: '10px',
+                                                        height: '70px',
+                                                        fontWeight: '600',
+                                                        color: '#56575B',
+                                                    }}
+                                                />
                                                 <Line type="monotone" dataKey="score" stroke="#67A292" />
                                             </LineChart>
                                         </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Question Summary Section */}
+                            <div className="pdf-section">
+                                <div className="QuizReportModal__question-summary">
+                                    <QuestionSummaryWithCharts questionStats={questionStats} />
+                                </div>
+                            </div>
+
+                            {/* Student Scores Section */}
+                            <div className="pdf-section">
+                                <div className="QuizReportModal__student-scores">
+                                    <h3 className="QuizReportModal__section-title">Student Scores</h3>
+                                    <div className="QuizReportModal__student-table">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Student Name</th>
+                                                    <th>Score</th>
+                                                    <th>Points</th>
+                                                    <th>Date Taken</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {studentScores.map((score, index) => (
+                                                    <tr key={index}>
+                                                        <td>{score.studentName}</td>
+                                                        <td>{score.score.toFixed(1)}%</td>
+                                                        <td>{score.totalPoints}/{score.maxPoints}</td>
+                                                        <td>{score.attemptDate}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

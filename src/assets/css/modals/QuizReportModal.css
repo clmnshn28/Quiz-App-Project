@@ -178,7 +178,7 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.QuizReportModal__chart-title {
+.QuizReportModal__chart-title, .QuizReportModal__section-title {
     font-size: 26px;
     font-weight: bold;
     color: #56575B;
@@ -214,10 +214,6 @@
     }
 }
 
-
-
-
-
 /* PDF BUTTOn */
 .QuizReportModal__download-button {
     background: none;
@@ -250,4 +246,25 @@
 .QuizReportModal__download-icon {
     width: 16px;
     height: 16px;
+}
+
+.pdf-section {
+    break-inside: avoid;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.QuizReportModal__student-scores {
+    background: #bddfd5;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@media print {
+    .pdf-section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
 }

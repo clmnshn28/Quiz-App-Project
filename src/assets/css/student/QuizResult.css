@@ -176,7 +176,29 @@
     color: #666;
 }
 
+.question-text {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+}
 
+.question-text p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.options-list {
+    margin-top: 0.5rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.options-list div {
+    font-size: 0.9rem;
+    color: #666;
+}
 
 
 

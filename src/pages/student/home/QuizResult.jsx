@@ -68,6 +68,7 @@ export const QuizResult = () => {
 
                 const quizData = await quizResponse.json();
                 setQuiz(quizData);
+                console.log('Quiz Data:', quizData); // Add this
 
                 // Fetch class data if we have quiz data
                 if (quizData.classes && quizData.classes.length > 0) {
@@ -103,13 +104,18 @@ export const QuizResult = () => {
                     if (!resultsResponse.ok) {
                         throw new Error('Failed to fetch quiz results');
                     }
-
-                    const data = await resultsResponse.json();
-                    if (data.length > 0) {
-                        setResults(data[0]);
+            
+                    const attemptsData = await resultsResponse.json();
+                    console.log('Attempts Data:', attemptsData);
+            
+                    if (attemptsData.length > 0) {
+                        console.log('First Attempt Data:', attemptsData[0]);
+                        console.log('Results field:', attemptsData[0].results);
+                        setResults(attemptsData[0]);
                     } else {
                         throw new Error('No quiz attempt found. Please take the quiz first.');
                     }
+                    setLoading(false);
                 }
             } catch (err) {
                 setError(err.message);
@@ -124,36 +130,6 @@ export const QuizResult = () => {
         fetchData();
     }, [quizId, location.state, navigate]);
 
-    // if (error) {
-    //     return (
-    //         <div className="no-results">
-    //             <p>{error}</p>
-    //             <button 
-    //                 className="back-button"
-    //                 onClick={() => navigate(-1)}
-    //             >
-    //                 Back to Quiz
-    //             </button>
-    //         </div>
-    //     );
-    // }
-
-    // // Additional check to ensure results exist before rendering
-    // if (!results || !results.results) {
-    //     return (
-    //         <div className="no-results">
-    //             <p>No results available for this quiz</p>
-    //             <button 
-    //                 className="back-button"
-    //                 onClick={() => navigate(-1)}
-    //             >
-    //                 Back to Quiz
-    //             </button>
-    //         </div>
-    //     );
-    // }
-
-
     return (
         <>
             <nav className="QuizzesTeacher__breadcrumb">
@@ -165,7 +141,7 @@ export const QuizResult = () => {
                     <span>{classData?.name || 'Loading...'}</span>
                 </a>
                 <span> &gt; </span>
-                <span >{quiz?.title || 'Loading...'}</span>
+                <span>{quiz?.title || 'Loading...'}</span>
             </nav>
 
             {loading ? (
@@ -173,11 +149,11 @@ export const QuizResult = () => {
                     <div className="loading-spinner"></div>
                 </div>
             ) : (
-                <div className='TakeQuiz__box-shadow'>
+                <div className="TakeQuiz__box-shadow">
                     <div className="TakeQuiz__quiz-header">
                         <div className="TakeQuiz__title-section">
                             <h1 className="TakeQuiz__section-header">{quiz?.title || 'Quiz Results'}</h1>
-                            <p className="TakeQuiz__quiz-subtitle">Read each question carefully before answering.</p>
+                            <p className="TakeQuiz__quiz-subtitle">Here are your quiz results.</p>
                         </div>
                     </div>
             
@@ -203,43 +179,70 @@ export const QuizResult = () => {
                         </div>
                     </div>
 
-                    {/* Only show detailed results if show_correct_answers is true */}
-                    {results?.show_correct_answers && (
+                    {quiz?.show_correct_answers && results?.results ? (
                         <div className="results-detail">
-                            {results.results && results.results.map((result, index) => (
-                                <div key={index} className={`question-result ${result.correct ? 'correct' : 'incorrect'}`}>
-                                    <div className="result-header">
-                                        <div className="question-number">Question {index + 1}</div>
-                                        <div className="result-icon">
-                                            {result.correct ? <CheckIcon /> : <XIcon />}
+                            {console.log('Rendering results:', results.results)}
+                            {Array.isArray(results.results) ? (
+                                results.results.map((result, index) => {
+                                    console.log('Processing result item:', result);
+                                    const question = quiz.questions[index];
+                                    return (
+                                        <div key={index} className={`question-result ${result.correct ? 'correct' : 'incorrect'}`}>
+                                            <div className="result-header">
+                                                <div className="question-number">Question {index + 1}</div>
+                                                <div className="result-icon">
+                                                    {result.correct ? <CheckIcon /> : <XIcon />}
+                                                </div>
+                                            </div>
+                                            {question && (
+                                                <div className="question-text">
+                                                    <p>{question.question_text}</p>
+                                                    {!question.question_text && <p className="error-text">Question text not found</p>}
+                                                </div>
+                                            )}
+                                            <div className="answer-details">
+                                                <div className="answer-row">
+                                                    <span className="answer-label">Your answer:</span>
+                                                    <span className="answer-value">{result.user_answer || 'No answer recorded'}</span>
+                                                </div>
+                                                {quiz.show_correct_answers && (
+                                                    <div className="answer-row">
+                                                        <span className="answer-label">Correct answer:</span>
+                                                        <span className="answer-value">{result.correct_answer || 'No correct answer recorded'}</span>
+                                                    </div>
+                                                )}
+                                                <div className="points-row">
+                                                    <span className="points-label">Points:</span>
+                                                    <span className="points-value">{result.points} / {result.max_points}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="answer-details">
-                                        <div className="answer-row">
-                                            <span className="answer-label">Your answer:</span>
-                                            <span className="answer-value">{result.user_answer}</span>
-                                        </div>
-                                        <div className="answer-row">
-                                            <span className="answer-label">Correct answer:</span>
-                                            <span className="answer-value">{result.correct_answer}</span>
-                                        </div>
-                                        <div className="points-row">
-                                            <span className="points-label">Points:</span>
-                                            <span className="points-value">{result.points} / {result.max_points}</span>
-                                        </div>
-                                    </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="error-message">
+                                    Results data is not in the expected format.
+                                    <pre>{JSON.stringify(results.results, null, 2)}</pre>
                                 </div>
-                            ))}
+                            )}
+                        </div>
+                    ) : (
+                        <div className="no-results-message">
+                            {!quiz?.show_correct_answers ? 
+                                "The teacher has disabled showing correct answers for this quiz." :
+                                "No results data available."}
                         </div>
                     )}
 
                     <div className="QuizResult__quiz-navigation">
-                        <button onClick={() => navigate(-2)} className="QuizResult__done-button">
-                            Done
-                        </button>
+                    <button onClick={() => navigate(`/student/home/class/${classData?.id}`)} className="QuizResult__done-button">
+                        Done
+                    </button>
                     </div>
                 </div>
             )}
         </>
     );
 };
+
+export default QuizResult;

@@ -11,6 +11,34 @@ export const EnterClassStudent = () => {
     const [quizzes, setQuizzes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [processingQuiz, setProcessingQuiz] = useState(null);
+    const [quizAttempts, setQuizAttempts] = useState({});
+
+    // Modified fetchAllQuizAttempts to properly handle the response
+    const fetchAllQuizAttempts = async (quizzes, accessToken) => {
+        try {
+            const attempts = {};
+            for (const quiz of quizzes) {
+                const attemptsResponse = await fetch(
+                    `https://apiquizapp.pythonanywhere.com/api/attempts/?quiz=${quiz.id}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    }
+                );
+
+                if (attemptsResponse.ok) {
+                    const attemptsData = await attemptsResponse.json();
+                    // Store the actual attempts array, not filtered
+                    attempts[quiz.id] = attemptsData;
+                }
+            }
+            setQuizAttempts(attempts);
+        } catch (error) {
+            console.error('Error fetching attempts:', error);
+        }
+    };
 
     useEffect(() => {
         const fetchClassAndQuizzes = async () => {
@@ -18,7 +46,6 @@ export const EnterClassStudent = () => {
                 setLoading(true);
                 const accessToken = localStorage.getItem('accessToken');
                 
-                // Fetch class data
                 const classResponse = await fetch(`https://apiquizapp.pythonanywhere.com/api/classes/${classId}/`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
@@ -31,7 +58,6 @@ export const EnterClassStudent = () => {
                 const classData = await classResponse.json();
                 setClassData(classData);
 
-                // Fetch quizzes specifically for this class
                 const quizzesResponse = await fetch(`https://apiquizapp.pythonanywhere.com/api/quizzes/?class=${classId}`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
@@ -43,12 +69,13 @@ export const EnterClassStudent = () => {
                 }
                 const quizzesData = await quizzesResponse.json();
                 
-                // Filter quizzes to only include ones associated with this class
                 const classQuizzes = quizzesData.filter(quiz => 
                     quiz.classes.includes(parseInt(classId))
                 );
                 
                 setQuizzes(classQuizzes);
+                await fetchAllQuizAttempts(classQuizzes, accessToken);
+                
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -66,44 +93,49 @@ export const EnterClassStudent = () => {
         return now >= start && now <= end;
     };
 
+    // Modified handleQuizClick to properly check attempts
     const handleQuizClick = async (quiz) => {
-        // First check if the quiz is available
-        if (!isQuizAvailable(quiz)) {
-            // You might want to show a message to the user here
+        if (processingQuiz) return;
+        
+        // Check if we have attempts for this quiz
+        const attempts = quizAttempts[quiz.id] || [];
+        const hasAttempt = attempts.length > 0;
+
+        if (hasAttempt) {
+            navigate(`quiz/${quiz.id}/results`);
             return;
         }
-    
-        try {
-            const accessToken = localStorage.getItem('accessToken');
+
+        if (isQuizAvailable(quiz)) {
+            setProcessingQuiz(quiz.id);
             
-            // Check if student has already attempted the quiz
-            const attemptsResponse = await fetch(
-                `https://apiquizapp.pythonanywhere.com/api/attempts/?quiz=${quiz.id}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                const attemptsResponse = await fetch(
+                    `https://apiquizapp.pythonanywhere.com/api/attempts/?quiz=${quiz.id}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
                     }
+                );
+        
+                if (!attemptsResponse.ok) {
+                    throw new Error('Failed to check quiz attempts');
                 }
-            );
-    
-            if (!attemptsResponse.ok) {
-                throw new Error('Failed to check quiz attempts');
+        
+                const attempts = await attemptsResponse.json();
+                
+                if (attempts && attempts.length > 0) {
+                    navigate(`quiz/${quiz.id}/results`);
+                } else {
+                    navigate(`quiz/${quiz.id}`);
+                }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setProcessingQuiz(null);
             }
-    
-            const attempts = await attemptsResponse.json();
-            
-            // Make sure we're checking specifically for attempts on this quiz
-            const quizAttempts = attempts.filter(attempt => attempt.quiz === quiz.id);
-            
-            if (quizAttempts && quizAttempts.length > 0) {
-                // If there's an attempt for this specific quiz, navigate to results
-                navigate(`quiz/${quiz.id}/results`);
-            } else {
-                // If no attempt exists for this quiz, navigate to take the quiz
-                navigate(`quiz/${quiz.id}`);
-            }
-        } catch (err) {
-            setError(err.message);
         }
     };
 
@@ -121,17 +153,6 @@ export const EnterClassStudent = () => {
         }
     };
 
-
-
-    // if (error) {
-    //     return (
-    //         <div className="error-container">
-    //             <span className="error-icon">⚠️</span>
-    //             <span className="error-message">{error}</span>
-    //         </div>
-    //     );
-    // }
-
     return (
         <>
             <nav className="QuizzesTeacher__breadcrumb">
@@ -142,8 +163,6 @@ export const EnterClassStudent = () => {
                 <span>{classData?.name || 'Loading...'}</span>
             </nav>
             
-
-            {/* Quiz Section */}
             <div className="EnterClassTeacher__main-content">
                 <div className="EnterClassTeacher__tabs">
                     <button 
@@ -160,53 +179,55 @@ export const EnterClassStudent = () => {
                 ) : (
                 <div className="EnterClassStudent__quiz-list">
                     {quizzes.length > 0 ? (
-                        quizzes.map((quiz) => (
-                            <div 
-                                key={quiz.id}
-                                className={`EnterClassStudent__quiz-item ${getQuizStatusClass(quiz)}`}
-                                onClick={() => handleQuizClick(quiz)}
-                            >
-                                <span className="EnterClassStudent__quiz-icon-container">
-                                    <LuClipboardList className="EnterClassStudent__quiz-icon"/>
-                                </span>
-                                <span className="EnterClassStudent__quiz-name">{quiz.title}</span>
-                        
-                                <div className="EnterClassStudent__quiz-info">
-                                    {isQuizAvailable(quiz) ? (
-                                        <div className="EnterClassStudent__quiz-timing">
-                                            <span className="EnterClassStudent__quiz-status">
-                                                <span 
-                                                    className={`UsersAdmin__dot UsersAdmin__active`}   
-                                                />  
-                                                Available now
-                                            </span>
-                                            <span className="EnterClassStudent__quiz-due-date">
-                                                Due: {new Date(quiz.end_datetime).toLocaleString('en-US', {
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    year: 'numeric',
-                                                    hour: 'numeric',
-                                                    minute: '2-digit',
-                                                    hour12: true
-                                                })}
-                                            </span>
-                                            <span className="EnterClassStudent__quiz-duration">
-                                                <FaClockRotateLeft/>
-                                                {quiz.time_limit_minutes} minutes
-                                            </span>
-                                        </div>
-                                    ) : (
-                                        <div className="quiz-timing">
-                                             <span className="EnterClassStudent__quiz-closed">
-                                                Closed
-                                            </span>
-                                        </div>
-                                    )}
-                                   
-                                </div>
+                        quizzes.map((quiz) => {
+                            const hasAttempt = quizAttempts[quiz.id]?.length > 0;
+                            return (
+                                <div 
+                                    key={quiz.id}
+                                    className={`EnterClassStudent__quiz-item ${getQuizStatusClass(quiz)}`}
+                                    onClick={() => handleQuizClick(quiz)}
+                                    style={{ cursor: processingQuiz === quiz.id ? 'wait' : 'pointer' }}
+                                >
+                                    <span className="EnterClassStudent__quiz-icon-container">
+                                        <LuClipboardList className="EnterClassStudent__quiz-icon"/>
+                                    </span>
+                                    <span className="EnterClassStudent__quiz-name">{quiz.title}</span>
                             
-                            </div>
-                        ))
+                                    <div className="EnterClassStudent__quiz-info">
+                                        {isQuizAvailable(quiz) && !hasAttempt ? (
+                                            <div className="EnterClassStudent__quiz-timing">
+                                                <span className="EnterClassStudent__quiz-status">
+                                                    <span 
+                                                        className={`UsersAdmin__dot UsersAdmin__active`}   
+                                                    />  
+                                                    Available now
+                                                </span>
+                                                <span className="EnterClassStudent__quiz-due-date">
+                                                    Due: {new Date(quiz.end_datetime).toLocaleString('en-US', {
+                                                        month: '2-digit',
+                                                        day: '2-digit',
+                                                        year: 'numeric',
+                                                        hour: 'numeric',
+                                                        minute: '2-digit',
+                                                        hour12: true
+                                                    })}
+                                                </span>
+                                                <span className="EnterClassStudent__quiz-duration">
+                                                    <FaClockRotateLeft/>
+                                                    {quiz.time_limit_minutes} minutes
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="quiz-timing">
+                                                <span className="EnterClassStudent__quiz-closed">
+                                                    {hasAttempt ? 'Completed' : 'Closed'}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })
                     ) : (
                         <div className="EnterClassStudent__no-available">
                             No quizzes available for this class yet.
@@ -215,7 +236,6 @@ export const EnterClassStudent = () => {
                 </div>
                 )}
             </div>
-        
         </>
     );
 };

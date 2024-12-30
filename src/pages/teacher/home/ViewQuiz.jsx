@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import 'assets/css/student';
+import 'assets/css/teacher';
 
 export const ViewQuiz = () => {
     const { quizId } = useParams();
     const navigate = useNavigate();
-
     const [classData, setClassData] = useState(null);
     const [quiz, setQuiz] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-   
+    
     const questionsPerPage = 5;
- 
+
     useEffect(() => {
         const fetchQuizAndClass = async () => {
             try {
@@ -24,18 +22,14 @@ export const ViewQuiz = () => {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 });
-
+                
                 if (!quizResponse.ok) {
                     throw new Error('Failed to fetch quiz');
                 }
-
+                
                 const quizData = await quizResponse.json();
-                if (!quizData.questions || quizData.questions.length === 0) {
-                    throw new Error('No questions available for this quiz');
-                }
                 setQuiz(quizData);
 
-                // Fetch class data using the first class ID from the quiz
                 if (quizData.classes && quizData.classes.length > 0) {
                     const classResponse = await fetch(`https://apiquizapp.pythonanywhere.com/api/classes/${quizData.classes[0]}/`, {
                         headers: {
@@ -43,11 +37,10 @@ export const ViewQuiz = () => {
                         }
                     });
                     
-                    if (!classResponse.ok) {
-                        throw new Error('Failed to fetch class data');
+                    if (classResponse.ok) {
+                        const classData = await classResponse.json();
+                        setClassData(classData);
                     }
-                    const classData = await classResponse.json();
-                    setClassData(classData);
                 }
                 
                 setLoading(false);
@@ -56,9 +49,9 @@ export const ViewQuiz = () => {
                 setLoading(false);
             }
         };
-
+    
         fetchQuizAndClass();
-    }, [classId]);
+    }, [quizId]);
 
     const goToNextPage = () => {
         if (currentPage < Math.ceil(quiz.questions.length / questionsPerPage) - 1) {
@@ -72,30 +65,34 @@ export const ViewQuiz = () => {
         }
     };
 
-
+    // Helper function to determine if an option is the correct answer
+    const isCorrectOption = (questionData, optionValue) => {
+        return questionData.correct_answer === optionValue;
+    };
 
     if (loading) {
         return (
             <div className="quiz-loading">
-                 <div className="loading-spinner"></div>
+                <div className="loading-spinner"></div>
             </div>
         );
     }
-
 
     const startIndex = currentPage * questionsPerPage;
     const endIndex = Math.min(startIndex + questionsPerPage, quiz.questions.length);
     const currentQuestions = quiz.questions.slice(startIndex, endIndex);
     const totalPages = Math.ceil(quiz.questions.length / questionsPerPage);
+
+    const getOptionLetter = (index) => ['A', 'B', 'C', 'D'][index];
     
     return (
         <>
             <nav className="QuizzesTeacher__breadcrumb">
-                <a href="/student/home" className="QuizzesTeacher__breadcrumb-nav">
+                <a href="/teacher/home" className="QuizzesTeacher__breadcrumb-nav">
                     <span>Home</span>
                 </a>
                 <span> &gt; </span>
-                <a href={`/student/home/class/${classData?.id}`} className="QuizzesTeacher__breadcrumb-nav">
+                <a href={`/teacher/home/class/${classData?.id}`} className="QuizzesTeacher__breadcrumb-nav">
                     <span>{classData?.name || 'Loading...'}</span>
                 </a>
                 <span> &gt; </span>
@@ -106,66 +103,86 @@ export const ViewQuiz = () => {
                 <div className="TakeQuiz__quiz-header">
                     <div className="TakeQuiz__title-section">
                         <h1 className="TakeQuiz__section-header">{quiz?.title || 'Quiz Title'}</h1>
-                        <p className="TakeQuiz__quiz-subtitle">Read each question carefully before answering.</p>
+                        <p className="TakeQuiz__quiz-subtitle">Total Questions: {quiz?.questions.length || 0}</p>
                     </div>
                 </div>
 
-
                 <div className="TakeQuiz__quiz-main-take">
                 {currentQuestions.map((questionData, index) => (
-                        <div key={questionData.id} className={`TakeQuiz__question-container ${
-                            index === currentQuestions.length - 1 ? 'last' : ''
-                        }`}>
+                    <div key={questionData.id} className={`TakeQuiz__question-container ${
+                        index === currentQuestions.length - 1 ? 'last' : ''
+                    }`}>
+                        <div className="TakeQuiz__question-header">
                             <p className="TakeQuiz__question-text">
                                 {startIndex + index + 1}. {questionData.question_text}
                             </p>
-
-                            {questionData.question_type === 'MC' && (
-                                <div className="TakeQuiz__multi-options-container">
-                                    {['option_a', 'option_b', 'option_c', 'option_d'].map((option, optionIndex) => (
-                                        questionData[option] && (
-                                            <label key={option} className="TakeQuiz__option-label">
-                                                <input
-                                                    type="radio"
-                                                    name={`question-${questionData.id}`}
-                                                    value={optionIndex}
-                                                    disabled
-                                                />
-                                                <span className="TakeQuiz__option-text">{questionData[option]}</span>
-                                            </label>
-                                        )
-                                    ))}
-                                </div>
-                            )}
-
-                            {questionData.question_type === 'TF' && (
-                                <div className="options-container">
-                                    {['True', 'False'].map((option) => (
-                                        <label key={option} className="TakeQuiz__option-label">
-                                            <input
-                                                type="radio"
-                                                name={`question-${questionData.id}`}
-                                                value={option}
-                                                disabled
-                                            />
-                                            <span className="TakeQuiz__option-text">{option}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            )}
-
-                            {questionData.question_type === 'ID' && (
-                                <div className='TakeQuiz__input-short-container'>
-                                    <input
-                                        type="text"
-                                        className="TakeQuiz__identification-input"
-                                        placeholder="Identification answer..."
-                                        disabled
-                                    />
-                                </div>
-                            )}
+                            <span className="TakeQuiz__question-points">
+                                {questionData.points} {questionData.points === 1 ? 'point' : 'points'}
+                            </span>
                         </div>
-                    ))}
+
+                        {questionData.question_type === 'MC' && (
+                            <div className="TakeQuiz__multi-options-container">
+                                {[
+                                    { key: 'option_a', value: questionData.option_a },
+                                    { key: 'option_b', value: questionData.option_b },
+                                    { key: 'option_c', value: questionData.option_c },
+                                    { key: 'option_d', value: questionData.option_d }
+                                ].map((option, optionIndex) => {
+                                    if (!option.value) return null;
+                                    const isCorrect = isCorrectOption(questionData, option.value);
+                                    
+                                    return (
+                                        <div 
+                                            key={option.key} 
+                                            className={`TakeQuiz__option-label ${isCorrect ? 'correct' : ''}`}
+                                        >
+                                            <div className="TakeQuiz__option-number">
+                                                {getOptionLetter(optionIndex)}.
+                                            </div>
+                                            <div className="TakeQuiz__option-text">
+                                                {option.value}
+                                            </div>
+                                            {isCorrect && (
+                                                <div className="TakeQuiz__correct-mark">✓</div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {questionData.question_type === 'TF' && (
+                            <div className="options-container">
+                                {['True', 'False'].map((option) => {
+                                    const isCorrectAnswer = option === questionData.correct_answer;
+                                    
+                                    return (
+                                        <div 
+                                            key={option} 
+                                            className={`TakeQuiz__option-label ${isCorrectAnswer ? 'correct' : ''}`}
+                                        >
+                                            <div className="TakeQuiz__option-text">
+                                                {option}
+                                            </div>
+                                            {isCorrectAnswer && (
+                                                <div className="TakeQuiz__correct-mark">✓</div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {questionData.question_type === 'ID' && (
+                            <div className='TakeQuiz__input-short-container'>
+                                <div className="TakeQuiz__correct-answer-display">
+                                    Correct Answer: {questionData.correct_answer}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
 
                     <div className="TakeQuiz__quiz-navigation">
                         {currentPage > 0 && (
